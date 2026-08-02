@@ -21,6 +21,13 @@
   --badge-green: #7cb342;
   --badge-teal: #14b8a6;
   --badge-indigo: #6366f1;
+
+  /* --- TARANG LOGO OFFICIAL BRAND PALETTE --- */
+  --logo-blue: #0081cb;     /* Top Left Sky Blue Figure */
+  --logo-orange: #f15a24;   /* Top Right Warm Orange Figure */
+  --logo-yellow: #f8a100;   /* Right Yellow/Gold Figure */
+  --logo-green: #8cc63f;    /* Bottom Right Olive Green Figure */
+  --logo-brown: #9e4624;    /* Center Swirl Brown Accent */
 }
 
 /* Base Utility Classes */
@@ -28,6 +35,12 @@
 .bg-purple-dark { background-color: var(--purple-dark) !important; }
 .bg-purple-light { background-color: var(--purple-bg) !important; }
 .text-purple-main { color: var(--primary-purple) !important; }
+
+/* Custom Text & BG classes for Logo Palette */
+.text-logo-orange { color: var(--logo-orange) !important; }
+.bg-logo-orange { background-color: var(--logo-orange) !important; }
+.text-logo-blue { color: var(--logo-blue) !important; }
+.text-logo-green { color: var(--logo-green) !important; }
 
 /* Custom Badge Icon Box */
 .icon-badge-box {
@@ -42,7 +55,7 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Image Yellow Border Box (Matching Image 1) */
+/* Image Yellow Border Box */
 .founder-img-wrapper {
   border: 8px solid #f5b000;
   border-radius: 20px;

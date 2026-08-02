@@ -3,6 +3,8 @@ import Hero from '@/components/home/Hero';
 import AboutSection from '@/components/home/AboutSection';
 import Collaborations from '@/components/home/Collaborations';
 import UpcomingExhibitions from '@/components/home/UpcomingExhibitions';
+import RecognitionAndAwards from '@/components/home/RecognitionAndAwards';
+import RecentEventsSection from '@/components/home/RecentEventsSection';
 import WhoCanJoin from '@/components/home/WhoCanJoin';
 import StatsCounter from '@/components/home/StatsCounter';
 import Testimonials from '@/components/home/Testimonials';
@@ -17,6 +19,8 @@ export default function HomePage() {
       <AboutSection />
       <Collaborations />
       <UpcomingExhibitions />
+      <RecentEventsSection />
+      <RecognitionAndAwards />
       <WhoCanJoin />
       <StatsCounter />
       <Testimonials />
