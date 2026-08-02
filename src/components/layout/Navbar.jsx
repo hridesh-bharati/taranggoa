@@ -28,7 +28,6 @@ export default function Navbar() {
   const navLinks = [
     { name: 'Home', href: '/', icon: Home, colorClass: 'icon-blue' },
     { name: 'About Us', href: '/about', icon: Info, colorClass: 'icon-cyan' },
-    { name: 'Exhibitions', href: '/exhibitions', icon: Sparkles, colorClass: 'icon-yellow' },
     { name: 'Events', href: '/events', icon: Calendar, colorClass: 'icon-red' },
     { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },

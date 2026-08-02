@@ -1,25 +1,28 @@
-/* Custom Helper Variables */
-.text-purple-main {
-  color: var(--primary-purple, #6b21a8) !important;
-}
+/* =========================================================
+   COLLABORATIONS SECTION STYLES (No Purple - Pure Theme)
+   ========================================================= */
 
 /* Institutional Card Styling */
 .uni-card {
   background: #ffffff;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid rgba(0, 86, 191, 0.12);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.06);
+  transition: all 0.35s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .uni-card:hover {
-  box-shadow: 0 8px 24px rgba(107, 33, 168, 0.1) !important;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 86, 191, 0.15) !important;
+  border-color: rgba(0, 86, 191, 0.3);
 }
 
+/* Card Header - Royal Blue Gradient (Replacing Purple) */
 .uni-card-header {
-  background: linear-gradient(135deg, var(--primary-purple, #6b21a8) 0%, #581c87 100%);
-  font-size: 1.05rem;
+  background: linear-gradient(135deg, #0056bf 0%, #003a82 100%);
+  font-size: 1rem;
+  letter-spacing: 0.3px;
 }
 
 .uni-card-body {
@@ -28,53 +31,93 @@
 
 /* Ticker Bar Styling */
 .ticker-bar {
-  background-color: #fffbeb;
-  border: 1px solid rgba(245, 176, 0, 0.3);
+  background: linear-gradient(90deg, #fffbeb 0%, #ffffff 100%);
+  border: 1px solid rgba(245, 176, 0, 0.35);
   color: #1e293b;
 }
 
 .ticker-badge {
-  background: linear-gradient(135deg, #f5b000 0%, #d97706 100%);
+  background: linear-gradient(135deg, #ffc107 0%, #e64a19 100%);
   color: #ffffff;
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
-.ticker-icon {
-  color: #ffffff;
-}
-
-/* Marquee Container Styling */
+/* Marquee Smooth Vertical Loop */
 .marquee-wrapper {
-  height: 320px;
-  mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+  height: 310px;
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+@keyframes scrollMarquee {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.marquee-content-animated {
+  animation: scrollMarquee 22s linear infinite;
+}
+
+.marquee-wrapper:hover .marquee-content-animated {
+  animation-play-state: paused;
 }
 
 .partner-item {
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
 }
 
 .partner-item:hover {
-  background-color: var(--purple-hover-bg, rgba(107, 33, 168, 0.05));
+  background-color: #f0f7ff;
   border-radius: 6px;
+  padding-left: 12px !important;
 }
 
-/* Event Slider Image Heights */
+/* Event Slider Smooth Transition */
 .event-slider-container {
   height: 280px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.1);
 }
 
 .transition-fade {
-  transition: opacity 0.8s ease-in-out;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.image-scale-enter {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.image-scale-exit {
+  opacity: 0;
+  transform: scale(1.04);
+  z-index: 1;
 }
 
 /* Highlights Card */
 .highlights-img {
   height: 180px;
   width: 100%;
+  transition: transform 0.4s ease;
+}
+
+.uni-card:hover .highlights-img {
+  transform: scale(1.02);
 }
 
 /* Bottom Banner */
 .bottom-banner-img {
   max-height: 220px;
+  transition: transform 0.5s ease;
+}
+
+.uni-card:hover .bottom-banner-img {
+  transform: scale(1.01);
+}
+
+/* Micro Font Utility */
+.fs-7 {
+  font-size: 0.82rem;
 }

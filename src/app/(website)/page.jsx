@@ -8,6 +8,7 @@ import RecentEventsSection from '@/components/home/RecentEventsSection';
 import WhoCanJoin from '@/components/home/WhoCanJoin';
 import StatsCounter from '@/components/home/StatsCounter';
 import Testimonials from '@/components/home/Testimonials';
+import WhyChooseUs from '@/components/home/WhyChooseUs';
 import Newsletter from '@/components/home/Newsletter';
 import Footer from '@/components/layout/Footer';
 
@@ -24,6 +25,7 @@ export default function HomePage() {
       <WhoCanJoin />
       <StatsCounter />
       <Testimonials />
+      <WhyChooseUs />
       <Newsletter />
       <Footer />
     </main>

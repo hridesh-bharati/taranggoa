@@ -74,7 +74,7 @@ export default function UpcomingExhibitions() {
         }
       `}</style>
 
-      <div className="container py-3 position-relative z-2">
+      <div className="container-fluid py-3 position-relative z-2">
         
         {/* Main Section Header */}
         <div className="gov-portal-card mb-5 anim-title">
