@@ -17,6 +17,8 @@ import {
   Trash2, 
   ShieldCheck, 
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   X,
   AlignRight,
   Bell,
@@ -29,15 +31,21 @@ export default function AdminLayout({ children }) {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false);
 
+  // FIXED: Microtask Queue added for Next.js App Router safely
   useEffect(() => {
     if (!loading) {
-      if (!user) router.push('/login');
-      else if (!isAdmin) router.push('/');
+      if (!user) {
+        Promise.resolve().then(() => router.replace('/login'));
+      } else if (!isAdmin) {
+        Promise.resolve().then(() => router.replace('/'));
+      }
     }
   }, [user, isAdmin, loading, router]);
 
-  if (loading || !isAdmin) {
+  // Loading state guard
+  if (loading || !user || !isAdmin) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
         <div className="spinner-border text-logo-orange" role="status"></div>
@@ -67,15 +75,19 @@ export default function AdminLayout({ children }) {
     <div className="min-vh-100 d-flex admin-dashboard-container">
       
       {/* 1. DESKTOP SIDEBAR */}
-      <aside className="admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex">
+      <aside className={`admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex ${desktopCollapsed ? 'collapsed' : ''}`}>
         <div>
-          <div className="d-flex align-items-center gap-2 px-2 py-3 border-bottom border-light-subtle mb-2">
-            <span className="app-icon-badge bg-logo-orange text-white d-flex align-items-center justify-content-center rounded-3" style={{ width: 36, height: 36 }}>
-              <ShieldCheck size={20} />
-            </span>
-            <div>
-              <h6 className="fw-black text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
-              <small className="text-secondary fw-semibold" style={{ fontSize: '0.72rem' }}>Control Center</small>
+          <div className="d-flex align-items-center justify-content-between px-1 py-3 border-bottom border-light-subtle mb-2">
+            <div className="d-flex align-items-center gap-2 overflow-hidden">
+              <span className="app-icon-badge bg-logo-orange text-white d-flex align-items-center justify-content-center rounded-3 flex-shrink-0" style={{ width: 36, height: 36 }}>
+                <ShieldCheck size={20} />
+              </span>
+              {!desktopCollapsed && (
+                <div>
+                  <h6 className="fw-black text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
+                  <small className="text-secondary fw-semibold" style={{ fontSize: '0.72rem' }}>Control Center</small>
+                </div>
+              )}
             </div>
           </div>
 
@@ -86,13 +98,13 @@ export default function AdminLayout({ children }) {
               const isActive = pathname === link.href;
 
               return (
-                <li key={link.href} className="nav-item">
+                <li key={link.href} className="nav-item" title={desktopCollapsed ? link.name : ''}>
                   <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
                     <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
-                    <span className="flex-grow-1">{link.name}</span>
-                    {link.hasDropdown && <ChevronDown size={14} className="opacity-50" />}
+                    {!desktopCollapsed && <span className="flex-grow-1">{link.name}</span>}
+                    {!desktopCollapsed && link.hasDropdown && <ChevronDown size={14} className="opacity-50" />}
                   </Link>
                 </li>
               );
@@ -106,12 +118,12 @@ export default function AdminLayout({ children }) {
               const isActive = pathname === link.href;
 
               return (
-                <li key={link.href} className="nav-item">
+                <li key={link.href} className="nav-item" title={desktopCollapsed ? link.name : ''}>
                   <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
                     <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
-                    <span className="flex-grow-1">{link.name}</span>
+                    {!desktopCollapsed && <span className="flex-grow-1">{link.name}</span>}
                   </Link>
                 </li>
               );
@@ -124,14 +136,18 @@ export default function AdminLayout({ children }) {
             <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold" style={{ width: 34, height: 34 }}>
               {userInitial}
             </div>
-            <div className="overflow-hidden">
-              <h6 className="fw-bold mb-0 text-dark fs-7 text-truncate">Admin Account</h6>
-              <small className="text-secondary d-block fs-8 text-truncate">{user?.email}</small>
-            </div>
+            {!desktopCollapsed && (
+              <div className="overflow-hidden">
+                <h6 className="fw-bold mb-0 text-dark fs-7 text-truncate">Admin Account</h6>
+                <small className="text-secondary d-block fs-8 text-truncate">{user?.email}</small>
+              </div>
+            )}
           </div>
-          <button onClick={() => logout()} className="btn btn-sm btn-outline-danger border-0 rounded-circle p-2" title="Logout">
-            <i className="bi bi-box-arrow-right fs-6"></i>
-          </button>
+          {!desktopCollapsed && (
+            <button onClick={() => logout()} className="btn btn-sm btn-outline-danger border-0 rounded-circle p-2" title="Logout">
+              <i className="bi bi-box-arrow-right fs-6"></i>
+            </button>
+          )}
         </div>
       </aside>
 
@@ -217,11 +233,14 @@ export default function AdminLayout({ children }) {
         <header className="bg-white border-bottom px-3 px-md-4 py-2.5 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
           <div className="d-flex align-items-center gap-2">
             <button 
-              className="btn border-0 p-1.5 d-lg-none"
-              onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
+              className="btn btn-light rounded-circle p-1.5 border text-dark d-none d-lg-flex align-items-center justify-content-center"
+              onClick={() => setDesktopCollapsed(!desktopCollapsed)}
+              title={desktopCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+              style={{ width: 34, height: 34 }}
             >
-              <AlignRight size={22} className="text-dark" />
+              {desktopCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             </button>
+
             <span className="badge bg-logo-orange text-white px-3 py-1.5 rounded-pill fw-bold">
               SYSTEM ONLINE
             </span>
@@ -241,6 +260,14 @@ export default function AdminLayout({ children }) {
               <Globe size={16} />
               <span className="d-none d-sm-inline">Home</span>
             </Link>
+
+            <button 
+              className="btn btn-light border rounded-circle p-2 d-lg-none text-dark"
+              onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
+              title="Open Navigation"
+            >
+              <AlignRight size={18} />
+            </button>
           </div>
         </header>
 
