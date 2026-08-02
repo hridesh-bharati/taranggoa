@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'; // <-- GoogleAuthProvider import किया
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
@@ -19,6 +19,7 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 // Firebase Services
 const auth = getAuth(app);
 const db = getFirestore(app);
+const googleProvider = new GoogleAuthProvider(); // <-- Provider Initialize किया
 
 // Analytics only runs on Browser side
 let analytics = null;
@@ -30,4 +31,5 @@ if (typeof window !== 'undefined') {
   });
 }
 
-export { app, auth, db, analytics };
+// googleProvider को यहाँ export में ऐड कर दिया है
+export { app, auth, db, googleProvider, analytics };

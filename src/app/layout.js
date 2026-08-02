@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { AuthProvider } from '@/context/AuthContext';
 import './globals.css';
 
 export default function RootLayout({ children }) {
@@ -10,7 +11,11 @@ export default function RootLayout({ children }) {
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body suppressHydrationWarning>{children}</body>
+      <body suppressHydrationWarning>
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      </body>
     </html>
   );
 }

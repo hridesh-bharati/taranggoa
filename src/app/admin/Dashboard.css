@@ -1,0 +1,195 @@
+@import '../../components/layout/Navbar.css';
+
+/* Soft Light Background for Main Dashboard */
+.admin-dashboard-container {
+  background: #edf2f7;
+  min-height: 100vh;
+}
+
+/* --- DESKTOP SIDEBAR --- */
+.admin-sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.sidebar-section-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  color: #64748b;
+  text-transform: uppercase;
+  padding: 0 10px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+/* PC Sidebar Links with Colored Icon Badges */
+.sidebar-link {
+  color: #334155 !important;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border-radius: 12px;
+  padding: 6px 10px !important;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.sidebar-link:hover {
+  background-color: #f1f5f9;
+  color: var(--primary-purple) !important;
+}
+
+/* Active Pill Highlight */
+.sidebar-link.active {
+  background: linear-gradient(135deg, #f15a24 0%, #ff7a45 100%) !important;
+  color: #ffffff !important;
+  font-weight: 800;
+  box-shadow: 0 4px 14px rgba(241, 90, 36, 0.3);
+}
+
+.sidebar-link.active .app-icon-badge {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* --- MOBILE STYLES & DRAWER --- */
+@media (max-width: 991.98px) {
+  .admin-sidebar {
+    display: none !important;
+  }
+
+  .mobile-admin-drawer {
+    position: fixed;
+    top: 0;
+    left: -285px;
+    width: 275px;
+    height: 100vh;
+    background: linear-gradient(180deg, #ffffff 0%, #f4f5fd 100%);
+    box-shadow: 10px 0 30px rgba(99, 102, 241, 0.2);
+    z-index: 1055;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow-y: auto;
+  }
+
+  .mobile-admin-drawer.open {
+    left: 0;
+  }
+
+  .drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    z-index: 1050;
+  }
+
+  /* Fixed Bottom Dock Bar */
+  .mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 62px;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    z-index: 1040;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    padding: 0 4px;
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 4px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    flex: 1;
+    text-align: center;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--primary-purple);
+  }
+
+  .bottom-profile-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: var(--logo-orange);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.75rem;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  main {
+    padding-bottom: 80px !important;
+  }
+}
+
+/* TOP BANNER & CARDS */
+.admin-top-banner {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%) !important;
+  color: #ffffff !important;
+  border-radius: 18px;
+  padding: 20px 24px;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.25);
+}
+
+.dash-card {
+  border: none !important;
+  border-radius: 18px !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04) !important;
+}
+
+.stat-card-purple {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+  color: #ffffff !important;
+}
+
+.stat-card-cyan {
+  background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important;
+  color: #ffffff !important;
+}
+
+.stat-card-orange {
+  background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+  color: #ffffff !important;
+}
+
+.stat-card-pink {
+  background: linear-gradient(135deg, #db2777 0%, #be185d 100%) !important;
+  color: #ffffff !important;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

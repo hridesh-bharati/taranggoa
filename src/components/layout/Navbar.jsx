@@ -94,12 +94,12 @@ export default function Navbar() {
           <div className="bottom-action-group pt-2 pt-lg-0 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 flex-shrink-0">
 
             <Link
-              href="/membership"
+              href="/login"
               className="btn btn-register rounded-pill px-3 py-2 d-flex align-items-center justify-content-center gap-2 fw-bold shadow-sm"
               onClick={() => setIsOpen(false)}
             >
               <UserPlus size={16} />
-              <span>Register Now</span>
+              <span>Login</span>
             </Link>
 
             {/* Language Dropdown */}
@@ -123,3 +123,5 @@ export default function Navbar() {
     </nav>
   );
 }
+
+
