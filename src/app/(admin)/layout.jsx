@@ -37,7 +37,7 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     if (!loading) {
       if (!user) {
-        Promise.resolve().then(() => router.replace('/login'));
+        Promise.resolve().then(() => router.replace('/auth/login'));
       } else if (!isAdmin) {
         Promise.resolve().then(() => router.replace('/'));
       }

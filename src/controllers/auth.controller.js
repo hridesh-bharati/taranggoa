@@ -77,7 +77,7 @@ export const authController = {
   async logout(router) {
     try {
       await authService.logout();
-      router.push('/login');
+      router.push('/auth/login');
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }

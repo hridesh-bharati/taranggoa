@@ -5,42 +5,43 @@ import { useRouter } from 'next/navigation';
 import { authController } from '@/controllers/auth.controller';
 import Link from 'next/link';
 
-export default function SignupPage() {
+export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSignup = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await authController.signup(email, password, confirmPassword, router);
+      await authController.login(email, password, router);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleSignup = async () => {
+  const handleGoogleLogin = async () => {
     setError('');
     try {
       await authController.loginWithGoogle(router);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Google login failed');
     }
   };
 
   return (
     <main className="min-vh-100 d-flex align-items-center justify-content-center bg-light px-3 py-5">
       <div className="card border-0 rounded-4 shadow-lg p-4 p-md-5 bg-white" style={{ maxWidth: '440px', width: '100%' }}>
+        
         <div className="text-center mb-4">
-          <span className="badge bg-primary text-white px-3 py-1.5 rounded-pill mb-2 fw-bold">JOIN TARANG GOA</span>
-          <h3 className="fw-extrabold text-dark m-0" style={{ fontWeight: 800 }}>Create Account</h3>
+          <span className="badge bg-logo-orange text-white px-3 py-1.5 rounded-pill mb-2 fw-bold">WELCOME BACK</span>
+          <h3 className="fw-extrabold text-dark m-0" style={{ fontWeight: 800 }}>Account Login</h3>
         </div>
 
         {error && (
@@ -50,7 +51,7 @@ export default function SignupPage() {
           </div>
         )}
 
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleLogin}>
           <div className="mb-3">
             <label className="form-label fw-bold fs-7 text-dark">Email Address *</label>
             <input 
@@ -64,27 +65,27 @@ export default function SignupPage() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label fw-bold fs-7 text-dark">Password *</label>
-            <input 
-              type="password" 
-              required 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6" 
-              placeholder="Minimum 6 characters"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label className="form-label fw-bold fs-7 text-dark">Confirm Password *</label>
-            <input 
-              type="password" 
-              required 
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6" 
-              placeholder="Re-enter password"
-            />
+            <div className="d-flex justify-content-between align-items-center mb-1">
+              <label className="form-label fw-bold fs-7 text-dark m-0">Password *</label>
+              <Link href="/forgot-password" className="text-logo-orange fs-7 fw-bold text-decoration-none">Forgot?</Link>
+            </div>
+            <div className="position-relative">
+              <input 
+                type={showPassword ? 'text' : 'password'} 
+                required 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="form-control bg-light border-0 py-2.5 px-3 pe-5 rounded-3 fs-6" 
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="btn border-0 position-absolute end-0 top-50 translate-middle-y text-muted px-3"
+              >
+                <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
+              </button>
+            </div>
           </div>
 
           <button 
@@ -92,7 +93,7 @@ export default function SignupPage() {
             disabled={loading}
             className="btn bg-logo-orange text-white rounded-pill w-100 py-2.5 fw-bold shadow-sm mb-3"
           >
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? 'Logging In...' : 'Log In'}
           </button>
         </form>
 
@@ -102,17 +103,18 @@ export default function SignupPage() {
         </div>
 
         <button 
-          onClick={handleGoogleSignup}
+          onClick={handleGoogleLogin}
           type="button"
           className="btn btn-outline-secondary rounded-pill w-100 py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
         >
           <i className="bi bi-google text-danger fs-6"></i>
-          <span>Sign up with Google</span>
+          <span>Continue with Google</span>
         </button>
 
         <p className="text-center text-muted fs-7 mt-4 mb-0">
-          Already registered? <Link href="/login" className="text-logo-orange fw-bold text-decoration-none">Log In</Link>
+          Don't have an account? <Link href="/signup" className="text-logo-orange fw-bold text-decoration-none">Sign Up</Link>
         </p>
+
       </div>
     </main>
   );

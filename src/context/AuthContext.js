@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await authController.handleLogout();
-    router.push('/login');
+    router.push('/auth/login');
   };
 
   const resetPassword = (email) => authController.handleResetPassword(email);
