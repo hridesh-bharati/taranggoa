@@ -1,0 +1,110 @@
+/* Helper Classes */
+.text-purple-main {
+  color: var(--primary-purple, #6b21a8) !important;
+}
+
+.bg-purple-subtle {
+  background-color: rgba(107, 33, 168, 0.08);
+}
+
+/* Base Card Styling */
+.join-card {
+  min-width: 150px;
+  border-radius: 20px !important;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Icon Container Sizing */
+.icon-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.join-card:hover .icon-circle {
+  transform: scale(1.12) rotate(5deg);
+}
+
+/* ---------------------------------------------
+   BACKGROUND GRADIENTS & SHADOWS
+--------------------------------------------- */
+
+/* 1. Blue (Entrepreneurs) */
+.badge-blue {
+  background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+  border: 1px solid rgba(0, 136, 204, 0.25);
+}
+.badge-blue .icon-circle {
+  background: linear-gradient(135deg, #0088cc 0%, #0284c7 100%);
+  box-shadow: 0 6px 15px rgba(0, 136, 204, 0.35);
+}
+.badge-blue .icon-svg { color: #ffffff; }
+
+/* 2. Cyan (Startups) */
+.badge-cyan {
+  background: linear-gradient(135deg, #cff4fc 0%, #ecfeff 100%);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+.badge-cyan .icon-circle {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  box-shadow: 0 6px 15px rgba(6, 182, 212, 0.35);
+}
+.badge-cyan .icon-svg { color: #ffffff; }
+
+/* 3. Yellow/Gold (Artisans) */
+.badge-yellow {
+  background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+  border: 1px solid rgba(245, 176, 0, 0.3);
+}
+.badge-yellow .icon-circle {
+  background: linear-gradient(135deg, #f5b000 0%, #d97706 100%);
+  box-shadow: 0 6px 15px rgba(245, 176, 0, 0.35);
+}
+.badge-yellow .icon-svg { color: #ffffff; }
+
+/* 4. Red/Coral (MSMEs) */
+.badge-red {
+  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+  border: 1px solid rgba(217, 78, 52, 0.25);
+}
+.badge-red .icon-circle {
+  background: linear-gradient(135deg, #d94e34 0%, #dc2626 100%);
+  box-shadow: 0 6px 15px rgba(217, 78, 52, 0.35);
+}
+.badge-red .icon-svg { color: #ffffff; }
+
+/* 5. Purple (Business Owners) */
+.badge-purple {
+  background: linear-gradient(135deg, #f3e8ff 0%, #faf5ff 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+}
+.badge-purple .icon-circle {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6b21a8 100%);
+  box-shadow: 0 6px 15px rgba(139, 92, 246, 0.35);
+}
+.badge-purple .icon-svg { color: #ffffff; }
+
+/* 6. Green (Innovators) */
+.badge-green {
+  background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+  border: 1px solid rgba(124, 179, 66, 0.3);
+}
+.badge-green .icon-circle {
+  background: linear-gradient(135deg, #7cb342 0%, #16a34a 100%);
+  box-shadow: 0 6px 15px rgba(124, 179, 66, 0.35);
+}
+.badge-green .icon-svg { color: #ffffff; }
+
+/* 7. Teal (Professionals) */
+.badge-teal {
+  background: linear-gradient(135deg, #ccfbf1 0%, #f0fdfa 100%);
+  border: 1px solid rgba(20, 184, 166, 0.25);
+}
+.badge-teal .icon-circle {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  box-shadow: 0 6px 15px rgba(20, 184, 166, 0.35);
+}
+.badge-teal .icon-svg { color: #ffffff; }

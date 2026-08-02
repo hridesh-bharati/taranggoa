@@ -1,0 +1,168 @@
+
+/* Base Navbar */
+.custom-navbar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Three Dot WhatsApp Style Toggle Button */
+.three-dot-btn {
+  background: transparent;
+  border: none;
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.three-dot-btn:active {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Nav Link Styles */
+.custom-nav-link {
+  color: var(--text-color) !important;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  white-space: nowrap;
+}
+
+.custom-nav-link:hover, 
+.custom-nav-link.active {
+  color: var(--primary-purple) !important;
+  background-color: var(--purple-hover-bg);
+}
+
+.custom-nav-link .nav-text {
+  font-size: 0.88rem;
+}
+
+.custom-nav-link .nav-icon {
+  transition: transform 0.2s ease;
+}
+
+.custom-nav-link:hover .nav-icon {
+  transform: translateY(-2px);
+  color: var(--primary-purple);
+}
+
+/* CTA Register Button */
+.btn-register {
+  background: linear-gradient(135deg, var(--primary-purple) 0%, var(--purple-light) 100%);
+  color: #ffffff !important;
+  transition: all 0.25s ease;
+  border: none;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(107, 33, 168, 0.3) !important;
+  opacity: 0.95;
+}
+
+/* Language Selector */
+.language-selector {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background-color: #f9fafb;
+}
+
+.lang-icon {
+  color: var(--primary-purple);
+}
+
+.lang-select-dropdown {
+  outline: none;
+  font-size: 0.82rem;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+/* Mobile Top-to-Bottom Drawer (Width: 60vw & Extra Margin-Y) */
+@media (max-width: 991.98px) {
+  .mobile-menu-drawer {
+    position: absolute;
+    top: 100%;
+    right: 0;                   /* Aligning card to top-right */
+    width: 60vw;               /* Requested Custom Width */
+    min-width: 240px;          /* Minimum fallback width for small screens */
+    background-color: #ffffff;
+    box-shadow: -4px 12px 24px rgba(0, 0, 0, 0.15);
+    border-radius: 0 0 16px 16px;
+    padding: 12px 14px 16px 14px;
+    
+    /* Smooth Top-to-Bottom Drop Animation */
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transform: translateY(-8px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    visibility: hidden;
+  }
+
+  .mobile-menu-drawer.open {
+    max-height: 100vh;
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  /* Added Spacing / Margin-Y Between Links */
+  .custom-nav-link {
+    padding: 7px 10px !important;
+    margin-top: 2px;
+    margin-bottom: 6px;        /* Increased Margin-Y so links don't stick */
+    border-radius: 10px;
+  }
+
+  /* App Icon Badges */
+  .app-icon-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon-blue { background-color: var(--badge-blue); }
+  .icon-cyan { background-color: var(--badge-cyan); }
+  .icon-yellow { background-color: var(--badge-yellow); }
+  .icon-red { background-color: var(--badge-red); }
+  .icon-purple { background-color: var(--badge-purple); }
+  .icon-green { background-color: var(--badge-green); }
+  .icon-teal { background-color: var(--badge-teal); }
+  .icon-indigo { background-color: var(--badge-indigo); }
+
+  .bottom-action-group {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    margin-top: 6px;
+    padding-top: 10px !important;
+  }
+}
+
+/* PC / Desktop Horizontal Layout */
+@media (min-width: 992px) {
+  .mobile-menu-drawer {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .custom-nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 8px;
+    right: 8px;
+    height: 3px;
+    background-color: var(--primary-purple);
+    border-radius: 2px;
+  }
+}

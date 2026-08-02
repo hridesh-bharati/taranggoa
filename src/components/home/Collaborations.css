@@ -1,0 +1,80 @@
+/* Custom Helper Variables */
+.text-purple-main {
+  color: var(--primary-purple, #6b21a8) !important;
+}
+
+/* Institutional Card Styling */
+.uni-card {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.uni-card:hover {
+  box-shadow: 0 8px 24px rgba(107, 33, 168, 0.1) !important;
+}
+
+.uni-card-header {
+  background: linear-gradient(135deg, var(--primary-purple, #6b21a8) 0%, #581c87 100%);
+  font-size: 1.05rem;
+}
+
+.uni-card-body {
+  background: #ffffff;
+}
+
+/* Ticker Bar Styling */
+.ticker-bar {
+  background-color: #fffbeb;
+  border: 1px solid rgba(245, 176, 0, 0.3);
+  color: #1e293b;
+}
+
+.ticker-badge {
+  background: linear-gradient(135deg, #f5b000 0%, #d97706 100%);
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.ticker-icon {
+  color: #ffffff;
+}
+
+/* Marquee Container Styling */
+.marquee-wrapper {
+  height: 320px;
+  mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+}
+
+.partner-item {
+  transition: background-color 0.2s ease;
+}
+
+.partner-item:hover {
+  background-color: var(--purple-hover-bg, rgba(107, 33, 168, 0.05));
+  border-radius: 6px;
+}
+
+/* Event Slider Image Heights */
+.event-slider-container {
+  height: 280px;
+}
+
+.transition-fade {
+  transition: opacity 0.8s ease-in-out;
+}
+
+/* Highlights Card */
+.highlights-img {
+  height: 180px;
+  width: 100%;
+}
+
+/* Bottom Banner */
+.bottom-banner-img {
+  max-height: 220px;
+}

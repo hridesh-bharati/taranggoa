@@ -1,0 +1,120 @@
+/* =========================================================
+   GLOBAL REUSABLE SNAP & SCROLL ANIMATIONS
+   ========================================================= */
+
+/* Default Hidden State for Elements */
+.anim-title,
+.anim-desc,
+.anim-btn-outline,
+.anim-btn-orange,
+.anim-fade-up {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* --- ACTIVE TRIGGERS (SCROLL REVEAL / OBSERVER) --- */
+
+/* 1. Main Title - Top to Bottom Snap */
+.anim-title.active {
+  animation: snapDown 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.1s forwards;
+}
+
+/* 2. Description - Right to Left Snap */
+.anim-desc.active {
+  animation: snapRightToLeft 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.35s forwards;
+}
+
+/* 3. Outline Button - Right to Left Snap */
+.anim-btn-outline.active {
+  animation: snapRightToLeft 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.65s forwards;
+}
+
+/* 4. Orange/Red Button - Delay Jhatka Snap */
+.anim-btn-orange.active {
+  animation: snapRightToLeft 0.35s cubic-bezier(0.68, -0.6, 0.265, 1.75) 0.8s forwards;
+}
+
+/* 5. General Fade Up for Cards */
+.anim-fade-up.active {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* --- KEYFRAMES --- */
+
+@keyframes snapDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-80px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes snapRightToLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(120px);
+  }
+  80% {
+    transform: translateX(-10px); /* Bounce Jhatka */
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card Hover Lift Utility */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) !important;
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* animation scrool */
+/* Vertical Marquee Animation */
+@keyframes marqueeVertical {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.marquee-content {
+  animation: marqueeVertical 18s linear infinite;
+}
+
+.marquee-container:hover .marquee-content {
+  animation-play-state: paused;
+}
+
+/* Image Fade Animation */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: scale(0.98); }
+  15% { opacity: 1; transform: scale(1); }
+  85% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.02); }
+}
+
+.fade-image-active {
+  animation: fadeInOut 4s ease-in-out infinite;
+}
+
