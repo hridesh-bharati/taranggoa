@@ -66,21 +66,19 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-vh-100 d-flex admin-dashboard-container">
       
-      {/* 1. DESKTOP SIDEBAR WITH APP ICON BADGES */}
+      {/* 1. DESKTOP SIDEBAR */}
       <aside className="admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex">
         <div>
-          {/* Logo Header */}
           <div className="d-flex align-items-center gap-2 px-2 py-3 border-bottom border-light-subtle mb-2">
-            <span className="app-icon-badge bg-logo-orange text-white" style={{ width: 36, height: 36 }}>
+            <span className="app-icon-badge bg-logo-orange text-white d-flex align-items-center justify-content-center rounded-3" style={{ width: 36, height: 36 }}>
               <ShieldCheck size={20} />
             </span>
             <div>
-              <h6 className="fw-extrabold text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
+              <h6 className="fw-black text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
               <small className="text-secondary fw-semibold" style={{ fontSize: '0.72rem' }}>Control Center</small>
             </div>
           </div>
 
-          {/* Section 1: MANAGEMENT */}
           <div className="sidebar-section-title">MANAGEMENT</div>
           <ul className="nav flex-column gap-1 p-0 m-0">
             {managementLinks.map((link) => {
@@ -90,7 +88,7 @@ export default function AdminLayout({ children }) {
               return (
                 <li key={link.href} className="nav-item">
                   <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
-                    <span className={`app-icon-badge ${link.colorClass}`} style={{ width: 30, height: 30, borderRadius: 8 }}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
                     <span className="flex-grow-1">{link.name}</span>
@@ -101,7 +99,6 @@ export default function AdminLayout({ children }) {
             })}
           </ul>
 
-          {/* Section 2: MARKETING */}
           <div className="sidebar-section-title">MARKETING</div>
           <ul className="nav flex-column gap-1 p-0 m-0">
             {marketingLinks.map((link) => {
@@ -111,7 +108,7 @@ export default function AdminLayout({ children }) {
               return (
                 <li key={link.href} className="nav-item">
                   <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
-                    <span className={`app-icon-badge ${link.colorClass}`} style={{ width: 30, height: 30, borderRadius: 8 }}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
                     <span className="flex-grow-1">{link.name}</span>
@@ -122,7 +119,6 @@ export default function AdminLayout({ children }) {
           </ul>
         </div>
 
-        {/* Profile Bottom Footer */}
         <div className="p-2 border-top d-flex align-items-center justify-content-between gap-2 mt-3">
           <div className="d-flex align-items-center gap-2 overflow-hidden">
             <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 fw-bold" style={{ width: 34, height: 34 }}>
@@ -148,10 +144,10 @@ export default function AdminLayout({ children }) {
         <div>
           <div className="d-flex align-items-center justify-content-between px-2 py-3 border-bottom mb-2">
             <div className="d-flex align-items-center gap-2">
-              <span className="app-icon-badge bg-logo-orange text-white" style={{ width: 34, height: 34 }}>
+              <span className="app-icon-badge bg-logo-orange text-white d-flex align-items-center justify-content-center rounded-3" style={{ width: 34, height: 34 }}>
                 <ShieldCheck size={18} />
               </span>
-              <h6 className="fw-extrabold text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
+              <h6 className="fw-black text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
             </div>
             <button onClick={() => setMobileDrawerOpen(false)} className="btn border-0 p-1 text-dark">
               <X size={22} />
@@ -171,7 +167,7 @@ export default function AdminLayout({ children }) {
                     className={`sidebar-link ${isActive ? 'active' : ''}`}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    <span className={`app-icon-badge ${link.colorClass}`} style={{ width: 28, height: 28, borderRadius: 6 }}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 28, height: 28, borderRadius: 6 }}>
                       <Icon size={15} className="text-white" />
                     </span>
                     <span className="flex-grow-1">{link.name}</span>
@@ -194,7 +190,7 @@ export default function AdminLayout({ children }) {
                     className={`sidebar-link ${isActive ? 'active' : ''}`}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
-                    <span className={`app-icon-badge ${link.colorClass}`} style={{ width: 28, height: 28, borderRadius: 6 }}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 28, height: 28, borderRadius: 6 }}>
                       <Icon size={15} className="text-white" />
                     </span>
                     <span className="flex-grow-1">{link.name}</span>
@@ -216,9 +212,8 @@ export default function AdminLayout({ children }) {
         </div>
       </div>
 
-      {/* TOPBAR */}
+      {/* TOPBAR & MAIN CONTENT */}
       <div className="flex-grow-1 d-flex flex-column overflow-x-hidden">
-        
         <header className="bg-white border-bottom px-3 px-md-4 py-2.5 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
           <div className="d-flex align-items-center gap-2">
             <button 
