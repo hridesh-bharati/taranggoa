@@ -5,11 +5,11 @@ import './globals.css';
 
 export default function RootLayout({ children }) {
   useEffect(() => {
-    require('bootstrap/dist/js/bootstrap.bundle.min.js');
+    import('bootstrap/dist/js/bootstrap.bundle.min.js');
   }, []);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );
