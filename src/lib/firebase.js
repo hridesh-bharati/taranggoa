@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'; // <-- GoogleAuthProvider import किया
+import { getAuth, GoogleAuthProvider } from 'firebase/auth'; 
 import { getFirestore } from 'firebase/firestore';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
@@ -31,5 +31,4 @@ if (typeof window !== 'undefined') {
   });
 }
 
-// googleProvider को यहाँ export में ऐड कर दिया है
 export { app, auth, db, googleProvider, analytics };
