@@ -16,6 +16,24 @@
   top: 0;
   z-index: 100;
   flex-shrink: 0;
+  transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  overflow-x: hidden;
+}
+
+/* 🔴 FIX FOR COLLAPSED SIDEBAR */
+.admin-sidebar.collapsed {
+  width: 80px !important;
+  padding-left: 0.5rem !important;
+  padding-right: 0.5rem !important;
+}
+
+.admin-sidebar.collapsed .sidebar-link {
+  justify-content: center !important;
+  padding: 8px 0 !important;
+}
+
+.admin-sidebar.collapsed .sidebar-link .app-icon-badge {
+  margin: 0 auto;
 }
 
 .sidebar-section-title {
@@ -27,6 +45,7 @@
   padding: 0 10px;
   margin-top: 18px;
   margin-bottom: 6px;
+  white-space: nowrap;
 }
 
 /* Base Link Styles */
@@ -41,6 +60,7 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  white-space: nowrap;
 }
 
 .sidebar-link:hover {

@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
         {/* Footer Link */}
         <p className="text-center text-muted fs-7 mt-4 mb-0">
           Remember password?{' '}
-          <Link href="/auth/login" className="text-logo-orange fw-bold text-decoration-none">
+          <Link href="/admin/auth/login" className="text-logo-orange fw-bold text-decoration-none">
             Back to Login
           </Link>
         </p>

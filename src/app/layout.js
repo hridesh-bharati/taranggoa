@@ -1,3 +1,4 @@
+// src/app/layout.jsx
 'use client';
 
 import { useEffect } from 'react';

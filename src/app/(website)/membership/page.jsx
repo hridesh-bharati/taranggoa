@@ -12,7 +12,7 @@ export default function MembershipPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/auth/login');
+      router.push('/admin/auth/login');
     }
   }, [user, loading, router]);
 

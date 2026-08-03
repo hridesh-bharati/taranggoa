@@ -111,7 +111,7 @@ export default function SignupPage() {
         </button>
 
         <p className="text-center text-muted fs-7 mt-4 mb-0">
-          Already registered? <Link href="/auth/login" className="text-logo-orange fw-bold text-decoration-none">Log In</Link>
+          Already registered? <Link href="/admin/auth/login" className="text-logo-orange fw-bold text-decoration-none">Log In</Link>
         </p>
       </div>
     </main>

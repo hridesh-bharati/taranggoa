@@ -11,19 +11,42 @@ import {
   Newspaper,
   PhoneCall,
   UserPlus,
-  MoreVertical,
-  Sparkles,
   Globe,
   X,
-  AlignRight
+  AlignRight,
+  User,
+  LogOut,
+  LayoutDashboard
 } from 'lucide-react';
-import { useState } from 'react';
-import './Navbar.css'
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/context/AuthContext';
+import { profileController } from '@/controllers/profile.controller';
+import './Navbar.css';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [lang, setLang] = useState('EN');
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [profileData, setProfileData] = useState(null);
+
+  const { user, logout } = useAuth();
+
+  // Load Cached & Fresh Firestore Profile Data (With Cloudinary URL support)
+  useEffect(() => {
+    if (user?.uid) {
+      // 1. Instant cache load
+      const cached = profileController.getCache(user.uid);
+      if (cached) setProfileData(cached);
+
+      // 2. Background Firestore sync
+      profileController.fetchProfile(user.uid, user.email, (freshData) => {
+        setProfileData(freshData);
+      }).catch((err) => console.error('Navbar profile fetch error:', err));
+    } else {
+      setProfileData(null);
+    }
+  }, [user]);
 
   const navLinks = [
     { name: 'Home', href: '/', icon: Home, colorClass: 'icon-blue' },
@@ -31,9 +54,14 @@ export default function Navbar() {
     { name: 'Events', href: '/events', icon: Calendar, colorClass: 'icon-red' },
     { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
+    { name: 'Post', href: '/adminpost', icon: Briefcase, colorClass: 'icon-green' },
     { name: 'News', href: '/news', icon: Newspaper, colorClass: 'icon-teal' },
     { name: 'Contact Us', href: '/contact', icon: PhoneCall, colorClass: 'icon-indigo' },
   ];
+
+  const displayName = profileData?.name || user?.displayName || 'User Profile';
+  const displayPhoto = profileData?.photoURL || user?.photoURL;
+  const userInitial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
   return (
     <nav className="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-1 py-lg-2 custom-navbar">
@@ -48,7 +76,7 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* WhatsApp-style Three-Dot Button for Mobile */}
+        {/* Mobile Toggle Button */}
         <button
           className="three-dot-btn d-lg-none ms-auto"
           type="button"
@@ -59,10 +87,10 @@ export default function Navbar() {
           {isOpen ? <X size={22} className="text-dark" /> : <AlignRight size={22} className="text-dark" />}
         </button>
 
-        {/* Smooth Top-to-Bottom Slide Drawer */}
+        {/* Navigation Drawer */}
         <div className={`mobile-menu-drawer ${isOpen ? 'open' : ''}`}>
 
-          {/* Navigation Links */}
+          {/* Links */}
           <ul className="navbar-nav mx-auto align-items-lg-center gap-xl-1 py-2 py-lg-0 w-100 justify-content-center">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -75,14 +103,10 @@ export default function Navbar() {
                     className={`nav-link custom-nav-link d-flex align-items-center gap-2 px-2 px-xl-3 py-2 ${isActive ? 'active' : ''}`}
                     onClick={() => setIsOpen(false)}
                   >
-                    {/* Mobile Colorful Icon Badge */}
                     <span className={`app-icon-badge d-lg-none ${link.colorClass}`}>
                       <Icon size={16} className="text-white" />
                     </span>
-
-                    {/* Desktop Icon */}
                     <Icon size={15} className="d-none d-lg-inline nav-icon" />
-
                     <span className="fw-medium nav-text">{link.name}</span>
                   </Link>
                 </li>
@@ -90,17 +114,81 @@ export default function Navbar() {
             })}
           </ul>
 
-          {/* Right Action Group: Register CTA & Language Switcher */}
+          {/* Right Action Group */}
           <div className="bottom-action-group pt-2 pt-lg-0 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 flex-shrink-0">
 
-            <Link
-              href="/auth/login"
-              className="btn btn-register rounded-pill px-3 py-2 d-flex align-items-center justify-content-center gap-2 fw-bold shadow-sm"
-              onClick={() => setIsOpen(false)}
-            >
-              <UserPlus size={16} />
-              <span>Login</span>
-            </Link>
+            {/* Logged-In User Profile Avatar & Dropdown */}
+            {user ? (
+              <div className="position-relative">
+                <button
+                  type="button"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="btn p-0 border-0 d-flex align-items-center gap-2"
+                >
+                  <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden" style={{ width: 38, height: 38 }}>
+                    {displayPhoto ? (
+                      <img src={displayPhoto} alt="User" className="rounded-circle w-100 h-100 object-fit-cover" />
+                    ) : (
+                      userInitial
+                    )}
+                  </div>
+                </button>
+
+                {/* Dropdown Menu */}
+                {showDropdown && (
+                  <div 
+                    className="position-absolute end-0 mt-2 bg-white rounded-4 shadow-lg p-2 z-3 border"
+                    style={{ minWidth: '220px' }}
+                  >
+                    <div className="px-3 py-2 border-bottom">
+                      <p className="fw-bold mb-0 text-dark fs-7 text-truncate">{displayName}</p>
+                      <small className="text-muted text-truncate d-block fs-8">{user.email}</small>
+                    </div>
+
+                    <Link 
+                      href="/admin/dashboard" 
+                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark mt-1"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <LayoutDashboard size={16} className="text-primary" />
+                      <span>Dashboard</span>
+                    </Link>
+
+                    <Link 
+                      href="/admin/profile" 
+                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      <User size={16} className="text-success" />
+                      <span>My Profile</span>
+                    </Link>
+
+                    <hr className="my-1 opacity-25" />
+
+                    <button 
+                      onClick={() => {
+                        setShowDropdown(false);
+                        logout();
+                      }}
+                      className="dropdown-item text-danger d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-semibold w-100 border-0 bg-transparent"
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              /* Login CTA */
+              <Link
+                href="/admin/auth/login"
+                className="btn btn-register rounded-pill px-3 py-2 d-flex align-items-center justify-content-center gap-2 fw-bold shadow-sm"
+                onClick={() => setIsOpen(false)}
+              >
+                <UserPlus size={16} />
+                <span>Login</span>
+              </Link>
+            )}
 
             {/* Language Dropdown */}
             <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill px-2 py-1">

@@ -6,6 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { 
   LayoutDashboard, 
+  User,
   Users, 
   UserPlus, 
   Inbox, 
@@ -33,18 +34,22 @@ export default function AdminLayout({ children }) {
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
 
-  // FIXED: Microtask Queue added for Next.js App Router safely
+  const isAuthPage = pathname?.includes('/admin/auth');
+
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !isAuthPage) {
       if (!user) {
-        Promise.resolve().then(() => router.replace('/auth/login'));
+        Promise.resolve().then(() => router.replace('/admin/auth/login'));
       } else if (!isAdmin) {
         Promise.resolve().then(() => router.replace('/'));
       }
     }
-  }, [user, isAdmin, loading, router]);
+  }, [user, isAdmin, loading, router, isAuthPage]);
 
-  // Loading state guard
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
+
   if (loading || !user || !isAdmin) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -53,14 +58,15 @@ export default function AdminLayout({ children }) {
     );
   }
 
-  const managementLinks = [
-    { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
-    { name: 'Tarang Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
-    { name: 'Stall Applications', href: '/admin/members?filter=new', icon: UserPlus, colorClass: 'icon-yellow' },
-    { name: 'Inquiries', href: '/admin/queries', icon: Inbox, colorClass: 'icon-purple' },
-    { name: 'Stall Bookings', href: '/admin/stalls', icon: Store, colorClass: 'icon-red', hasDropdown: true },
-    { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal', hasDropdown: true },
-  ];
+const managementLinks = [
+  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
+  { name: 'My Profile', href: '/admin/profile', icon: User, colorClass: 'icon-green' },
+  { name: 'Tarang Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
+  { name: 'Stall Applications', href: '/admin/members?filter=new', icon: UserPlus, colorClass: 'icon-yellow' },
+  { name: 'Inquiries', href: '/admin/queries', icon: Inbox, colorClass: 'icon-purple' },
+  { name: 'Stall Bookings', href: '/admin/stalls', icon: Store, colorClass: 'icon-red', hasDropdown: true },
+  { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal', hasDropdown: true },
+];
 
   const marketingLinks = [
     { name: 'Upload Media', href: '/admin/media', icon: Upload, colorClass: 'icon-cyan' },
@@ -75,7 +81,14 @@ export default function AdminLayout({ children }) {
     <div className="min-vh-100 d-flex admin-dashboard-container">
       
       {/* 1. DESKTOP SIDEBAR */}
-      <aside className={`admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex ${desktopCollapsed ? 'collapsed' : ''}`}>
+      <aside 
+        className={`admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex ${desktopCollapsed ? 'collapsed' : ''}`}
+        style={{
+          width: desktopCollapsed ? '80px' : '260px',
+          transition: 'width 0.25s ease-in-out',
+          flexShrink: 0
+        }}
+      >
         <div>
           <div className="d-flex align-items-center justify-content-between px-1 py-3 border-bottom border-light-subtle mb-2">
             <div className="d-flex align-items-center gap-2 overflow-hidden">
@@ -83,15 +96,15 @@ export default function AdminLayout({ children }) {
                 <ShieldCheck size={20} />
               </span>
               {!desktopCollapsed && (
-                <div>
-                  <h6 className="fw-black text-dark mb-0" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
-                  <small className="text-secondary fw-semibold" style={{ fontSize: '0.72rem' }}>Control Center</small>
+                <div className="text-truncate">
+                  <h6 className="fw-black text-dark mb-0 text-truncate" style={{ fontWeight: 900 }}>TARANG ADMIN</h6>
+                  <small className="text-secondary fw-semibold d-block text-truncate" style={{ fontSize: '0.72rem' }}>Control Center</small>
                 </div>
               )}
             </div>
           </div>
 
-          <div className="sidebar-section-title">MANAGEMENT</div>
+          {!desktopCollapsed && <div className="sidebar-section-title px-1 mt-3 mb-1 text-muted fw-bold fs-8">MANAGEMENT</div>}
           <ul className="nav flex-column gap-1 p-0 m-0">
             {managementLinks.map((link) => {
               const Icon = link.icon;
@@ -99,19 +112,19 @@ export default function AdminLayout({ children }) {
 
               return (
                 <li key={link.href} className="nav-item" title={desktopCollapsed ? link.name : ''}>
-                  <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
-                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
+                  <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''} d-flex align-items-center gap-2 p-2 rounded-3 text-decoration-none text-dark`}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 32, height: 32, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
-                    {!desktopCollapsed && <span className="flex-grow-1">{link.name}</span>}
-                    {!desktopCollapsed && link.hasDropdown && <ChevronDown size={14} className="opacity-50" />}
+                    {!desktopCollapsed && <span className="flex-grow-1 text-truncate fs-7 fw-semibold">{link.name}</span>}
+                    {!desktopCollapsed && link.hasDropdown && <ChevronDown size={14} className="opacity-50 flex-shrink-0" />}
                   </Link>
                 </li>
               );
             })}
           </ul>
 
-          <div className="sidebar-section-title">MARKETING</div>
+          {!desktopCollapsed && <div className="sidebar-section-title px-1 mt-3 mb-1 text-muted fw-bold fs-8">MARKETING</div>}
           <ul className="nav flex-column gap-1 p-0 m-0">
             {marketingLinks.map((link) => {
               const Icon = link.icon;
@@ -119,11 +132,11 @@ export default function AdminLayout({ children }) {
 
               return (
                 <li key={link.href} className="nav-item" title={desktopCollapsed ? link.name : ''}>
-                  <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''}`}>
-                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 30, height: 30, borderRadius: 8 }}>
+                  <Link href={link.href} className={`sidebar-link ${isActive ? 'active' : ''} d-flex align-items-center gap-2 p-2 rounded-3 text-decoration-none text-dark`}>
+                    <span className={`app-icon-badge ${link.colorClass} d-flex align-items-center justify-content-center flex-shrink-0`} style={{ width: 32, height: 32, borderRadius: 8 }}>
                       <Icon size={16} className="text-white" />
                     </span>
-                    {!desktopCollapsed && <span className="flex-grow-1">{link.name}</span>}
+                    {!desktopCollapsed && <span className="flex-grow-1 text-truncate fs-7 fw-semibold">{link.name}</span>}
                   </Link>
                 </li>
               );
@@ -144,7 +157,7 @@ export default function AdminLayout({ children }) {
             )}
           </div>
           {!desktopCollapsed && (
-            <button onClick={() => logout()} className="btn btn-sm btn-outline-danger border-0 rounded-circle p-2" title="Logout">
+            <button onClick={() => logout()} className="btn btn-sm btn-outline-danger border-0 rounded-circle p-2 flex-shrink-0" title="Logout">
               <i className="bi bi-box-arrow-right fs-6"></i>
             </button>
           )}

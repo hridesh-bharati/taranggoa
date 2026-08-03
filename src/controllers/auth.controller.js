@@ -1,3 +1,4 @@
+
 // src\controllers\auth.controller.js
 import { authService } from '@/services/auth.service';
 
@@ -77,7 +78,7 @@ export const authController = {
   async logout(router) {
     try {
       await authService.logout();
-      router.push('/auth/login');
+      router.push('/admin/auth/login');
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }

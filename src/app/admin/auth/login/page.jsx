@@ -112,7 +112,7 @@ export default function LoginPage() {
         </button>
 
         <p className="text-center text-muted fs-7 mt-4 mb-0">
-          Don't have an account? <Link href="/signup" className="text-logo-orange fw-bold text-decoration-none">Sign Up</Link>
+          Don't have an account? <Link href="/admin/auth/signup" className="text-logo-orange fw-bold text-decoration-none">Sign Up</Link>
         </p>
 
       </div>
