@@ -72,25 +72,25 @@ export default function AdminInboxPage() {
   });
 
   return (
-    <div className="container-fluid py-3 px-3 px-lg-4 min-vh-100">
+    <div className="container-fluid py-3 py-md-4 px-3 px-lg-4 min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       
       {/* Header & Search */}
-      <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 border-bottom pb-3">
+      <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
         <div>
-          <h4 className="fw-black text-dark mb-1 fs-4 d-flex align-items-center gap-2">
-            <Inbox className="text-primary" size={24} /> Contact Messages Inbox
+          <h4 className="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+            <Inbox className="text-primary" size={24} /> Inbox
           </h4>
-          <small className="text-muted fw-medium">Manage user inquiries submitted through the contact form</small>
+          <small className="text-secondary fw-medium">Manage user inquiries submitted through the contact form</small>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
-          <div className="input-group shadow-sm rounded-pill overflow-hidden bg-white border" style={{ maxWidth: 300 }}>
+        <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
+          <div className="input-group shadow-sm rounded-pill overflow-hidden bg-white border flex-grow-1 flex-md-grow-0" style={{ maxWidth: 320 }}>
             <span className="input-group-text bg-transparent border-0 text-muted ps-3">
               <Search size={16} />
             </span>
             <input
               type="text"
-              className="form-control border-0 bg-transparent fs-7 py-2"
+              className="form-control border-0 bg-transparent small py-2"
               placeholder="Search sender, email, topic..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -99,7 +99,7 @@ export default function AdminInboxPage() {
 
           <button 
             onClick={fetchInquiries} 
-            className="btn btn-light border rounded-circle p-2 text-secondary shadow-sm"
+            className="btn btn-light border rounded-circle p-2 text-secondary shadow-sm flex-shrink-0"
             title="Refresh Messages"
           >
             <RefreshCw size={16} className={loading ? 'spin-animation' : ''} />
@@ -107,103 +107,104 @@ export default function AdminInboxPage() {
         </div>
       </div>
 
-      {/* Messages Grid (Blue Gradient + Glassmorphism Cards) */}
+      {/* Messages Grid */}
       {loading ? (
         <div className="text-center py-5">
-          <Loader2 className="spinner-border text-primary" />
+          <Loader2 className="spinner-border text-primary" size={32} />
         </div>
       ) : filteredInquiries.length === 0 ? (
         <div className="card border-0 rounded-4 shadow-sm p-5 text-center bg-white">
-          <p className="text-muted fw-medium mb-0">No contact messages found.</p>
+          <p className="text-muted fw-medium small mb-0">No contact messages found.</p>
         </div>
       ) : (
         <div className="row g-4 align-items-start">
           {filteredInquiries.map((item) => (
             <div key={item.id} className="col-12 col-md-6 col-xl-4">
               <div 
-                className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative transition-all"
+                className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 position-relative bg-white"
                 style={{
-                  background: 'linear-gradient(135deg, rgba(224, 242, 254, 0.85) 0%, rgba(240, 249, 255, 0.95) 100%)',
-                  backdropFilter: 'blur(10px)',
-                  WebkitBackdropFilter: 'blur(10px)',
-                  border: item.status === 'unread' ? '1px solid rgba(2, 132, 199, 0.4)' : '1px solid rgba(0, 0, 0, 0.08)'
+                  borderLeft: item.status === 'unread' ? '4px solid #0d6efd' : '4px solid #dee2e6'
                 }}
               >
                 {/* Header Badge */}
-                <div className="p-3 border-bottom d-flex align-items-center justify-content-between bg-white bg-opacity-50">
+                <div className="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
                   <div className="d-flex align-items-center gap-2">
                     <div 
-                      className="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow-sm"
+                      className="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow-sm flex-shrink-0"
                       style={{ 
-                        width: 36, 
-                        height: 36, 
-                        background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' 
+                        width: 38, 
+                        height: 38, 
+                        background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)' 
                       }}
                     >
                       {item.name ? item.name.charAt(0).toUpperCase() : <User size={18} />}
                     </div>
-                    <div>
-                      <h6 className="fw-bold text-dark mb-0 fs-7">{item.name || 'Anonymous User'}</h6>
-                      <small className="text-muted fs-8 d-flex align-items-center gap-1">
+                    <div className="overflow-hidden">
+                      <h6 className="fw-bold text-dark mb-0 text-truncate">{item.name || 'Anonymous User'}</h6>
+                      <small className="text-muted small d-flex align-items-center gap-1">
                         <Clock size={11} /> {formatTime(item.createdAt)}
                       </small>
                     </div>
                   </div>
 
-                  <span className={`badge rounded-pill px-2.5 py-1 fs-8 fw-bold ${item.status === 'unread' ? 'bg-primary text-white shadow-sm' : 'bg-light text-secondary border'}`}>
-                    {item.status === 'unread' ? 'New Message' : 'Read'}
+                  <span className={`badge rounded-pill px-2.5 py-1 small fw-bold flex-shrink-0 ${item.status === 'unread' ? 'bg-primary text-white shadow-sm' : 'bg-white text-secondary border'}`}>
+                    {item.status === 'unread' ? 'New' : 'Read'}
                   </span>
                 </div>
 
                 {/* Body Content */}
-                <div className="p-3">
-                  {/* Subject */}
-                  {item.subject && (
-                    <div className="mb-2">
-                      <span className="badge bg-white text-primary border rounded-pill px-2.5 py-1 fs-8 fw-bold mb-1">
-                        Topic: {item.subject}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Message Box */}
-                  <p className="fs-7 text-dark fw-normal bg-white bg-opacity-60 p-3 rounded-3 border mb-3 text-break" style={{ minHeight: 80 }}>
-                    "{item.message}"
-                  </p>
-
-                  {/* Contact Info */}
-                  <div className="d-flex flex-column gap-1 fs-8 text-secondary mb-3 bg-white bg-opacity-40 p-2 rounded-2 border">
-                    <span className="d-flex align-items-center gap-1.5 text-truncate">
-                      <Mail size={13} className="text-primary flex-shrink-0" /> {item.email}
-                    </span>
-                    {item.phone && (
-                      <span className="d-flex align-items-center gap-1.5 text-truncate">
-                        <Phone size={13} className="text-success flex-shrink-0" /> {item.phone}
-                      </span>
+                <div className="p-3 d-flex flex-column justify-content-between flex-grow-1">
+                  <div>
+                    {/* Subject */}
+                    {item.subject && (
+                      <div className="mb-2">
+                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 small fw-bold">
+                          Topic: {item.subject}
+                        </span>
+                      </div>
                     )}
+
+                    {/* Message Box */}
+                    <p className="small text-secondary bg-light p-3 rounded-3 border-0 mb-3 text-break" style={{ minHeight: 75, lineHeight: 1.5 }}>
+                      "{item.message}"
+                    </p>
+
+                    {/* Contact Info */}
+                    <div className="d-flex flex-column gap-1 small text-secondary mb-3 bg-white p-2.5 rounded-3 border">
+                      <span className="d-flex align-items-center gap-2 text-truncate">
+                        <Mail size={14} className="text-primary flex-shrink-0" /> 
+                        <span className="text-dark fw-medium text-truncate">{item.email}</span>
+                      </span>
+                      {item.phone && (
+                        <span className="d-flex align-items-center gap-2 text-truncate">
+                          <Phone size={14} className="text-success flex-shrink-0" /> 
+                          <span className="text-dark fw-medium">{item.phone}</span>
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Card Actions */}
-                  <div className="d-flex align-items-center justify-content-between border-top pt-2">
+                  <div className="d-flex align-items-center justify-content-between border-top pt-2.5 mt-auto">
                     {item.status === 'unread' ? (
                       <button 
                         onClick={() => handleMarkAsRead(item.id)}
-                        className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-bold fs-8 d-flex align-items-center gap-1"
+                        className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold small d-flex align-items-center gap-1 shadow-sm"
                       >
-                        <CheckCircle2 size={13} /> Mark Read
+                        <CheckCircle2 size={14} /> Mark Read
                       </button>
                     ) : (
-                      <span className="text-muted fs-8 fw-semibold d-flex align-items-center gap-1">
-                        <CheckCircle2 size={13} className="text-success" /> Processed
+                      <span className="text-muted small fw-medium d-flex align-items-center gap-1">
+                        <CheckCircle2 size={14} className="text-success" /> Processed
                       </span>
                     )}
 
                     <button 
                       onClick={() => handleDelete(item.id)}
-                      className="btn btn-sm btn-link text-danger p-0 border-0" 
+                      className="btn btn-sm btn-light text-danger border rounded-circle p-2 shadow-sm" 
                       title="Delete Inquiry"
                     >
-                      <Trash2 size={16} />
+                      <Trash2 size={14} />
                     </button>
                   </div>
                 </div>

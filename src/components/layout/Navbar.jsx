@@ -1,3 +1,4 @@
+// src/components/layout/Navbar.jsx
 'use client';
 
 import Link from 'next/link';
@@ -8,7 +9,7 @@ import {
   Calendar,
   Image as GalleryIcon,
   Briefcase,
-  Newspaper,
+  Users,
   PhoneCall,
   UserPlus,
   Globe,
@@ -18,18 +19,20 @@ import {
   LogOut,
   LayoutDashboard
 } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { profileController } from '@/controllers/profile.controller';
 import './Navbar.css';
 
+// Lazy load the LanguageTranslator component to boost performance
+const LanguageTranslator = lazy(() => import('@/components/layout/LanguageTranslator'));
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [lang, setLang] = useState('EN');
   const [showDropdown, setShowDropdown] = useState(false);
   const [profileData, setProfileData] = useState(null);
-
+  const [loadTranslator, setLoadTranslator] = useState(false);
   const { user, logout } = useAuth();
 
   // Load Cached & Fresh Profile Data
@@ -53,7 +56,7 @@ export default function Navbar() {
     { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
     { name: 'Post', href: '/adminpost', icon: Briefcase, colorClass: 'icon-green' },
-    { name: 'News', href: '/community', icon: Newspaper, colorClass: 'icon-teal' },
+    { name: 'Community', href: '/community', icon: Users, colorClass: 'icon-teal' },
     { name: 'Contact Us', href: '/contact', icon: PhoneCall, colorClass: 'icon-indigo' },
   ];
 
@@ -135,7 +138,7 @@ export default function Navbar() {
                       userInitial
                     )}
                   </div>
-                  <span className="d-lg-none fw-bold fs-7 text-dark text-truncate">{displayName}</span>
+                  <span className="d-lg-none fw-bold small text-dark text-truncate">{displayName}</span>
                 </button>
 
                 {/* Dropdown Menu (Fixed Overflow for Mobile) */}
@@ -145,14 +148,14 @@ export default function Navbar() {
                     style={{ minWidth: '220px', zIndex: 1070 }}
                   >
                     <div className="px-3 py-2 border-bottom">
-                      <p className="fw-bold mb-0 text-dark fs-7 text-truncate">{displayName}</p>
-                      <small className="text-muted text-truncate d-block fs-8">{user.email}</small>
+                      <p className="fw-bold mb-0 text-dark small text-truncate">{displayName}</p>
+                      <small className="text-muted text-truncate d-block small">{user.email}</small>
                     </div>
 
                     {/* Dynamic Dashboard Link */}
                     <Link 
                       href={dashboardLink} 
-                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark mt-1"
+                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark mt-1"
                       onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
                       <LayoutDashboard size={16} className="text-primary" />
@@ -162,7 +165,7 @@ export default function Navbar() {
                     {/* Dynamic Profile Link */}
                     <Link 
                       href={profileLink} 
-                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark"
+                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark"
                       onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
                       <User size={16} className="text-success" />
@@ -177,7 +180,7 @@ export default function Navbar() {
                         setIsOpen(false);
                         logout();
                       }}
-                      className="dropdown-item text-danger d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-semibold w-100 border-0 bg-transparent"
+                      className="dropdown-item text-danger d-flex align-items-center gap-2 p-2 rounded-3 small fw-semibold w-100 border-0 bg-transparent"
                     >
                       <LogOut size={16} />
                       <span>Logout</span>
@@ -197,18 +200,22 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Language Dropdown */}
+            {/* Language Translator / Selector Integration */}
             <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill px-2 py-1">
-              <Globe size={15} className="lang-icon" />
-              <select
-                value={lang}
-                onChange={(e) => setLang(e.target.value)}
-                className="lang-select-dropdown bg-transparent border-0 fw-semibold"
-              >
-                <option value="EN">EN</option>
-                <option value="HI">HI</option>
-                <option value="MR">MR</option>
-              </select>
+              {!loadTranslator ? (
+                <button 
+                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold border d-flex align-items-center gap-1 text-secondary" 
+                  onClick={() => setLoadTranslator(true)}
+                  title="Change Language"
+                >
+                  <Globe size={15} />
+                  <span>Translate</span>
+                </button>
+              ) : (
+                <Suspense fallback={<small className="text-muted">Loading...</small>}>
+                  <LanguageTranslator />
+                </Suspense>
+              )}
             </div>
 
           </div>

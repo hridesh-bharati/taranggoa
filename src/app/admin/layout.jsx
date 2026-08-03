@@ -242,7 +242,7 @@ export default function AdminLayout({ children }) {
 
       {/* TOPBAR & MAIN CONTENT */}
       <div className="flex-grow-1 d-flex flex-column overflow-x-hidden">
-        <header className="bg-white border-bottom px-3 px-md-4 py-2.5 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
+        <header className="bg-white border-bottom p-2 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
           <div className="d-flex align-items-center gap-2">
             <button
               className="btn btn-light rounded-circle p-1.5 border text-dark d-none d-lg-flex align-items-center justify-content-center"
@@ -253,7 +253,7 @@ export default function AdminLayout({ children }) {
               {desktopCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             </button>
 
-            <span className="badge bg-logo-orange text-white px-3 py-1.5 rounded-pill fw-bold">
+            <span className="badge bg-logo-orange text-white px-3 py-1 rounded-pill fw-bold">
               SYSTEM ONLINE
             </span>
           </div>
@@ -266,7 +266,7 @@ export default function AdminLayout({ children }) {
 
             <Link
               href="/"
-              className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5"
+              className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold d-flex align-items-center gap-1.5"
               title="Go to Main Website"
             >
               <Globe size={16} />
@@ -283,7 +283,7 @@ export default function AdminLayout({ children }) {
           </div>
         </header>
 
-        <main className="p-3 p-md-4 flex-grow-1">{children}</main>
+        <main className="p-1 flex-grow-1">{children}</main>
       </div>
 
       {/* MOBILE BOTTOM DOCK */}

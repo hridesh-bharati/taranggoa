@@ -12,7 +12,8 @@ import {
   Sparkles, 
   Clock, 
   TrendingUp, 
-  ArrowUpRight 
+  ArrowUpRight,
+  Loader2
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -23,17 +24,29 @@ export default function UserDashboardConsole() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     if (user?.uid) {
       const cached = profileController.getCache(user.uid);
-      if (cached) setProfileData(cached);
-      profileController.fetchProfile(user.uid, user.email, (fresh) => setProfileData(fresh));
+      if (cached && isMounted) setProfileData(cached);
+      profileController.fetchProfile(user.uid, user.email, (fresh) => {
+        if (isMounted) setProfileData(fresh);
+      });
 
+      // Real-time listener for user's community posts and interactions
       const unsubscribe = communityService.subscribeToCommunityPosts((livePosts) => {
+        if (!isMounted) return;
         const myPosts = livePosts.filter(p => p.authorId === user.uid);
         setPosts(myPosts);
         setLoading(false);
       });
-      return () => unsubscribe();
+
+      return () => {
+        isMounted = false;
+        if (typeof unsubscribe === 'function') unsubscribe();
+      };
+    } else {
+      setLoading(false);
     }
   }, [user]);
 
@@ -63,12 +76,12 @@ export default function UserDashboardConsole() {
         </div>
       </div>
 
-      {/* 🔴 STAT CARDS (2 CARDS IN A ROW ON MOBILE `col-6`) */}
+      {/* STAT CARDS (Real-time DB Counts) */}
       <div className="row g-2.5 g-md-3 mb-4">
         
         {/* Posts */}
         <div className="col-6 col-xl-3">
-          <div className="usr-card usr-card-purple p-3 p-md-3.5 h-100">
+          <div className="usr-card usr-card-purple p-3 p-md-3.5 h-100 position-relative">
             <FileText size={50} className="usr-card-icon-bg" />
             <div className="d-flex align-items-center justify-content-between mb-1.5">
               <span className="fw-bold fs-9 fs-md-8 text-uppercase opacity-90 text-truncate">MY POSTS</span>
@@ -76,13 +89,13 @@ export default function UserDashboardConsole() {
                 <FileText size={15} className="text-white" />
               </div>
             </div>
-            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{totalPosts}</h3>
+            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{loading ? '...' : totalPosts}</h3>
           </div>
         </div>
 
         {/* Likes */}
         <div className="col-6 col-xl-3">
-          <div className="usr-card usr-card-cyan p-3 p-md-3.5 h-100">
+          <div className="usr-card usr-card-cyan p-3 p-md-3.5 h-100 position-relative">
             <Heart size={50} className="usr-card-icon-bg" />
             <div className="d-flex align-items-center justify-content-between mb-1.5">
               <span className="fw-bold fs-9 fs-md-8 text-uppercase opacity-90 text-truncate">LIKES</span>
@@ -90,13 +103,13 @@ export default function UserDashboardConsole() {
                 <Heart size={15} className="text-white" />
               </div>
             </div>
-            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{totalLikes}</h3>
+            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{loading ? '...' : totalLikes}</h3>
           </div>
         </div>
 
         {/* Comments */}
         <div className="col-6 col-xl-3">
-          <div className="usr-card usr-card-orange p-3 p-md-3.5 h-100">
+          <div className="usr-card usr-card-orange p-3 p-md-3.5 h-100 position-relative">
             <MessageSquare size={50} className="usr-card-icon-bg" />
             <div className="d-flex align-items-center justify-content-between mb-1.5">
               <span className="fw-bold fs-9 fs-md-8 text-uppercase opacity-90 text-truncate">DISCUSSIONS</span>
@@ -104,13 +117,13 @@ export default function UserDashboardConsole() {
                 <MessageSquare size={15} className="text-white" />
               </div>
             </div>
-            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{totalComments}</h3>
+            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{loading ? '...' : totalComments}</h3>
           </div>
         </div>
 
         {/* Media */}
         <div className="col-6 col-xl-3">
-          <div className="usr-card usr-card-pink p-3 p-md-3.5 h-100">
+          <div className="usr-card usr-card-pink p-3 p-md-3.5 h-100 position-relative">
             <ImageIcon size={50} className="usr-card-icon-bg" />
             <div className="d-flex align-items-center justify-content-between mb-1.5">
               <span className="fw-bold fs-9 fs-md-8 text-uppercase opacity-90 text-truncate">MEDIA</span>
@@ -118,7 +131,7 @@ export default function UserDashboardConsole() {
                 <ImageIcon size={15} className="text-white" />
               </div>
             </div>
-            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{totalMedia}</h3>
+            <h3 className="fw-black mb-0 fs-2 fs-md-1 font-mono">{loading ? '...' : totalMedia}</h3>
           </div>
         </div>
 
@@ -143,10 +156,10 @@ export default function UserDashboardConsole() {
             </div>
 
             {loading ? (
-              <div className="text-center py-4 text-muted fs-8">Loading posts...</div>
+              <div className="text-center py-4"><Loader2 className="spinner-border text-primary spinner-border-sm" /> Loading posts...</div>
             ) : posts.length === 0 ? (
               <div className="text-center py-4 bg-light rounded-3">
-                <p className="text-muted fw-medium fs-8 mb-0">No published posts yet.</p>
+                <p className="text-muted fw-medium fs-8 mb-0">No published posts yet. Share something with the community!</p>
               </div>
             ) : (
               <div className="d-flex flex-column gap-2">
@@ -179,12 +192,12 @@ export default function UserDashboardConsole() {
                   <img src={profileData.photoURL} alt="" className="w-100 h-100 object-fit-cover" />
                 ) : (
                   <div className="w-100 h-100 bg-primary text-white d-flex align-items-center justify-content-center fw-bold fs-4">
-                    {profileData?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase()}
+                    {profileData?.name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
               </div>
-              <h6 className="fw-bold text-dark mb-0 fs-7">{profileData?.name || 'Member'}</h6>
-              <small className="text-muted fs-8 d-block">{profileData?.about || 'Verified Entrepreneur'}</small>
+              <h6 className="fw-bold text-dark mb-0 fs-7">{profileData?.name || user?.email?.split('@')[0] || 'Member'}</h6>
+              <small className="text-muted fs-8 d-block">{profileData?.about || profileData?.description || 'Verified Member'}</small>
             </div>
 
             <div className="d-flex flex-column gap-2 fs-8 border-top pt-3">
@@ -194,7 +207,7 @@ export default function UserDashboardConsole() {
               </div>
               <div className="d-flex justify-content-between text-muted fw-semibold">
                 <span>Mobile:</span>
-                <span className="text-dark fw-bold">{profileData?.mobile || 'Not set'}</span>
+                <span className="text-dark fw-bold">{profileData?.mobile || 'Not provided'}</span>
               </div>
             </div>
 

@@ -37,7 +37,7 @@ export default function AdminMembersPage() {
   });
 
   return (
-    <div className="container-fluid py-3 px-3 px-lg-4">
+    <div className="container-fluid py-2 px-2 px-md-3 px-lg-4">
       {/* Header & Search Bar */}
       <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 border-bottom pb-3">
         <div>
@@ -47,9 +47,9 @@ export default function AdminMembersPage() {
           <small className="text-muted fw-medium">List of all users logged in through authentication</small>
         </div>
 
-        <div className="d-flex align-items-center gap-2">
+        <div className="d-flex align-items-center gap-2 w-100 w-md-auto">
           {/* Search Input */}
-          <div className="input-group shadow-sm rounded-pill overflow-hidden bg-white border" style={{ maxWidth: 300 }}>
+          <div className="input-group shadow-sm rounded-pill overflow-hidden bg-white border flex-grow-1 flex-md-grow-0" style={{ maxWidth: 300 }}>
             <span className="input-group-text bg-transparent border-0 text-muted ps-3">
               <Search size={16} />
             </span>
@@ -65,7 +65,7 @@ export default function AdminMembersPage() {
           {/* Refresh Button */}
           <button 
             onClick={fetchUsers} 
-            className="btn btn-light border rounded-circle p-2 text-secondary shadow-sm"
+            className="btn btn-light border rounded-circle p-2 text-secondary shadow-sm flex-shrink-0"
             title="Refresh Users List"
           >
             <RefreshCw size={16} className={loading ? 'spin-animation' : ''} />
@@ -88,7 +88,7 @@ export default function AdminMembersPage() {
         </div>
       </div>
 
-      {/* Users Table / Grid */}
+      {/* Users Table / Grid (Mobile Responsive container) */}
       {loading ? (
         <div className="text-center py-5">
           <Loader2 className="spinner-border text-primary" />
@@ -100,21 +100,21 @@ export default function AdminMembersPage() {
       ) : (
         <div className="card border-0 rounded-4 shadow-sm bg-white overflow-hidden">
           <div className="table-responsive">
-            <table className="table table-hover align-middle mb-0">
+            <table className="table table-hover align-middle mb-0 text-nowrap">
               <thead className="bg-light border-bottom">
                 <tr className="fs-8 text-uppercase text-secondary fw-bold">
-                  <th className="ps-4 py-3">Member</th>
+                  <th className="ps-3 ps-md-4 py-3">Member</th>
                   <th className="py-3">Contact Email</th>
                   <th className="py-3">Mobile Number</th>
                   <th className="py-3">Account Type</th>
-                  <th className="pe-4 py-3 text-end">Status</th>
+                  <th className="pe-3 pe-md-4 py-3 text-end">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y fs-7">
                 {filteredUsers.map((u) => (
                   <tr key={u.uid}>
                     {/* User Profile & Name */}
-                    <td className="ps-4 py-3">
+                    <td className="ps-3 ps-md-4 py-3">
                       <div className="d-flex align-items-center gap-3">
                         <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 40, height: 40 }}>
                           {u.photoURL ? (
@@ -135,14 +135,14 @@ export default function AdminMembersPage() {
                     {/* Email */}
                     <td className="py-3">
                       <span className="d-flex align-items-center gap-1.5 text-secondary fw-medium">
-                        <Mail size={14} className="text-muted" /> {u.email || 'N/A'}
+                        <Mail size={14} className="text-muted flex-shrink-0" /> {u.email || 'N/A'}
                       </span>
                     </td>
 
                     {/* Phone */}
                     <td className="py-3">
                       <span className="d-flex align-items-center gap-1.5 text-secondary fw-medium">
-                        <Phone size={14} className="text-muted" /> {u.mobile || 'Not Provided'}
+                        <Phone size={14} className="text-muted flex-shrink-0" /> {u.mobile || 'Not Provided'}
                       </span>
                     </td>
 
@@ -160,7 +160,7 @@ export default function AdminMembersPage() {
                     </td>
 
                     {/* Status Badge */}
-                    <td className="pe-4 py-3 text-end">
+                    <td className="pe-3 pe-md-4 py-3 text-end">
                       <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1 fw-bold fs-8">
                         Active
                       </span>
