@@ -45,8 +45,9 @@ export default function UserLayout({ children }) {
     {
       title: 'CONTENT & MEDIA',
       items: [
-        { name: 'My Posts & Articles', href: '/user/user-post', icon: FileText },
-        { name: 'My Gallery', href: '/user/user-gallary', icon: ImageIcon },
+        { name: 'New Post', href: '/user/user-new-post', icon: FileText },
+        { name: 'Gallery', href: '/user/user-gallary', icon: ImageIcon },
+        { name: 'Articles', href: '/user/user-post', icon: FileText },
       ]
     },
     {

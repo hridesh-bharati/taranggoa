@@ -1,4 +1,3 @@
-
 // src\controllers\auth.controller.js
 import { authService } from '@/services/auth.service';
 
@@ -17,16 +16,21 @@ export const authController = {
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
       
       const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      router.push(targetPath);
-      return { success: true, user: res.user, isAdmin };
+      if (router) router.push(targetPath);
+      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }
   },
 
+  // Alias for compatibility with AuthContext
+  async handleLogin(email, password) {
+    return await this.login(email, password, null);
+  },
+
   // --- Email & Password Signup ---
   async signup(email, password, confirmPassword, router) {
-    if (password !== confirmPassword) {
+    if (confirmPassword && password !== confirmPassword) {
       throw new Error('Passwords do not match.');
     }
     if (password.length < 6) {
@@ -39,11 +43,16 @@ export const authController = {
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
       const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      router.push(targetPath);
-      return { success: true, user: res.user, isAdmin };
+      if (router) router.push(targetPath);
+      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }
+  },
+
+  // Alias for compatibility with AuthContext
+  async handleSignup(email, password) {
+    return await this.signup(email, password, null, null);
   },
 
   // --- Google OAuth Login / Signup ---
@@ -54,11 +63,16 @@ export const authController = {
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
       const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      router.push(targetPath);
-      return { success: true, user: res.user, isAdmin };
+      if (router) router.push(targetPath);
+      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }
+  },
+
+  // Alias for compatibility with AuthContext
+  async handleGoogleLogin() {
+    return await this.loginWithGoogle(null);
   },
 
   // --- Password Reset ---
@@ -74,13 +88,28 @@ export const authController = {
     }
   },
 
+  // Alias for compatibility with AuthContext
+  async handleResetPassword(email) {
+    return await this.resetPassword(email);
+  },
+
   // --- Logout ---
   async logout(router) {
     try {
       await authService.logout();
-      router.push('/admin/auth/login');
+      if (typeof window !== 'undefined') {
+        localStorage.clear();
+        sessionStorage.clear();
+      }
+      if (router) router.push('/admin/auth/login');
+      return { success: true };
     } catch (error) {
       throw new Error(formatFirebaseError(error));
     }
+  },
+
+  // Alias for compatibility with AuthContext
+  async handleLogout() {
+    return await this.logout(null);
   }
 };

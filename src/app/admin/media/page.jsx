@@ -1,54 +1,30 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { mediaService } from '@/services/media.service';
 import { profileController } from '@/controllers/profile.controller';
 import { showToast } from '@/utils/toast';
-import { Image as ImageIcon, Video as VideoIcon, Send, Trash2, Loader2, MessageSquare, ThumbsUp, Clock, X } from 'lucide-react';
+import { Image as ImageIcon, Video as VideoIcon, Send, Loader2 } from 'lucide-react';
 
 export default function AdminMediaPage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();  
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState(null);
   const [fileType, setFileType] = useState('image');
   const [preview, setPreview] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploading, setUploading] = useState(false);
-  const [posts, setPosts] = useState([]);
-  const [fetching, setFetching] = useState(true);
   const [userProfile, setUserProfile] = useState(null);
 
-  const [activeCommentPost, setActiveCommentPost] = useState(null);
-  const [commentsMap, setCommentsMap] = useState({});
-  const [newComment, setNewComment] = useState('');
-
-  useEffect(() => {
+  // Load user profile cache on mount
+  useState(() => {
     if (user?.uid) {
       const cached = profileController.getCache(user.uid);
       if (cached) setUserProfile(cached);
       profileController.fetchProfile(user.uid, user.email, (fresh) => setUserProfile(fresh));
     }
-
-    // 🔴 Real-time Snapshot Subscription for Admin Panel
-    const unsubscribe = mediaService.subscribeToPosts((livePosts) => {
-      setPosts(livePosts);
-      setFetching(false);
-    });
-
-    return () => unsubscribe();
-  }, [user]);
-
-  // Real-time Comments Listener for Admin
-  useEffect(() => {
-    if (!activeCommentPost) return;
-
-    const unsubscribeComments = mediaService.subscribeToComments(activeCommentPost, (liveComments) => {
-      setCommentsMap(prev => ({ ...prev, [activeCommentPost]: liveComments }));
-    });
-
-    return () => unsubscribeComments();
-  }, [activeCommentPost]);
+  });
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -82,12 +58,12 @@ export default function AdminMediaPage() {
           mediaUrl: uploadData.url,
           mediaType: fileType,
           caption: caption.trim(),
-          authorName: userProfile?.name || 'Admin',
+          authorName: userProfile?.name || (isAdmin ? 'Admin' : user.email.split('@')[0]),
           authorEmail: user.email,
           authorPhoto: userProfile?.photoURL || '',
           authorId: user.uid
         });
-        showToast('success', 'Published!');
+        showToast('success', 'Published successfully!');
         setCaption(''); setFile(null); setPreview(null);
       } else {
         showToast('error', 'Upload failed');
@@ -98,52 +74,16 @@ export default function AdminMediaPage() {
     xhr.send(formData);
   };
 
-  const handleDeletePost = async (postId) => {
-    if (!confirm('Delete this post?')) return;
-    try {
-      await mediaService.deletePost(postId);
-      showToast('success', 'Post deleted');
-    } catch {
-      showToast('error', 'Failed to delete');
-    }
-  };
-
-  const handleAddComment = async (postId) => {
-    if (!newComment.trim()) return;
-    try {
-      const commentObj = {
-        text: newComment.trim(),
-        userName: userProfile?.name || 'Admin',
-        userPhoto: userProfile?.photoURL || '',
-        userId: user.uid
-      };
-      await mediaService.addComment(postId, commentObj);
-      setNewComment('');
-    } catch {
-      showToast('error', 'Failed to comment');
-    }
-  };
-
-  const handleDeleteComment = async (postId, commentId) => {
-    try {
-      await mediaService.deleteComment(postId, commentId);
-    } catch {
-      showToast('error', 'Failed to delete comment');
-    }
-  };
-
-  const formatTime = (ts) => ts?.toDate ? ts.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Just now';
-
   return (
-    <div className="container-fluid py-3 px-3 px-lg-4">
-      <h4 className="fw-black text-dark mb-4 fs-4">Media & Video Manager</h4>
+    <div className="container-fluid py-3 px-3 px-lg-4" style={{ maxWidth: 800 }}>
+      <h4 className="fw-black text-dark mb-4 fs-4">{isAdmin ? 'Media & Video Manager' : 'Create Post & Share Media'}</h4>
 
       {/* CREATE POST CARD */}
       <div className="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
         <h6 className="fw-bold text-dark border-bottom pb-3 mb-3 fs-6">Create New Post</h6>
         <form onSubmit={handleUpload}>
           <textarea
-            rows="3"
+            rows="4"
             className="form-control bg-light border-0 py-2 fs-7 fw-medium mb-3"
             placeholder="Write a caption or announcement..."
             value={caption}
@@ -154,9 +94,9 @@ export default function AdminMediaPage() {
           {preview && (
             <div className="mb-3 position-relative d-inline-block">
               {fileType === 'video' ? (
-                <video src={preview} controls className="rounded-3 border" style={{ maxHeight: 200 }} />
+                <video src={preview} controls className="rounded-3 border" style={{ maxHeight: 220 }} />
               ) : (
-                <img src={preview} alt="Preview" className="rounded-3 border" style={{ maxHeight: 200 }} />
+                <img src={preview} alt="Preview" className="rounded-3 border" style={{ maxHeight: 220 }} />
               )}
               {!uploading && (
                 <button type="button" className="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-1" onClick={() => { setFile(null); setPreview(null); }}>✕</button>
@@ -192,104 +132,6 @@ export default function AdminMediaPage() {
           </div>
         </form>
       </div>
-
-      {/* REALTIME PUBLISHED MEDIA LIST */}
-      <h6 className="fw-bold text-dark mb-3">Published Media ({posts.length})</h6>
-      {fetching ? (
-        <div className="text-center py-4"><Loader2 className="spinner-border text-primary" /></div>
-      ) : (
-        <div className="row g-4 align-items-start">
-          {posts.map((post) => {
-            const isCommentOpen = activeCommentPost === post.id;
-            const authorAvatar = (user && user.uid === post.authorId && userProfile?.photoURL) 
-              ? userProfile.photoURL 
-              : post.authorPhoto;
-
-            return (
-              <div key={post.id} className="col-12 col-md-6 col-lg-4">
-                <div className="card border-0 rounded-4 shadow-sm overflow-hidden bg-white">
-                  
-                  {/* Header */}
-                  <div className="p-3 d-flex align-items-center justify-content-between border-bottom">
-                    <div className="d-flex align-items-center gap-2">
-                      <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center" style={{ width: 34, height: 34 }}>
-                        {authorAvatar ? <img src={authorAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-7">{post.authorName?.charAt(0)}</span>}
-                      </div>
-                      <div>
-                        <h6 className="fw-bold text-dark mb-0 fs-7">{post.authorName}</h6>
-                        <small className="text-muted fs-8"><Clock size={10} className="me-1" />{formatTime(post.createdAt)}</small>
-                      </div>
-                    </div>
-                    <button onClick={() => handleDeletePost(post.id)} className="btn btn-link text-danger p-0"><Trash2 size={16} /></button>
-                  </div>
-
-                  {/* Media */}
-                  {post.mediaType === 'video' ? (
-                    <video src={post.mediaUrl} controls preload="metadata" className="w-100 bg-black" style={{ height: 220 }} />
-                  ) : (
-                    <img src={post.mediaUrl} alt="" className="w-100 object-fit-cover" style={{ height: 220 }} />
-                  )}
-
-                  {/* Footer Stats */}
-                  <div className="p-3">
-                    <p className="fs-7 text-dark fw-medium mb-3">{post.caption}</p>
-                    <div className="d-flex justify-content-between border-top pt-2 text-muted fs-8">
-                      <span className="fw-semibold text-primary"><ThumbsUp size={14} className="me-1" />{post.likes?.length || 0} Likes</span>
-                      <button onClick={() => setActiveCommentPost(isCommentOpen ? null : post.id)} className="btn btn-link text-secondary p-0 text-decoration-none fw-semibold fs-8">
-                        <MessageSquare size={14} className="me-1" />{post.commentsCount || 0} Comments
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Comment Section */}
-                  {isCommentOpen && (
-                    <div className="bg-light p-3 border-top">
-                      <div className="d-flex align-items-center justify-content-between mb-2">
-                        <span className="fw-bold fs-8 text-dark">Comments</span>
-                        <button onClick={() => setActiveCommentPost(null)} className="btn btn-sm btn-link text-secondary p-0"><X size={14} /></button>
-                      </div>
-
-                      <div className="d-flex flex-column gap-2 mb-3 overflow-auto" style={{ maxHeight: 200 }}>
-                        {(commentsMap[post.id] || []).map((c) => {
-                          const commenterAvatar = (user && user.uid === c.userId && userProfile?.photoURL) 
-                            ? userProfile.photoURL 
-                            : c.userPhoto;
-
-                          return (
-                            <div key={c.id} className="bg-white p-2 rounded-3 border d-flex justify-content-between align-items-start gap-2">
-                              <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 26, height: 26 }}>
-                                {commenterAvatar ? <img src={commenterAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-8">{c.userName?.charAt(0)}</span>}
-                              </div>
-                              <div className="flex-grow-1 overflow-hidden">
-                                <span className="fw-bold fs-8 d-block text-dark">{c.userName}</span>
-                                <span className="fs-8 text-secondary text-break d-block">{c.text}</span>
-                              </div>
-                              <button onClick={() => handleDeleteComment(post.id, c.id)} className="btn btn-link text-danger p-0 ms-1"><Trash2 size={12} /></button>
-                            </div>
-                          );
-                        })}
-                      </div>
-
-                      <div className="input-group input-group-sm">
-                        <input
-                          type="text"
-                          className="form-control fs-8 border-0 shadow-sm"
-                          placeholder="Reply as Admin..."
-                          value={newComment}
-                          onChange={(e) => setNewComment(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && handleAddComment(post.id)}
-                        />
-                        <button onClick={() => handleAddComment(post.id)} className="btn bg-logo-orange text-white"><Send size={13} /></button>
-                      </div>
-                    </div>
-                  )}
-
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 }

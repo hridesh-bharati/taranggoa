@@ -1,3 +1,4 @@
+// src\context\AuthContext.js
 'use client';
 
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -19,11 +20,15 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      // 🔴 If user switches accounts, clear old caches instantly
+      if (!currentUser && user) {
+        if (typeof window !== 'undefined') localStorage.clear();
+      }
       setUser(currentUser);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   const login = async (email, password) => {
     const result = await authController.handleLogin(email, password);
