@@ -16,7 +16,7 @@ export const authController = {
       const userEmail = res.user.email?.toLowerCase();
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
       
-      const targetPath = isAdmin ? '/admin/dashboard' : '/membership';
+      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
       router.push(targetPath);
       return { success: true, user: res.user, isAdmin };
     } catch (error) {
@@ -38,7 +38,7 @@ export const authController = {
       const userEmail = res.user.email?.toLowerCase();
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
-      const targetPath = isAdmin ? '/admin/dashboard' : '/membership';
+      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
       router.push(targetPath);
       return { success: true, user: res.user, isAdmin };
     } catch (error) {
@@ -53,7 +53,7 @@ export const authController = {
       const userEmail = res.user.email?.toLowerCase();
       const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
-      const targetPath = isAdmin ? '/admin/dashboard' : '/membership';
+      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
       router.push(targetPath);
       return { success: true, user: res.user, isAdmin };
     } catch (error) {

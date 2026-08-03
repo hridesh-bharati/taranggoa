@@ -32,14 +32,12 @@ export default function Navbar() {
 
   const { user, logout } = useAuth();
 
-  // Load Cached & Fresh Firestore Profile Data (With Cloudinary URL support)
+  // Load Cached & Fresh Profile Data
   useEffect(() => {
     if (user?.uid) {
-      // 1. Instant cache load
       const cached = profileController.getCache(user.uid);
       if (cached) setProfileData(cached);
 
-      // 2. Background Firestore sync
       profileController.fetchProfile(user.uid, user.email, (freshData) => {
         setProfileData(freshData);
       }).catch((err) => console.error('Navbar profile fetch error:', err));
@@ -55,13 +53,18 @@ export default function Navbar() {
     { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
     { name: 'Post', href: '/adminpost', icon: Briefcase, colorClass: 'icon-green' },
-    { name: 'News', href: '/news', icon: Newspaper, colorClass: 'icon-teal' },
+    { name: 'News', href: '/community', icon: Newspaper, colorClass: 'icon-teal' },
     { name: 'Contact Us', href: '/contact', icon: PhoneCall, colorClass: 'icon-indigo' },
   ];
 
   const displayName = profileData?.name || user?.displayName || 'User Profile';
   const displayPhoto = profileData?.photoURL || user?.photoURL;
   const userInitial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
+
+  // 🔴 DYNAMIC ROUTING: Detect Admin vs Regular Member routes
+  const isAdmin = profileData?.role === 'admin' || user?.email?.toLowerCase() === 'admin@taranggoa.org';
+  const dashboardLink = isAdmin ? '/admin/dashboard' : '/user/dashboard';
+  const profileLink = isAdmin ? '/admin/profile' : '/user/user-profile';
 
   return (
     <nav className="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-1 py-lg-2 custom-navbar">
@@ -123,41 +126,44 @@ export default function Navbar() {
                 <button
                   type="button"
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="btn p-0 border-0 d-flex align-items-center gap-2"
+                  className="btn p-0 border-0 d-flex align-items-center gap-2 w-100 justify-content-start justify-content-lg-center"
                 >
-                  <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden" style={{ width: 38, height: 38 }}>
+                  <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden flex-shrink-0" style={{ width: 38, height: 38 }}>
                     {displayPhoto ? (
                       <img src={displayPhoto} alt="User" className="rounded-circle w-100 h-100 object-fit-cover" />
                     ) : (
                       userInitial
                     )}
                   </div>
+                  <span className="d-lg-none fw-bold fs-7 text-dark text-truncate">{displayName}</span>
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu (Fixed Overflow for Mobile) */}
                 {showDropdown && (
                   <div 
                     className="position-absolute end-0 mt-2 bg-white rounded-4 shadow-lg p-2 z-3 border"
-                    style={{ minWidth: '220px' }}
+                    style={{ minWidth: '220px', zIndex: 1070 }}
                   >
                     <div className="px-3 py-2 border-bottom">
                       <p className="fw-bold mb-0 text-dark fs-7 text-truncate">{displayName}</p>
                       <small className="text-muted text-truncate d-block fs-8">{user.email}</small>
                     </div>
 
+                    {/* Dynamic Dashboard Link */}
                     <Link 
-                      href="/admin/dashboard" 
+                      href={dashboardLink} 
                       className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark mt-1"
-                      onClick={() => setShowDropdown(false)}
+                      onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
                       <LayoutDashboard size={16} className="text-primary" />
                       <span>Dashboard</span>
                     </Link>
 
+                    {/* Dynamic Profile Link */}
                     <Link 
-                      href="/admin/profile" 
+                      href={profileLink} 
                       className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-medium text-dark"
-                      onClick={() => setShowDropdown(false)}
+                      onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
                       <User size={16} className="text-success" />
                       <span>My Profile</span>
@@ -168,6 +174,7 @@ export default function Navbar() {
                     <button 
                       onClick={() => {
                         setShowDropdown(false);
+                        setIsOpen(false);
                         logout();
                       }}
                       className="dropdown-item text-danger d-flex align-items-center gap-2 p-2 rounded-3 fs-7 fw-semibold w-100 border-0 bg-transparent"

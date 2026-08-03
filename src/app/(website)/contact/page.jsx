@@ -1,15 +1,26 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import useScrollReveal from '@/hooks/useScrollReveal';
+import { contactService } from '@/services/contact.service';
+import { showToast } from '@/utils/toast';
+import { Loader2 } from 'lucide-react';
 
 export default function ContactPage() {
   const sectionRef = useRef(null);
   useScrollReveal(sectionRef);
 
-  // Exact Gradients, Borders & Shadows matching "Who Can Join Tarang Goa"
+  const [submitting, setSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+
   const contactCards = [
     { 
       icon: 'bi-geo-alt-fill', 
@@ -53,6 +64,25 @@ export default function ContactPage() {
     }
   ];
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.message) {
+      showToast('error', 'Please fill all required fields');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await contactService.sendMessage(formData);
+      showToast('success', 'Message sent successfully!');
+      setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
+    } catch {
+      showToast('error', 'Failed to send message');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <main className="min-vh-100 bg-light">
       <Navbar />
@@ -80,7 +110,7 @@ export default function ContactPage() {
           </div>
         </section>
 
-        {/* Colorful Cards Container (Mobile me exact 2-2 per row) */}
+        {/* Colorful Cards Container */}
         <div className="container py-5">
           <div className="row g-3 g-md-4 mb-5">
             {contactCards.map((c, idx) => (
@@ -94,7 +124,6 @@ export default function ContactPage() {
                     boxShadow: '0 4px 15px rgba(0,0,0,0.04)'
                   }}
                 >
-                  {/* Colorful Rounded Icon Circle */}
                   <div 
                     className="d-flex align-items-center justify-content-center mb-3"
                     style={{
@@ -118,37 +147,78 @@ export default function ContactPage() {
 
           {/* Form & Map Section */}
           <div className="row g-4">
-            {/* Direct Contact Form */}
             <div className="col-lg-7">
               <div className="card border-0 rounded-4 shadow-sm p-4 p-md-5 bg-white border-top border-4 border-warning anim-fade-up">
                 <span className="fw-bold text-uppercase small" style={{ color: '#6b21a8' }}>• Direct Contact Form</span>
                 <h3 className="fw-bold mb-4">How Can We Help You?</h3>
 
-                <form onSubmit={(e) => e.preventDefault()}>
+                <form onSubmit={handleSubmit}>
                   <div className="row g-3">
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Full Name <span className="text-danger">*</span></label>
-                      <input type="text" className="form-control bg-light border-0 py-2.5 rounded-3" placeholder="Sweta Chari" required />
+                      <input 
+                        type="text" 
+                        className="form-control bg-light border-0 py-2.5 rounded-3" 
+                        placeholder="Sweta Chari" 
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required 
+                      />
                     </div>
+
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Email Address <span className="text-danger">*</span></label>
-                      <input type="email" className="form-control bg-light border-0 py-2.5 rounded-3" placeholder="sweta@example.com" required />
+                      <input 
+                        type="email" 
+                        className="form-control bg-light border-0 py-2.5 rounded-3" 
+                        placeholder="sweta@example.com" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required 
+                      />
                     </div>
+
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Phone Number</label>
-                      <input type="tel" className="form-control bg-light border-0 py-2.5 rounded-3" placeholder="+91 98765 43210" />
+                      <input 
+                        type="tel" 
+                        className="form-control bg-light border-0 py-2.5 rounded-3" 
+                        placeholder="+91 98765 43210" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      />
                     </div>
+
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Inquiry Subject</label>
-                      <input type="text" className="form-control bg-light border-0 py-2.5 rounded-3" placeholder="Exhibition Stall / Membership" />
+                      <input 
+                        type="text" 
+                        className="form-control bg-light border-0 py-2.5 rounded-3" 
+                        placeholder="Exhibition Stall / Membership" 
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                      />
                     </div>
+
                     <div className="col-12 anim-desc">
                       <label className="form-label fw-bold small">Your Message <span className="text-danger">*</span></label>
-                      <textarea className="form-control bg-light border-0 p-3 rounded-3" rows="4" placeholder="Type your details or requirements here..." required></textarea>
+                      <textarea 
+                        className="form-control bg-light border-0 p-3 rounded-3" 
+                        rows="4" 
+                        placeholder="Type your details or requirements here..." 
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        required
+                      ></textarea>
                     </div>
+
                     <div className="col-12 mt-4 anim-btn-orange">
-                      <button type="submit" className="btn btn-warning rounded-pill w-100 py-3 fw-bold text-dark shadow-sm">
-                        Submit Message <i className="bi bi-send-fill ms-1"></i>
+                      <button 
+                        type="submit" 
+                        disabled={submitting} 
+                        className="btn btn-warning rounded-pill w-100 py-3 fw-bold text-dark shadow-sm d-flex align-items-center justify-content-center gap-2"
+                      >
+                        {submitting ? <Loader2 size={18} className="spinner-border spinner-border-sm" /> : <i className="bi bi-send-fill"></i>} Submit Message
                       </button>
                     </div>
                   </div>

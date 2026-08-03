@@ -4,19 +4,19 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { 
-  LayoutDashboard, 
+import {
+  LayoutDashboard,
   User,
-  Users, 
-  UserPlus, 
-  Inbox, 
-  CalendarCheck, 
-  Store, 
-  Upload, 
-  Image as GalleryIcon, 
-  Tag, 
-  Trash2, 
-  ShieldCheck, 
+  Users,
+  UserPlus,
+  Inbox,
+  CalendarCheck,
+  Store,
+  Upload,
+  Image as GalleryIcon,
+  Tag,
+  Trash2,
+  ShieldCheck,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -58,15 +58,14 @@ export default function AdminLayout({ children }) {
     );
   }
 
-const managementLinks = [
-  { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
-  { name: 'My Profile', href: '/admin/profile', icon: User, colorClass: 'icon-green' },
-  { name: 'Tarang Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
-  { name: 'Stall Applications', href: '/admin/members?filter=new', icon: UserPlus, colorClass: 'icon-yellow' },
-  { name: 'Inquiries', href: '/admin/queries', icon: Inbox, colorClass: 'icon-purple' },
-  { name: 'Stall Bookings', href: '/admin/stalls', icon: Store, colorClass: 'icon-red', hasDropdown: true },
-  { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal', hasDropdown: true },
-];
+  const managementLinks = [
+    { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
+    { name: 'My Profile', href: '/admin/profile', icon: User, colorClass: 'icon-green' },
+    { name: 'Tarang Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
+    { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
+    // { name: 'Stall Bookings', href: '/admin/stalls', icon: Store, colorClass: 'icon-red', hasDropdown: true },
+    { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal', hasDropdown: true },
+  ];
 
   const marketingLinks = [
     { name: 'Upload Media', href: '/admin/media', icon: Upload, colorClass: 'icon-cyan' },
@@ -79,9 +78,9 @@ const managementLinks = [
 
   return (
     <div className="min-vh-100 d-flex admin-dashboard-container">
-      
+
       {/* 1. DESKTOP SIDEBAR */}
-      <aside 
+      <aside
         className={`admin-sidebar p-3 d-flex flex-column justify-content-between d-none d-lg-flex ${desktopCollapsed ? 'collapsed' : ''}`}
         style={{
           width: desktopCollapsed ? '80px' : '260px',
@@ -168,7 +167,7 @@ const managementLinks = [
       {mobileDrawerOpen && (
         <div className="drawer-overlay d-lg-none" onClick={() => setMobileDrawerOpen(false)} />
       )}
-      
+
       <div className={`mobile-admin-drawer p-3 d-flex flex-column justify-content-between d-lg-none ${mobileDrawerOpen ? 'open' : ''}`}>
         <div>
           <div className="d-flex align-items-center justify-content-between px-2 py-3 border-bottom mb-2">
@@ -191,8 +190,8 @@ const managementLinks = [
 
               return (
                 <li key={link.href} className="nav-item">
-                  <Link 
-                    href={link.href} 
+                  <Link
+                    href={link.href}
                     className={`sidebar-link ${isActive ? 'active' : ''}`}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
@@ -214,8 +213,8 @@ const managementLinks = [
 
               return (
                 <li key={link.href} className="nav-item">
-                  <Link 
-                    href={link.href} 
+                  <Link
+                    href={link.href}
                     className={`sidebar-link ${isActive ? 'active' : ''}`}
                     onClick={() => setMobileDrawerOpen(false)}
                   >
@@ -245,7 +244,7 @@ const managementLinks = [
       <div className="flex-grow-1 d-flex flex-column overflow-x-hidden">
         <header className="bg-white border-bottom px-3 px-md-4 py-2.5 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
           <div className="d-flex align-items-center gap-2">
-            <button 
+            <button
               className="btn btn-light rounded-circle p-1.5 border text-dark d-none d-lg-flex align-items-center justify-content-center"
               onClick={() => setDesktopCollapsed(!desktopCollapsed)}
               title={desktopCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
@@ -265,8 +264,8 @@ const managementLinks = [
               <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
             </button>
 
-            <Link 
-              href="/" 
+            <Link
+              href="/"
               className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1.5 fw-bold d-flex align-items-center gap-1.5"
               title="Go to Main Website"
             >
@@ -274,7 +273,7 @@ const managementLinks = [
               <span className="d-none d-sm-inline">Home</span>
             </Link>
 
-            <button 
+            <button
               className="btn btn-light border rounded-circle p-2 d-lg-none text-dark"
               onClick={() => setMobileDrawerOpen(!mobileDrawerOpen)}
               title="Open Navigation"
@@ -304,12 +303,12 @@ const managementLinks = [
           <span>Stalls</span>
         </Link>
 
-        <Link href="/admin/queries" className={`bottom-nav-item ${pathname === '/admin/queries' ? 'active' : ''}`}>
+        <Link href="/admin/inbox" className={`bottom-nav-item ${pathname === '/admin/inbox' ? 'active' : ''}`}>
           <Inbox size={18} />
           <span>Inbox</span>
         </Link>
 
-        <button 
+        <button
           onClick={() => setMobileDrawerOpen(true)}
           className="bottom-nav-item border-0 bg-transparent"
         >

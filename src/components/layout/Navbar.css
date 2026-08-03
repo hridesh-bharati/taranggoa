@@ -1,7 +1,7 @@
-
 /* Base Navbar */
 .custom-navbar {
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  z-index: 1030;
 }
 
 /* Three Dot WhatsApp Style Toggle Button */
@@ -87,21 +87,22 @@
   .mobile-menu-drawer {
     position: absolute;
     top: 100%;
-    right: 0;                   /* Aligning card to top-right */
-    width: 60vw;               /* Requested Custom Width */
-    min-width: 240px;          /* Minimum fallback width for small screens */
+    right: 0;
+    width: 65vw;
+    min-width: 250px;
     background-color: #ffffff;
     box-shadow: -4px 12px 24px rgba(0, 0, 0, 0.15);
     border-radius: 0 0 16px 16px;
     padding: 12px 14px 16px 14px;
     
-    /* Smooth Top-to-Bottom Drop Animation */
+    /* 🔴 FIXED: Allow dropdown to overflow outside drawer without hiding */
     max-height: 0;
     opacity: 0;
-    overflow: hidden;
+    overflow: visible;
     transform: translateY(-8px);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     visibility: hidden;
+    z-index: 1050;
   }
 
   .mobile-menu-drawer.open {
@@ -115,7 +116,7 @@
   .custom-nav-link {
     padding: 7px 10px !important;
     margin-top: 2px;
-    margin-bottom: 6px;        /* Increased Margin-Y so links don't stick */
+    margin-bottom: 6px;
     border-radius: 10px;
   }
 
@@ -143,6 +144,8 @@
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     margin-top: 6px;
     padding-top: 10px !important;
+    position: relative;
+    z-index: 1060;
   }
 }
 

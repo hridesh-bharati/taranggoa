@@ -2,8 +2,7 @@ import { db } from '@/lib/firebase';
 import { 
   collection, 
   addDoc, 
-  getDocs, 
-  getDoc, 
+  onSnapshot, 
   doc, 
   updateDoc, 
   deleteDoc, 
@@ -15,7 +14,7 @@ import {
 } from 'firebase/firestore';
 
 export const mediaService = {
-  // Create Post
+  // 1. Create Post
   async createPost(postData) {
     const docRef = await addDoc(collection(db, 'posts'), {
       ...postData,
@@ -26,46 +25,55 @@ export const mediaService = {
     return docRef.id;
   },
 
-  // Fetch All Posts
-  async getAllPosts() {
+  // 2. Real-time Posts Listener (onSnapshot)
+  subscribeToPosts(callback) {
     const q = query(collection(db, 'posts'), orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    return onSnapshot(q, (snapshot) => {
+      const posts = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      callback(posts);
+    });
   },
 
-  // Delete Post
+  // 3. Delete Post
   async deletePost(postId) {
     await deleteDoc(doc(db, 'posts', postId));
   },
 
-  // Toggle Like
+  // 4. Toggle Like
   async toggleLike(postId, userId) {
     const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    if (!postSnap.exists()) return;
+    const likesArr = (await mediaService.getDocData(postId))?.likes || [];
 
-    const likes = postSnap.data().likes || [];
-    if (likes.includes(userId)) {
+    if (likesArr.includes(userId)) {
       await updateDoc(postRef, { likes: arrayRemove(userId) });
     } else {
       await updateDoc(postRef, { likes: arrayUnion(userId) });
     }
   },
 
-  // Add Comment
+  // 5. Real-time Comments Listener (onSnapshot)
+  subscribeToComments(postId, callback) {
+    const q = query(collection(db, `posts/${postId}/comments`), orderBy('createdAt', 'asc'));
+    return onSnapshot(q, (snapshot) => {
+      const comments = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      callback(comments);
+    });
+  },
+
+  // 6. Add Comment
   async addComment(postId, commentData) {
     await addDoc(collection(db, `posts/${postId}/comments`), {
       ...commentData,
       createdAt: serverTimestamp()
     });
     
+    // Update counter
     const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    const count = (postSnap.data()?.commentsCount || 0) + 1;
-    await updateDoc(postRef, { commentsCount: count });
+    const currentCount = (await mediaService.getDocData(postId))?.commentsCount || 0;
+    await updateDoc(postRef, { commentsCount: currentCount + 1 });
   },
 
-  // 🔴 Edit Comment
+  // 7. Edit Comment
   async editComment(postId, commentId, newText) {
     const commentRef = doc(db, `posts/${postId}/comments`, commentId);
     await updateDoc(commentRef, { 
@@ -74,20 +82,18 @@ export const mediaService = {
     });
   },
 
-  // 🔴 Delete Comment
+  // 8. Delete Comment
   async deleteComment(postId, commentId) {
     await deleteDoc(doc(db, `posts/${postId}/comments`, commentId));
 
     const postRef = doc(db, 'posts', postId);
-    const postSnap = await getDoc(postRef);
-    const currentCount = postSnap.data()?.commentsCount || 1;
+    const currentCount = (await mediaService.getDocData(postId))?.commentsCount || 1;
     await updateDoc(postRef, { commentsCount: Math.max(0, currentCount - 1) });
   },
 
-  // Get Comments for Post
-  async getComments(postId) {
-    const q = query(collection(db, `posts/${postId}/comments`), orderBy('createdAt', 'asc'));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  // Helper
+  async getDocData(postId) {
+    const snapshot = await mediaService.getDoc(doc(db, 'posts', postId));
+    return snapshot.data();
   }
 };

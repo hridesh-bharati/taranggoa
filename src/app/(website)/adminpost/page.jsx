@@ -1,3 +1,4 @@
+// Feed
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,20 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { mediaService } from '@/services/media.service';
 import { profileController } from '@/controllers/profile.controller';
 import { showToast } from '@/utils/toast';
-import { 
-  Heart, 
-  MessageCircle, 
-  Send, 
-  Loader2, 
-  Clock, 
-  Image as ImageIcon, 
-  Video, 
-  Grid, 
-  Trash2, 
-  Edit2, 
-  Check, 
-  X 
-} from 'lucide-react';
+import { Heart, MessageCircle, Send, Loader2, Clock, Image as ImageIcon, Video, Grid, Trash2, Edit2, Check, X } from 'lucide-react';
 
 export default function PublicFeedPage() {
   const { user } = useAuth();
@@ -39,46 +27,33 @@ export default function PublicFeedPage() {
       if (cached) setUserProfile(cached);
       profileController.fetchProfile(user.uid, user.email, (fresh) => setUserProfile(fresh));
     }
-    loadFeed();
+
+    // 🔴 Real-time Snapshot Subscription for Posts
+    const unsubscribe = mediaService.subscribeToPosts((livePosts) => {
+      setPosts(livePosts);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
-  const loadFeed = async () => {
-    try {
-      const data = await mediaService.getAllPosts();
-      setPosts(data);
-    } catch {
-      showToast('error', 'Failed to load feed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Real-time Comments Listener when Comment Box is Opened
+  useEffect(() => {
+    if (!activeCommentPost) return;
+
+    const unsubscribeComments = mediaService.subscribeToComments(activeCommentPost, (liveComments) => {
+      setCommentsMap(prev => ({ ...prev, [activeCommentPost]: liveComments }));
+    });
+
+    return () => unsubscribeComments();
+  }, [activeCommentPost]);
 
   const handleLike = async (postId) => {
-    if (!user) return showToast('error', 'Please login to like posts');
+    if (!user) return showToast('error', 'Please login to like');
     try {
       await mediaService.toggleLike(postId, user.uid);
-      setPosts(posts.map(p => {
-        if (p.id === postId) {
-          const likes = p.likes || [];
-          const hasLiked = likes.includes(user.uid);
-          return { ...p, likes: hasLiked ? likes.filter(id => id !== user.uid) : [...likes, user.uid] };
-        }
-        return p;
-      }));
     } catch {
       showToast('error', 'Action failed');
-    }
-  };
-
-  const toggleComments = async (postId) => {
-    if (activeCommentPost === postId) {
-      setActiveCommentPost(null);
-    } else {
-      setActiveCommentPost(postId);
-      if (!commentsMap[postId]) {
-        const comments = await mediaService.getComments(postId);
-        setCommentsMap(prev => ({ ...prev, [postId]: comments }));
-      }
     }
   };
 
@@ -94,9 +69,6 @@ export default function PublicFeedPage() {
         userId: user.uid
       };
       await mediaService.addComment(postId, commentObj);
-      const updated = await mediaService.getComments(postId);
-      setCommentsMap(prev => ({ ...prev, [postId]: updated }));
-      setPosts(posts.map(p => p.id === postId ? { ...p, commentsCount: (p.commentsCount || 0) + 1 } : p));
       setNewComment('');
     } catch {
       showToast('error', 'Failed to add comment');
@@ -107,10 +79,6 @@ export default function PublicFeedPage() {
     if (!editText.trim()) return;
     try {
       await mediaService.editComment(postId, commentId, editText.trim());
-      setCommentsMap(prev => ({
-        ...prev,
-        [postId]: prev[postId].map(c => c.id === commentId ? { ...c, text: editText.trim() } : c)
-      }));
       setEditingCommentId(null);
       setEditText('');
     } catch {
@@ -121,8 +89,6 @@ export default function PublicFeedPage() {
   const handleDeleteComment = async (postId, commentId) => {
     try {
       await mediaService.deleteComment(postId, commentId);
-      setCommentsMap(prev => ({ ...prev, [postId]: prev[postId].filter(c => c.id !== commentId) }));
-      setPosts(posts.map(p => p.id === postId ? { ...p, commentsCount: Math.max(0, (p.commentsCount || 1) - 1) } : p));
     } catch {
       showToast('error', 'Failed to delete comment');
     }
@@ -132,7 +98,6 @@ export default function PublicFeedPage() {
     if (!confirm('Delete your post?')) return;
     try {
       await mediaService.deletePost(postId);
-      setPosts(posts.filter(p => p.id !== postId));
       showToast('success', 'Post deleted');
     } catch {
       showToast('error', 'Failed to delete post');
@@ -152,8 +117,6 @@ export default function PublicFeedPage() {
       <Navbar />
 
       <div className="container-fluid py-4 px-3 px-lg-5">
-        
-        {/* HEADER & FILTER TABS */}
         <div className="text-center mb-4">
           <h3 className="fw-black text-dark mb-1">Community Feed</h3>
           <p className="text-muted fs-7 mb-3">Explore posts, updates, and discussions</p>
@@ -172,12 +135,16 @@ export default function PublicFeedPage() {
             <p className="text-muted fw-medium mb-0">No posts found in this category.</p>
           </div>
         ) : (
-          /* 🔴 align-items-start keeps natural card height across columns when comments toggle */
           <div className="row g-4 align-items-start justify-content-center">
             {filteredPosts.map((post) => {
               const isLiked = user && post.likes?.includes(user.uid);
               const isCommentOpen = activeCommentPost === post.id;
               const isPostOwner = user && user.uid === post.authorId;
+
+              // 🔴 Dynamic Avatar Sync: Active user updates instantly reflect
+              const authorAvatar = (isPostOwner && userProfile?.photoURL) 
+                ? userProfile.photoURL 
+                : post.authorPhoto;
 
               return (
                 <div key={post.id} className="col-12 col-md-6 col-lg-4">
@@ -187,7 +154,7 @@ export default function PublicFeedPage() {
                     <div className="p-3 d-flex align-items-center justify-content-between border-bottom">
                       <div className="d-flex align-items-center gap-2">
                         <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center" style={{ width: 36, height: 36 }}>
-                          {post.authorPhoto ? <img src={post.authorPhoto} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-7">{post.authorName?.charAt(0)}</span>}
+                          {authorAvatar ? <img src={authorAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-7">{post.authorName?.charAt(0)}</span>}
                         </div>
                         <div>
                           <h6 className="fw-bold text-dark mb-0 fs-7">{post.authorName}</h6>
@@ -202,7 +169,7 @@ export default function PublicFeedPage() {
                       )}
                     </div>
 
-                    {/* Media Image/Video */}
+                    {/* Media */}
                     {post.mediaType === 'video' ? (
                       <video src={post.mediaUrl} controls preload="metadata" className="w-100 bg-black" style={{ height: 260 }} />
                     ) : (
@@ -216,13 +183,13 @@ export default function PublicFeedPage() {
                         <button onClick={() => handleLike(post.id)} className={`btn p-0 border-0 fs-7 fw-bold ${isLiked ? 'text-danger' : 'text-secondary'}`}>
                           <Heart size={18} fill={isLiked ? '#ef4444' : 'none'} className="me-1" />{post.likes?.length || 0}
                         </button>
-                        <button onClick={() => toggleComments(post.id)} className="btn p-0 border-0 fs-7 fw-bold text-secondary">
+                        <button onClick={() => setActiveCommentPost(isCommentOpen ? null : post.id)} className="btn p-0 border-0 fs-7 fw-bold text-secondary">
                           <MessageCircle size={18} className="me-1" />{post.commentsCount || 0}
                         </button>
                       </div>
                     </div>
 
-                    {/* Isolated Toggle Comment Section */}
+                    {/* Real-time Comments Box */}
                     {isCommentOpen && (
                       <div className="bg-light p-3 border-top">
                         <div className="d-flex align-items-center justify-content-between mb-2">
@@ -236,9 +203,14 @@ export default function PublicFeedPage() {
                           ) : (
                             (commentsMap[post.id] || []).map((c) => {
                               const isOwner = user && user.uid === c.userId;
+                              const commenterAvatar = (isOwner && userProfile?.photoURL) ? userProfile.photoURL : c.userPhoto;
 
                               return (
-                                <div key={c.id} className="bg-white p-2.5 rounded-3 border d-flex justify-content-between align-items-start">
+                                <div key={c.id} className="bg-white p-2.5 rounded-3 border d-flex justify-content-between align-items-start gap-2">
+                                  <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 28, height: 28 }}>
+                                    {commenterAvatar ? <img src={commenterAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-8">{c.userName?.charAt(0)}</span>}
+                                  </div>
+
                                   <div className="flex-grow-1 overflow-hidden">
                                     <div className="d-flex align-items-center justify-content-between mb-1">
                                       <span className="fw-bold fs-8 text-dark">{c.userName}</span>
@@ -257,7 +229,7 @@ export default function PublicFeedPage() {
                                   </div>
 
                                   {isOwner && editingCommentId !== c.id && (
-                                    <div className="d-flex gap-1 ms-2 flex-shrink-0">
+                                    <div className="d-flex gap-1 flex-shrink-0">
                                       <button onClick={() => { setEditingCommentId(c.id); setEditText(c.text); }} className="btn btn-link text-primary p-0"><Edit2 size={12} /></button>
                                       <button onClick={() => handleDeleteComment(post.id, c.id)} className="btn btn-link text-danger p-0"><Trash2 size={12} /></button>
                                     </div>

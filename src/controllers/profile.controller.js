@@ -1,9 +1,30 @@
 import { profileService } from '@/services/profile.service';
+import { db } from '@/lib/firebase';
+import { collection, query, where, getDocs, writeBatch, doc } from 'firebase/firestore';
 
 const CACHE_KEY_PREFIX = 'user_profile_cache_';
 
 const formatError = (error) => {
   return error.message ? error.message.replace('Firebase: ', '') : 'An unexpected error occurred.';
+};
+
+// 🔴 Helper: Update Photo URL across all user posts in Firestore
+const syncPhotoToUserPosts = async (userId, newPhotoUrl) => {
+  try {
+    if (!userId || !newPhotoUrl) return;
+    const batch = writeBatch(db);
+    const q = query(collection(db, 'posts'), where('authorId', '==', userId));
+    const snap = await getDocs(q);
+
+    if (!snap.empty) {
+      snap.forEach((postDoc) => {
+        batch.update(doc(db, 'posts', postDoc.id), { authorPhoto: newPhotoUrl });
+      });
+      await batch.commit();
+    }
+  } catch (e) {
+    console.warn('Post author photo batch sync failed:', e);
+  }
 };
 
 export const profileController = {
@@ -27,7 +48,6 @@ export const profileController = {
     }
   },
 
-  // 🔴 BUG FIXED: Added `userId` parameter so API receives the exact user UID
   async uploadImage(file, userId) {
     if (!userId) throw new Error('User ID is required for image upload.');
 
@@ -43,10 +63,11 @@ export const profileController = {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Failed to upload image');
     
-    return data.url; // Returns Cloudinary HTTPS URL
+    // Add timestamp query parameter to bust browser cache
+    const freshUrl = `${data.url}?v=${Date.now()}`;
+    return freshUrl;
   },
 
-  // Fetch Profile (Cached First, then Sync from Firestore)
   async fetchProfile(uid, defaultEmail, onFreshData) {
     if (!uid) return null;
     const cachedData = this.getCache(uid);
@@ -77,12 +98,17 @@ export const profileController = {
     }
   },
 
-  // Save Profile (Updates Firestore & Local Cache)
   async saveProfile(uid, profileData) {
     if (!uid) throw new Error('User ID is required to save profile.');
     try {
       await profileService.updateUserProfile(uid, profileData);
       this.setCache(uid, profileData);
+
+      // Sync updated photo in all previous posts
+      if (profileData.photoURL) {
+        await syncPhotoToUserPosts(uid, profileData.photoURL);
+      }
+
       return { success: true, message: 'Profile updated successfully!' };
     } catch (error) {
       throw new Error(formatError(error));

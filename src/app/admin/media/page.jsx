@@ -5,17 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { mediaService } from '@/services/media.service';
 import { profileController } from '@/controllers/profile.controller';
 import { showToast } from '@/utils/toast';
-import { 
-  Image as ImageIcon, 
-  Video as VideoIcon, 
-  Send, 
-  Trash2, 
-  Loader2, 
-  MessageSquare, 
-  ThumbsUp, 
-  Clock, 
-  X 
-} from 'lucide-react';
+import { Image as ImageIcon, Video as VideoIcon, Send, Trash2, Loader2, MessageSquare, ThumbsUp, Clock, X } from 'lucide-react';
 
 export default function AdminMediaPage() {
   const { user } = useAuth();
@@ -39,19 +29,26 @@ export default function AdminMediaPage() {
       if (cached) setUserProfile(cached);
       profileController.fetchProfile(user.uid, user.email, (fresh) => setUserProfile(fresh));
     }
-    loadPosts();
+
+    // 🔴 Real-time Snapshot Subscription for Admin Panel
+    const unsubscribe = mediaService.subscribeToPosts((livePosts) => {
+      setPosts(livePosts);
+      setFetching(false);
+    });
+
+    return () => unsubscribe();
   }, [user]);
 
-  const loadPosts = async () => {
-    try {
-      const data = await mediaService.getAllPosts();
-      setPosts(data);
-    } catch {
-      showToast('error', 'Failed to load posts');
-    } finally {
-      setFetching(false);
-    }
-  };
+  // Real-time Comments Listener for Admin
+  useEffect(() => {
+    if (!activeCommentPost) return;
+
+    const unsubscribeComments = mediaService.subscribeToComments(activeCommentPost, (liveComments) => {
+      setCommentsMap(prev => ({ ...prev, [activeCommentPost]: liveComments }));
+    });
+
+    return () => unsubscribeComments();
+  }, [activeCommentPost]);
 
   const handleFileChange = (e) => {
     const selected = e.target.files[0];
@@ -64,7 +61,7 @@ export default function AdminMediaPage() {
 
   const handleUpload = (e) => {
     e.preventDefault();
-    if (!file || !caption.trim()) return showToast('error', 'Select media and write a caption');
+    if (!file || !caption.trim()) return showToast('error', 'Select media and write caption');
 
     setUploading(true);
     setUploadProgress(0);
@@ -92,7 +89,6 @@ export default function AdminMediaPage() {
         });
         showToast('success', 'Published!');
         setCaption(''); setFile(null); setPreview(null);
-        loadPosts();
       } else {
         showToast('error', 'Upload failed');
       }
@@ -106,22 +102,9 @@ export default function AdminMediaPage() {
     if (!confirm('Delete this post?')) return;
     try {
       await mediaService.deletePost(postId);
-      setPosts(posts.filter(p => p.id !== postId));
       showToast('success', 'Post deleted');
     } catch {
       showToast('error', 'Failed to delete');
-    }
-  };
-
-  const toggleComments = async (postId) => {
-    if (activeCommentPost === postId) {
-      setActiveCommentPost(null);
-    } else {
-      setActiveCommentPost(postId);
-      if (!commentsMap[postId]) {
-        const comments = await mediaService.getComments(postId);
-        setCommentsMap(prev => ({ ...prev, [postId]: comments }));
-      }
     }
   };
 
@@ -135,9 +118,6 @@ export default function AdminMediaPage() {
         userId: user.uid
       };
       await mediaService.addComment(postId, commentObj);
-      const updated = await mediaService.getComments(postId);
-      setCommentsMap(prev => ({ ...prev, [postId]: updated }));
-      setPosts(posts.map(p => p.id === postId ? { ...p, commentsCount: (p.commentsCount || 0) + 1 } : p));
       setNewComment('');
     } catch {
       showToast('error', 'Failed to comment');
@@ -147,8 +127,6 @@ export default function AdminMediaPage() {
   const handleDeleteComment = async (postId, commentId) => {
     try {
       await mediaService.deleteComment(postId, commentId);
-      setCommentsMap(prev => ({ ...prev, [postId]: prev[postId].filter(c => c.id !== commentId) }));
-      setPosts(posts.map(p => p.id === postId ? { ...p, commentsCount: Math.max(0, (p.commentsCount || 1) - 1) } : p));
     } catch {
       showToast('error', 'Failed to delete comment');
     }
@@ -215,7 +193,7 @@ export default function AdminMediaPage() {
         </form>
       </div>
 
-      {/* 🔴 FIX: align-items-start keeps cards at their natural height */}
+      {/* REALTIME PUBLISHED MEDIA LIST */}
       <h6 className="fw-bold text-dark mb-3">Published Media ({posts.length})</h6>
       {fetching ? (
         <div className="text-center py-4"><Loader2 className="spinner-border text-primary" /></div>
@@ -223,6 +201,9 @@ export default function AdminMediaPage() {
         <div className="row g-4 align-items-start">
           {posts.map((post) => {
             const isCommentOpen = activeCommentPost === post.id;
+            const authorAvatar = (user && user.uid === post.authorId && userProfile?.photoURL) 
+              ? userProfile.photoURL 
+              : post.authorPhoto;
 
             return (
               <div key={post.id} className="col-12 col-md-6 col-lg-4">
@@ -232,7 +213,7 @@ export default function AdminMediaPage() {
                   <div className="p-3 d-flex align-items-center justify-content-between border-bottom">
                     <div className="d-flex align-items-center gap-2">
                       <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center" style={{ width: 34, height: 34 }}>
-                        {post.authorPhoto ? <img src={post.authorPhoto} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-7">{post.authorName?.charAt(0)}</span>}
+                        {authorAvatar ? <img src={authorAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-7">{post.authorName?.charAt(0)}</span>}
                       </div>
                       <div>
                         <h6 className="fw-bold text-dark mb-0 fs-7">{post.authorName}</h6>
@@ -254,13 +235,13 @@ export default function AdminMediaPage() {
                     <p className="fs-7 text-dark fw-medium mb-3">{post.caption}</p>
                     <div className="d-flex justify-content-between border-top pt-2 text-muted fs-8">
                       <span className="fw-semibold text-primary"><ThumbsUp size={14} className="me-1" />{post.likes?.length || 0} Likes</span>
-                      <button onClick={() => toggleComments(post.id)} className="btn btn-link text-secondary p-0 text-decoration-none fw-semibold fs-8">
+                      <button onClick={() => setActiveCommentPost(isCommentOpen ? null : post.id)} className="btn btn-link text-secondary p-0 text-decoration-none fw-semibold fs-8">
                         <MessageSquare size={14} className="me-1" />{post.commentsCount || 0} Comments
                       </button>
                     </div>
                   </div>
 
-                  {/* Isolated Toggle Comments (Sirf issi card ka height adjust hoga) */}
+                  {/* Comment Section */}
                   {isCommentOpen && (
                     <div className="bg-light p-3 border-top">
                       <div className="d-flex align-items-center justify-content-between mb-2">
@@ -269,15 +250,24 @@ export default function AdminMediaPage() {
                       </div>
 
                       <div className="d-flex flex-column gap-2 mb-3 overflow-auto" style={{ maxHeight: 200 }}>
-                        {(commentsMap[post.id] || []).map((c) => (
-                          <div key={c.id} className="bg-white p-2 rounded-3 border d-flex justify-content-between align-items-start">
-                            <div>
-                              <span className="fw-bold fs-8 d-block text-dark">{c.userName}</span>
-                              <span className="fs-8 text-secondary text-break">{c.text}</span>
+                        {(commentsMap[post.id] || []).map((c) => {
+                          const commenterAvatar = (user && user.uid === c.userId && userProfile?.photoURL) 
+                            ? userProfile.photoURL 
+                            : c.userPhoto;
+
+                          return (
+                            <div key={c.id} className="bg-white p-2 rounded-3 border d-flex justify-content-between align-items-start gap-2">
+                              <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 26, height: 26 }}>
+                                {commenterAvatar ? <img src={commenterAvatar} alt="" className="w-100 h-100 object-fit-cover" /> : <span className="fw-bold text-primary fs-8">{c.userName?.charAt(0)}</span>}
+                              </div>
+                              <div className="flex-grow-1 overflow-hidden">
+                                <span className="fw-bold fs-8 d-block text-dark">{c.userName}</span>
+                                <span className="fs-8 text-secondary text-break d-block">{c.text}</span>
+                              </div>
+                              <button onClick={() => handleDeleteComment(post.id, c.id)} className="btn btn-link text-danger p-0 ms-1"><Trash2 size={12} /></button>
                             </div>
-                            <button onClick={() => handleDeleteComment(post.id, c.id)} className="btn btn-link text-danger p-0 ms-2"><Trash2 size={12} /></button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
 
                       <div className="input-group input-group-sm">
