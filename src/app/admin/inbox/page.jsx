@@ -58,7 +58,7 @@ export default function AdminInboxPage() {
   const formatTime = (ts) => ts?.toDate ? ts.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
 
   return (
-    <div className="container-fluid py-3 px-3 px-md-4">
+    <div className="container-fluid pb-2 mb-5 px-md-4">
       
       {/* Compact Gradient Header */}
       <div 
@@ -91,7 +91,7 @@ export default function AdminInboxPage() {
       ) : (
         <div className="row g-3">
           {inquiries.map((item) => (
-            <div key={item.id} className="col-12 col-md-6 col-xl-4">
+            <div key={item.id} className="col-12 col-md-6 col-xl-4 p-0">
               <div 
                 className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white"
                 style={{

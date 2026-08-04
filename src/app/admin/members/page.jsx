@@ -51,7 +51,7 @@ export default function AdminMembersPage() {
   };
 
   return (
-    <div className="container-fluid py-3 px-3 px-md-4">
+     <div className="container-fluid  p-0 pb-3 mb-5  px-md-4">
       
       {/* Compact Gradient Header */}
       <div 

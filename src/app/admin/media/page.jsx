@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { mediaService } from '@/services/media.service';
 import { profileController } from '@/controllers/profile.controller';
 import { showToast } from '@/utils/toast';
-import { Image as ImageIcon, Video as VideoIcon, Send, Loader2 } from 'lucide-react';
+import { Image as ImageIcon, Video as VideoIcon, Send, Loader2, LayoutGrid, ShieldCheck } from 'lucide-react';
 
 export default function AdminMediaPage() {
   const { user, isAdmin } = useAuth();  
@@ -76,10 +76,30 @@ export default function AdminMediaPage() {
 
   return (
     <div className="container-fluid py-3 px-3 px-lg-4" style={{ maxWidth: 800 }}>
-      <h4 className="fw-black text-dark mb-4 fs-4">{isAdmin ? 'Media & Video Manager' : 'Create Post & Share Media'}</h4>
+      
+      {/* UPDATED MOBILE-FRIENDLY HEADER WITH ICON */}
+      <div className="d-flex align-items-center justify-content-between mb-4 bg-white p-3 rounded-4 border border-light shadow-sm">
+        <div className="d-flex align-items-center gap-3">
+          <div className="p-2.5 bg-warning-subtle text-warning rounded-3 d-flex align-items-center justify-content-center" style={{ width: 44, height: 44 }}>
+            <LayoutGrid size={22} className="text-danger" />
+          </div>
+          <div>
+            <h5 className="fw-black text-dark mb-0 fs-5">
+              {isAdmin ? 'Media & Video Manager' : 'Create Post'}
+            </h5>
+            <small className="text-muted fw-medium fs-8">Share images, updates, and media</small>
+          </div>
+        </div>
+
+        {isAdmin && (
+          <span className="badge bg-danger-subtle text-danger px-2.5 py-1.5 rounded-pill fs-8 fw-bold d-flex align-items-center gap-1">
+            <ShieldCheck size={14} /> Admin
+          </span>
+        )}
+      </div>
 
       {/* CREATE POST CARD */}
-      <div className="card border-0 rounded-4 shadow-sm p-4 bg-white mb-4">
+      <div className="card border-0 rounded-4 shadow-sm p-3 p-md-4 bg-white mb-4">
         <h6 className="fw-bold text-dark border-bottom pb-3 mb-3 fs-6">Create New Post</h6>
         <form onSubmit={handleUpload}>
           <textarea
@@ -94,9 +114,9 @@ export default function AdminMediaPage() {
           {preview && (
             <div className="mb-3 position-relative d-inline-block">
               {fileType === 'video' ? (
-                <video src={preview} controls className="rounded-3 border" style={{ maxHeight: 220 }} />
+                <video src={preview} controls className="rounded-3 border max-w-100" style={{ maxHeight: 220 }} />
               ) : (
-                <img src={preview} alt="Preview" className="rounded-3 border" style={{ maxHeight: 220 }} />
+                <img src={preview} alt="Preview" className="rounded-3 border max-w-100" style={{ maxHeight: 220 }} />
               )}
               {!uploading && (
                 <button type="button" className="btn btn-danger btn-sm rounded-circle position-absolute top-0 end-0 m-1" onClick={() => { setFile(null); setPreview(null); }}>✕</button>
@@ -115,7 +135,7 @@ export default function AdminMediaPage() {
             </div>
           )}
 
-          <div className="d-flex justify-content-between border-top pt-3">
+          <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 border-top pt-3">
             <div className="d-flex gap-2">
               <label className="btn btn-light rounded-pill px-3 py-1.5 fw-bold fs-7 text-secondary cursor-pointer">
                 <ImageIcon size={18} className="me-1 text-primary" /> Photo
@@ -126,7 +146,7 @@ export default function AdminMediaPage() {
                 <input type="file" accept="video/*" className="d-none" disabled={uploading} onChange={handleFileChange} />
               </label>
             </div>
-            <button type="submit" disabled={uploading || !file} className="btn bg-logo-orange text-white rounded-pill px-4 py-2 fw-bold fs-7 d-flex align-items-center gap-2">
+            <button type="submit" disabled={uploading || !file} className="btn bg-logo-orange text-white rounded-pill px-4 py-2 fw-bold fs-7 d-flex align-items-center gap-2 ms-auto ms-sm-0">
               {uploading ? <Loader2 size={16} className="spinner-border spinner-border-sm" /> : <Send size={16} />} Publish
             </button>
           </div>
