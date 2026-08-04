@@ -76,7 +76,7 @@ export default function AdminLayout({ children }) {
 
   const navigationGroups = [
     {
-      title: 'CORE',
+      title: 'CORE SYSTEM',
       links: [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
       ]

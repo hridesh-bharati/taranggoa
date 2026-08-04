@@ -30,7 +30,7 @@ export default function ComingSoonPage() {
         {/* Back Navigation */}
         <div>
           <Link 
-            href="/admin" 
+            href="/admin/dashboard" 
             className="btn btn-outline-dark rounded-3 px-4 py-2 fs-7 fw-bold d-inline-flex align-items-center gap-2"
           >
             <ArrowLeft size={16} />

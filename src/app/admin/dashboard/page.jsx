@@ -6,11 +6,64 @@ import { Users, Store, Inbox, Image as GalleryIcon, Loader2, ArrowUpRight } from
 import { userService } from '@/services/user.service';
 import { contactService } from '@/services/contact.service';
 import { mediaService } from '@/services/media.service';
+import { eventController } from '@/controllers/event.controller';
+
+// Recharts Components
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  AreaChart,
+  Area,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
+
+// Mini Doughnut Chart Component
+function MiniDonutChart({ value, color = '#ffffff' }) {
+  const chartData = [
+    { name: 'Active', value: value || 0 },
+    { name: 'Remaining', value: value === 0 ? 1 : Math.max(20 - value, 1) },
+  ];
+
+  return (
+    <div className="position-relative d-inline-flex align-items-center justify-content-center" style={{ width: 68, height: 68 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <PieChart>
+          <Pie
+            data={chartData}
+            cx="50%"
+            cy="50%"
+            innerRadius={22}
+            outerRadius={28}
+            startAngle={90}
+            endAngle={-270}
+            dataKey="value"
+            stroke="none"
+          >
+            <Cell fill={color} />
+            <Cell fill="rgba(255, 255, 255, 0.25)" />
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+      <span className="position-absolute fs-5 text-white fw-bold">
+        {value}
+      </span>
+    </div>
+  );
+}
 
 export default function AdminDashboardPage() {
   const [members, setMembers] = useState([]);
   const [inquiries, setInquiries] = useState([]);
+  const [eventsCount, setEventsCount] = useState(0);
   const [mediaCount, setMediaCount] = useState(0);
+  const [growthData, setGrowthData] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,12 +71,56 @@ export default function AdminDashboardPage() {
 
     async function loadDashboardData() {
       try {
+        // 1. Fetch Real Database Users
         const userData = await userService.getAllUsers();
-        if (isMounted) setMembers(userData || []);
+        if (isMounted) {
+          const userList = userData || [];
+          setMembers(userList);
 
+          // Calculate Dynamic User Registration Growth by Month
+          const monthCounts = {};
+          const monthsOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+          userList.forEach((u) => {
+            let dateObj = null;
+            if (u.createdAt?.toDate) {
+              dateObj = u.createdAt.toDate();
+            } else if (u.createdAt) {
+              dateObj = new Date(u.createdAt);
+            } else {
+              dateObj = new Date();
+            }
+
+            const monthName = monthsOrder[dateObj.getMonth()];
+            monthCounts[monthName] = (monthCounts[monthName] || 0) + 1;
+          });
+
+          const currentMonthIndex = new Date().getMonth();
+          const dynamicGrowth = [];
+          let cumulativeUsers = 0;
+
+          for (let i = 5; i >= 0; i--) {
+            const idx = (currentMonthIndex - i + 12) % 12;
+            const mName = monthsOrder[idx];
+            cumulativeUsers += (monthCounts[mName] || 0);
+            dynamicGrowth.push({
+              month: mName,
+              users: cumulativeUsers || userList.length || 0,
+            });
+          }
+
+          setGrowthData(dynamicGrowth);
+        }
+
+        // 2. Fetch Real Inquiries
         const inquiryData = await contactService.getAllInquiries();
         if (isMounted) setInquiries(inquiryData || []);
 
+        // 3. Fetch Real Events Count
+        const allEvents = await eventController.fetchAllEvents();
+        if (isMounted) setEventsCount(allEvents?.length || 0);
+
+        // 4. Realtime Media Listener
         const unsubMedia = mediaService.subscribeToPosts((liveMedia) => {
           if (isMounted) setMediaCount(liveMedia?.length || 0);
         });
@@ -45,51 +142,51 @@ export default function AdminDashboardPage() {
     };
   }, []);
 
+  const metricsData = [
+    { name: 'Members', count: members.length, color: '#8b5cf6' },
+    { name: 'Events', count: eventsCount, color: '#0284c7' },
+    { name: 'Inquiries', count: inquiries.length, color: '#f97316' },
+    { name: 'Media', count: mediaCount, color: '#ec4899' },
+  ];
+
   return (
     <div className="container-fluid px-2 px-md-3 py-2 pb-5 mb-4">
-      
       {/* Top Banner */}
-      <div 
+      <div
         className="mb-3 mb-md-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 p-3 p-md-4 rounded-4 shadow-sm text-white"
         style={{ background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)' }}
       >
         <div>
-          <h3 className="fw-extrabold m-0 text-white fs-4 fs-md-3" style={{ fontWeight: 900 }}>
+          <h3 className="m-0 text-white fs-4 fs-md-3 fw-bold">
             <i className="bi bi-speedometer2 me-2"></i>Admin Console
           </h3>
-          <p className="m-0 text-white-50 fs-7 mt-1 fw-semibold">
-            <i className="bi bi-calendar-event me-1"></i> {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          <p className="m-0 text-white-50 small mt-1 fw-semibold">
+            <i className="bi bi-calendar-event me-1"></i>{' '}
+            {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold shadow-sm fs-7 align-self-start align-self-sm-auto">
+        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold shadow-sm small align-self-start align-self-sm-auto">
           • Session Active
         </span>
       </div>
 
-      {/* Stat Cards with Watermark */}
-      <div className="row g-2 g-md-3 mb-4">
+      {/* 🌟 Glowing & Curved Stat Cards */}
+      <div className="row g-3 mb-4">
         {/* Total Members Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/members" className="text-decoration-none">
-            <div 
-              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
-              style={{ background: 'linear-gradient(135deg, #6b21a8 0%, #4c1d95 100%)' }}
-            >
-              <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
-                <Users size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
-                  {loading ? '...' : members.length}
-                </span>
+            <div className="card dash-card stat-card-purple p-3 p-md-4 h-100">
+              <Users size={150} className="card-watermark-left text-white" />
+              <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
+                <Users size={32} className="text-white" />
+                <MiniDonutChart value={loading ? 0 : members.length} color="#ffffff" />
               </div>
-              <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Total Members</small>
-                <ArrowUpRight size={14} className="text-white opacity-75" />
+              <div className="d-flex align-items-center justify-content-between position-relative z-1 mt-2">
+                <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
+                  Total Members
+                </small>
+                <ArrowUpRight size={16} className="text-white opacity-75" />
               </div>
-              <Users 
-                size={110} 
-                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
-                style={{ transform: 'translate(15%, 20%)' }} 
-              />
             </div>
           </Link>
         </div>
@@ -97,25 +194,18 @@ export default function AdminDashboardPage() {
         {/* All Events Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/eventdetails" className="text-decoration-none">
-            <div 
-              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
-              style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' }}
-            >
-              <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
-                <Store size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
-                  {loading ? '...' : members.filter(m => m.stallBooked || m.category).length || 12}
-                </span>
+            <div className="card dash-card stat-card-cyan p-3 p-md-4 h-100">
+              <Store size={150} className="card-watermark-left text-white" />
+              <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
+                <Store size={32} className="text-white" />
+                <MiniDonutChart value={loading ? 0 : eventsCount} color="#ffffff" />
               </div>
-              <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>All Events</small>
-                <ArrowUpRight size={14} className="text-white opacity-75" />
+              <div className="d-flex align-items-center justify-content-between position-relative z-1 mt-2">
+                <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
+                  All Events
+                </small>
+                <ArrowUpRight size={16} className="text-white opacity-75" />
               </div>
-              <Store 
-                size={110} 
-                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
-                style={{ transform: 'translate(15%, 20%)' }} 
-              />
             </div>
           </Link>
         </div>
@@ -123,64 +213,108 @@ export default function AdminDashboardPage() {
         {/* Inquiries Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/inbox" className="text-decoration-none">
-            <div 
-              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
-              style={{ background: 'linear-gradient(135deg, #f15a24 0%, #c2410c 100%)' }}
-            >
-              <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
-                <Inbox size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
-                  {loading ? '...' : inquiries.length}
-                </span>
+            <div className="card dash-card stat-card-orange p-3 p-md-4 h-100">
+              <Inbox size={150} className="card-watermark-left text-white" />
+              <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
+                <Inbox size={32} className="text-white" />
+                <MiniDonutChart value={loading ? 0 : inquiries.length} color="#ffffff" />
               </div>
-              <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Inquiries</small>
-                <ArrowUpRight size={14} className="text-white opacity-75" />
+              <div className="d-flex align-items-center justify-content-between position-relative z-1 mt-2">
+                <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
+                  Inquiries
+                </small>
+                <ArrowUpRight size={16} className="text-white opacity-75" />
               </div>
-              <Inbox 
-                size={110} 
-                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
-                style={{ transform: 'translate(15%, 20%)' }} 
-              />
             </div>
           </Link>
         </div>
 
-        {/* Expo Media Card */}
+        {/* Media Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/gallery" className="text-decoration-none">
-            <div 
-              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
-              style={{ background: 'linear-gradient(135deg, #db2777 0%, #9d174d 100%)' }}
-            >
-              <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
-                <GalleryIcon size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
-                  {loading ? '...' : mediaCount}
-                </span>
+            <div className="card dash-card stat-card-pink p-3 p-md-4 h-100">
+              <GalleryIcon size={150} className="card-watermark-left text-white" />
+              <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
+                <GalleryIcon size={32} className="text-white" />
+                <MiniDonutChart value={loading ? 0 : mediaCount} color="#ffffff" />
               </div>
-              <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Expo Media</small>
-                <ArrowUpRight size={14} className="text-white opacity-75" />
+              <div className="d-flex align-items-center justify-content-between position-relative z-1 mt-2">
+                <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
+                  Expo Media
+                </small>
+                <ArrowUpRight size={16} className="text-white opacity-75" />
               </div>
-              <GalleryIcon 
-                size={110} 
-                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
-                style={{ transform: 'translate(15%, 20%)' }} 
-              />
             </div>
           </Link>
         </div>
       </div>
 
-      {/* Recent Members & Latest Inquiries Section */}
+      {/* Analytics Charts */}
+      <div className="row g-3 g-md-4 mb-4">
+        {/* User Registration Growth Area Chart */}
+        <div className="col-12 col-lg-7">
+          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h6 className="fw-bold text-dark m-0">User Registration Growth</h6>
+              <span className="badge bg-primary-subtle text-primary rounded-pill px-3 py-1 fw-bold small">
+                Live DB Trend
+              </span>
+            </div>
+            <div style={{ width: '100%', height: 250 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={growthData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="userGrowthGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0a66c2" stopOpacity={0.4} />
+                      <stop offset="95%" stopColor="#0a66c2" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                  <Area type="monotone" dataKey="users" stroke="#0a66c2" strokeWidth={3} fillOpacity={1} fill="url(#userGrowthGradient)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics Distribution Bar Chart */}
+        <div className="col-12 col-lg-5">
+          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+            <div className="d-flex align-items-center justify-content-between mb-3">
+              <h6 className="fw-bold text-dark m-0">Metrics Distribution</h6>
+              <span className="badge bg-light text-secondary rounded-pill px-3 py-1 fw-bold small">
+                Live DB Overview
+              </span>
+            </div>
+            <div style={{ width: '100%', height: 250 }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={metricsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <Tooltip cursor={{ fill: 'rgba(0,0,0,0.02)' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
+                  <Bar dataKey="count" radius={[8, 8, 0, 0]}>
+                    {metricsData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Recent Members & Latest Inquiries */}
       <div className="row g-3 g-md-4">
-        {/* Recent Members */}
         <div className="col-12 col-lg-7">
           <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
             <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-              <h6 className="fw-bold text-dark m-0" style={{ fontWeight: 800 }}>Recent Tarang Members</h6>
-              <Link href="/admin/members" className="btn btn-sm btn-light text-primary fw-bold rounded-pill fs-8">
+              <h6 className="fw-bold text-dark m-0">Recent Tarang Members</h6>
+              <Link href="/admin/members" className="btn btn-sm btn-light text-primary fw-bold rounded-pill small">
                 View All
               </Link>
             </div>
@@ -196,7 +330,7 @@ export default function AdminDashboardPage() {
                     </tr>
                   ) : members.length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="text-center py-3 text-muted fs-8">
+                      <td colSpan="3" className="text-center py-3 text-muted small">
                         No registered members found in database.
                       </td>
                     </tr>
@@ -207,24 +341,24 @@ export default function AdminDashboardPage() {
                         <tr key={memberId || idx}>
                           <td style={{ width: '45px' }}>
                             <Link href={`/profile/${memberId}`} className="text-decoration-none">
-                              <img 
-                                src={m.photoURL || m.image || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100"} 
-                                alt="Avatar" 
-                                className="rounded-circle object-fit-cover border" 
+                              <img
+                                src={m.photoURL || m.image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100'}
+                                alt="Avatar"
+                                className="rounded-circle object-fit-cover border"
                                 style={{ width: 38, height: 38 }}
                               />
                             </Link>
                           </td>
                           <td>
                             <Link href={`/profile/${memberId}`} className="text-decoration-none">
-                              <strong className="d-block text-dark fs-7 fw-bold hover-text-primary">
+                              <strong className="d-block text-dark small fw-bold hover-text-primary">
                                 {m.name || 'Member'}
                               </strong>
                             </Link>
-                            <small className="text-muted fs-8">{m.email || m.category || 'Member'}</small>
+                            <small className="text-muted">{m.email || m.category || 'Member'}</small>
                           </td>
                           <td className="text-end">
-                            <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold fs-8">
+                            <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold small">
                               {m.status || 'APPROVED'}
                             </span>
                           </td>
@@ -238,12 +372,11 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Latest Inquiries */}
         <div className="col-12 col-lg-5">
           <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
             <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-              <h6 className="fw-bold text-dark m-0" style={{ fontWeight: 800 }}>Latest Inquiries</h6>
-              <Link href="/admin/inbox" className="btn btn-sm btn-light text-primary fw-bold rounded-pill fs-8">
+              <h6 className="fw-bold text-dark m-0">Latest Inquiries</h6>
+              <Link href="/admin/inbox" className="btn btn-sm btn-light text-primary fw-bold rounded-pill small">
                 View Inbox
               </Link>
             </div>
@@ -254,13 +387,15 @@ export default function AdminDashboardPage() {
                   <Loader2 className="spinner-border text-primary spinner-border-sm" />
                 </div>
               ) : inquiries.length === 0 ? (
-                <p className="text-muted fs-8 text-center py-3 mb-0">No new inquiries received yet.</p>
+                <p className="text-muted small text-center py-3 mb-0">No new inquiries received yet.</p>
               ) : (
                 inquiries.slice(0, 4).map((inq, i) => (
-                  <div key={inq.id || i} className="p-2.5 bg-light rounded-3 border">
-                    <strong className="d-block text-dark fs-7 fw-bold">{inq.name || inq.fullName || 'Visitor'}</strong>
-                    <p className="text-secondary fs-8 mb-1 text-truncate">{inq.message || inq.query || 'Inquiry regarding stall booking.'}</p>
-                    <small className="text-primary fw-bold fs-8">
+                  <div key={inq.id || i} className="p-3 bg-light rounded-3 border">
+                    <strong className="d-block text-dark small fw-bold">{inq.name || inq.fullName || 'Visitor'}</strong>
+                    <p className="text-secondary small mb-1 text-truncate">
+                      {inq.message || inq.query || 'Inquiry regarding stall booking.'}
+                    </p>
+                    <small className="text-primary fw-bold">
                       {inq.createdAt?.toDate ? inq.createdAt.toDate().toLocaleDateString() : 'Recent'}
                     </small>
                   </div>
@@ -270,7 +405,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
