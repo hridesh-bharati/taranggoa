@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
 
         {/* Stall Bookings Card */}
         <div className="col-6 col-xl-3">
-          <Link href="/admin/members" className="text-decoration-none">
+          <Link href="/admin/eventdetails" className="text-decoration-none">
             <div className="card dash-card stat-card-cyan p-3 h-100 position-relative hover-scale transition-all">
               <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
                 <Store size={26} className="opacity-90 text-white" />
@@ -97,7 +97,7 @@ export default function AdminDashboardPage() {
                 </span>
               </div>
               <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>Stall Bookings</small>
+                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>All Events</small>
                 <ArrowUpRight size={14} className="text-white opacity-75" />
               </div>
               <Store size={110} className="card-watermark-icon" />

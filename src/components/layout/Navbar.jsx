@@ -53,9 +53,8 @@ export default function Navbar() {
     { name: 'Home', href: '/', icon: Home, colorClass: 'icon-blue' },
     { name: 'About Us', href: '/about', icon: Info, colorClass: 'icon-cyan' },
     { name: 'Events', href: '/events', icon: Calendar, colorClass: 'icon-red' },
-    { name: 'Gallery', href: '/adminpost', icon: GalleryIcon, colorClass: 'icon-purple' },
+    { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
-    { name: 'Community', href: '/community', icon: Users, colorClass: 'icon-teal' },
     { name: 'Contact Us', href: '/contact', icon: PhoneCall, colorClass: 'icon-indigo' },
   ];
 
@@ -75,7 +74,7 @@ export default function Navbar() {
         {/* Brand Logo */}
         <Link href="/" className="navbar-brand d-flex align-items-center py-0 me-0 me-lg-3">
           <img
-            src="/images/logo.jpg"
+            src="/logo.png"
             alt="Tarang Logo"
             style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
           />

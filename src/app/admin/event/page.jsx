@@ -56,8 +56,8 @@ export default function AdminPushEventPage() {
       {/* Header */}
       <div className="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom">
         <div>
-          <h4 className="fw-extrabold text-dark m-0">Push New Event</h4>
-          <small className="text-secondary">Create and publish new event to database</small>
+          <h4 className="fw-bolder text-dark m-0">Push New Event</h4>
+          <small className="text-secondary">Create and publish new event </small>
         </div>
         <Link 
           href="/admin/eventdetails" 
