@@ -171,7 +171,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/members" className="text-decoration-none">
             <div className="card dash-card stat-card-purple p-3 p-md-4 h-100">
-              <Users size={150} className="card-watermark-right text-white" />
+              <Users size={120} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Users size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : members.length} color="#ffffff" />
@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/eventdetails" className="text-decoration-none">
             <div className="card dash-card stat-card-cyan p-3 p-md-4 h-100">
-              <Store size={150} className="card-watermark-right text-white" />
+              <Store size={130} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Store size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : eventsCount} color="#ffffff" />
@@ -209,7 +209,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/inbox" className="text-decoration-none">
             <div className="card dash-card stat-card-orange p-3 p-md-4 h-100">
-              <Inbox size={150} className="card-watermark-right text-white" />
+              <Inbox size={130} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Inbox size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : inquiries.length} color="#ffffff" />
@@ -228,7 +228,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/gallery" className="text-decoration-none">
             <div className="card dash-card stat-card-pink p-3 p-md-4 h-100">
-              <GalleryIcon size={150} className="card-watermark-right text-white" />
+              <GalleryIcon size={130} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <GalleryIcon size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : mediaCount} color="#ffffff" />
