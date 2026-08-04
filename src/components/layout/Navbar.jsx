@@ -53,9 +53,8 @@ export default function Navbar() {
     { name: 'Home', href: '/', icon: Home, colorClass: 'icon-blue' },
     { name: 'About Us', href: '/about', icon: Info, colorClass: 'icon-cyan' },
     { name: 'Events', href: '/events', icon: Calendar, colorClass: 'icon-red' },
-    { name: 'Gallery', href: '/gallery', icon: GalleryIcon, colorClass: 'icon-purple' },
+    { name: 'Gallery', href: '/adminpost', icon: GalleryIcon, colorClass: 'icon-purple' },
     { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
-    { name: 'Post', href: '/adminpost', icon: Briefcase, colorClass: 'icon-green' },
     { name: 'Community', href: '/community', icon: Users, colorClass: 'icon-teal' },
     { name: 'Contact Us', href: '/contact', icon: PhoneCall, colorClass: 'icon-indigo' },
   ];

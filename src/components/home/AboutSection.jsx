@@ -43,7 +43,7 @@ export default function AboutSection() {
               >
                 <div className="rounded-3 overflow-hidden position-relative">
                   <img
-                    src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600"
+                    src="/images/founder-of-taranggoa-sweta-cheri.png"
                     alt="Ms. Sweta Chari - President & Founder"
                     className="img-fluid w-100 object-fit-cover hover-lift"
                     style={{ height: '340px' }}

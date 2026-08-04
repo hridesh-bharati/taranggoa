@@ -1,11 +1,13 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import useScrollReveal from '@/hooks/useScrollReveal';
 
 export default function RecognitionAndAwards() {
   const sectionRef = useRef(null);
   useScrollReveal(sectionRef);
+
+  const [showAll, setShowAll] = useState(false);
 
   const awardList = [
     "The Giving Economy Changemakers Award 2021 – Crowdera Foundation",
@@ -17,81 +19,137 @@ export default function RecognitionAndAwards() {
   ];
 
   const galleryImages = [
-    { src: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=600', alt: 'Speech Award Stage' },
-    { src: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&q=80&w=600', alt: 'Felicitation Group Award' },
-    { src: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&q=80&w=600', alt: 'Grand Asturi Award Ceremony' },
-    { src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=600', alt: 'Rotary Club Honor' },
-    { src: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=600', alt: 'Asturi Presentation Award' },
-    { src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600', alt: 'State Level Felicitation' },
+    { src: '/images/recongniz-and-award1.png', alt: 'Speech Award Stage' },
+    { src: '/images/recongniz-and-award2.png', alt: 'Felicitation Group Award' },
+    { src: '/images/recongniz-and-award3.png', alt: 'Grand Asturi Award Ceremony' },
+    { src: '/images/recongniz-and-award4.png', alt: 'Rotary Club Honor' },
+    { src: '/images/recongniz-and-award5.png', alt: 'Award Celebration' },
+    { src: '/images/recongniz-and-award6.png', alt: 'Achievers Stage' },
   ];
 
+  // Show first 3 images initially, and all 6 when expanded
+  const displayedImages = showAll ? galleryImages : galleryImages.slice(0, 3);
+
   return (
-    <section ref={sectionRef} className="py-5 bg-white position-relative overflow-hidden">
+    <section ref={sectionRef} className="py-5 position-relative overflow-hidden" style={{ backgroundColor: '#FAF7F5' }}>
       
-      {/* Top Right Orange Triangle Decor (Exact match to screenshot) */}
+      {/* Top Right Orange Triangle Decor */}
       <div 
         className="position-absolute top-0 end-0"
         style={{
           width: 0,
           height: 0,
           borderStyle: 'solid',
-          borderWidth: '0 60px 60px 0',
+          borderWidth: '0 70px 70px 0',
           borderColor: 'transparent var(--logo-yellow, #f8a100) transparent transparent',
-          zIndex: 1
+          zIndex: 1,
+          opacity: 0.85
         }}
       ></div>
 
-      <div className="container py-3 position-relative z-2">
+      <div className="container py-4 position-relative z-2">
         
         {/* Header Section */}
-        <div className="text-center mb-4 anim-title">
-          <h2 className="display-5 fw-extrabold text-logo-orange mb-2" style={{ color: 'var(--logo-orange)', fontWeight: 800 }}>
+        <div className="text-center mb-5 anim-title">
+          <span className="badge px-3 py-2 rounded-pill fw-bold text-uppercase mb-3 shadow-sm" style={{ backgroundColor: '#FEEFD6', color: 'var(--logo-orange, #e67e22)', letterSpacing: '1px', fontSize: '0.75rem' }}>
+            Accolades & Milestones
+          </span>
+          <h2 className="display-5 fw-extrabold mb-3" style={{ color: '#2C1A1D', fontWeight: 800 }}>
             Recognition & Awards
           </h2>
-          <p className="fs-6 text-secondary fw-medium mx-auto" style={{ maxWidth: '850px', lineHeight: '1.6' }}>
-            Awards are not just Recognition it's a Testament to the power of Passion, Perseverance and Unwavering belief That Dreams are Achievable with Dedication.
+          <p className="fs-6 text-muted mx-auto" style={{ maxWidth: '750px', lineHeight: '1.7' }}>
+            Awards are not just recognition; they are a testament to the power of passion, perseverance, and unwavering belief that dreams are achievable with dedication.
           </p>
         </div>
 
-        {/* 6 Grid Award Ceremony Photos */}
-        <div className="row g-3 mb-5 anim-fade-up">
-          {galleryImages.map((img, idx) => (
-            <div key={idx} className="col-md-6">
-              <div className="rounded-3 overflow-hidden shadow-sm border border-light hover-lift">
-                <img
-                  src={img.src}
-                  alt={img.alt}
-                  className="img-fluid w-100 object-fit-cover"
-                  style={{ height: '210px' }}
-                />
+        {/* Gallery Grid: 3 columns on PC (col-lg-4), 1 column on Mobile (col-12) */}
+        <div className="row g-4 mb-4 anim-fade-up justify-content-center">
+          {displayedImages.map((img, idx) => (
+            <div key={idx} className="col-12 col-md-6 col-lg-4">
+              <div 
+                className="rounded-4 overflow-hidden h-100 position-relative border-0 shadow-sm transition-all"
+                style={{ 
+                  backgroundColor: '#ffffff',
+                  boxShadow: '0 10px 25px rgba(0, 0, 0, 0.05)',
+                  transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+                }}
+              >
+                <div style={{ height: '240px', overflow: 'hidden' }}>
+                  <img
+                    src={img.src}
+                    alt={img.alt}
+                    className="w-100 h-100 object-fit-cover transition-transform"
+                    style={{ transition: 'transform 0.5s ease' }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.08)'}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                  />
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Orange Caret Arrow Bulleted List */}
-        <div className="row g-3 px-lg-2 mb-4">
+        {/* View More / View Less Button */}
+        {galleryImages.length > 3 && (
+          <div className="text-center mb-5">
+            <button
+              onClick={() => setShowAll(!showAll)}
+              className="btn px-4 py-2 rounded-pill fw-bold shadow-sm transition-all"
+              style={{
+                backgroundColor: 'var(--logo-orange, #e67e22)',
+                color: '#ffffff',
+                border: 'none',
+                letterSpacing: '0.5px'
+              }}
+            >
+              {showAll ? 'Show Less <' : 'More Photos >'}
+            </button>
+          </div>
+        )}
+
+        {/* Award List Container */}
+        <div className="row justify-content-center">
           <div className="col-12">
-            <div className="d-flex flex-column gap-3">
-              {awardList.map((award, idx) => (
-                <div key={idx} className="d-flex align-items-center gap-3 anim-desc">
-                  <i className="bi bi-caret-right-fill fs-4 flex-shrink-0" style={{ color: 'var(--logo-orange)' }}></i>
-                  <span className="fw-bold text-dark fs-6" style={{ letterSpacing: '0.2px' }}>
-                    {award}
-                  </span>
-                </div>
-              ))}
+            <div 
+              className="p-4 p-md-5 rounded-4 shadow-sm border-0 position-relative"
+              style={{ 
+                backgroundColor: '#ffffff',
+                boxShadow: '0 15px 35px rgba(44, 26, 29, 0.06)'
+              }}
+            >
+              <div className="d-flex flex-column gap-4">
+                {awardList.map((award, idx) => (
+                  <div key={idx} className="d-flex align-items-start gap-3 anim-desc pb-3 border-bottom border-light last-border-0">
+                    <div 
+                      className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 mt-1 shadow-sm"
+                      style={{ 
+                        width: '32px', 
+                        height: '32px', 
+                        backgroundColor: '#FEEFD6',
+                        color: 'var(--logo-orange, #e67e22)' 
+                      }}
+                    >
+                      <i className="bi bi-trophy-fill fs-6"></i>
+                    </div>
+                    <div>
+                      <span className="fw-bold fs-6" style={{ color: '#2C1A1D', lineHeight: '1.6' }}>
+                        {award}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
       </div>
 
-      {/* Bottom Orange/Yellow Dual Chevron Accent Strip */}
+      {/* Bottom Dual Color Accent Strip */}
       <div 
         className="position-absolute bottom-0 start-0 end-0" 
         style={{ 
-          height: '16px', 
+          height: '6px', 
           background: 'linear-gradient(90deg, var(--logo-orange) 0%, var(--logo-yellow) 100%)'
         }}
       ></div>
