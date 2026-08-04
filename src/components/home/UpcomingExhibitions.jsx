@@ -135,22 +135,22 @@ export default function UpcomingExhibitions() {
                       ))}
                     </div>
 
-                    {/* Full Poster Image Showcase (Fixed scaling & made clickable) */}
-                    <div 
-                      className="rounded-3 overflow-hidden border mb-3 bg-dark d-flex align-items-center justify-content-center position-relative" 
-                      style={{ height: '380px', cursor: 'pointer' }}
-                      onClick={() => setSelectedImage(item.image)}
-                      title="Click to view full poster"
-                    >
-                      <img 
-                        src={item.image} 
-                        alt={item.title} 
-                        className="w-100 h-100 object-fit-contain" 
-                      />
-                      <span className="position-absolute bottom-0 end-0 m-2 badge bg-dark bg-opacity-75 text-white fs-8">
-                        🔍 Click to zoom
-                      </span>
-                    </div>
+                 {/* Full Poster Image Showcase - Fixed to fill container nicely */}
+<div 
+  className="rounded-3 overflow-hidden border mb-3 position-relative" 
+  style={{ height: '380px', cursor: 'pointer' }}
+  onClick={() => setSelectedImage(item.image)}
+  title="Click to view full poster"
+>
+  <img 
+    src={item.image} 
+    alt={item.title} 
+    className="w-100 h-100 object-fit-cover" 
+  />
+  <span className="position-absolute bottom-0 end-0 m-2 badge bg-dark bg-opacity-75 text-white fs-8">
+    🔍 Click to zoom
+  </span>
+</div>
 
                     {/* Category List */}
                     <p className="fw-bold text-center text-dark fs-7 mb-3 bg-warning-subtle p-2 rounded border border-warning">
