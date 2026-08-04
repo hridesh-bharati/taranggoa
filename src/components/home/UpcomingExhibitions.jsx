@@ -1,18 +1,21 @@
 'use client';
 
-import { useRef } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/hooks/useScrollReveal';
+import { X } from 'lucide-react';
 
 export default function UpcomingExhibitions() {
   const sectionRef = useRef(null);
   useScrollReveal(sectionRef);
 
+  const [selectedImage, setSelectedImage] = useState(null);
+
   const upcomingEvents = [
     {
       id: 'raksha-bandhan-2026',
       badge: 'Raksha Bandhan Special 🎁',
-      headerBg: '#007bff', // Bright Blue from Image 2
+      headerBg: '#007bff',
       title: 'TARANG UTSAV 2026',
       subtitle: 'Goa’s Biggest Exhibition cum Sale',
       location: 'Kala Academy Goa, Darya Sangam',
@@ -20,13 +23,13 @@ export default function UpcomingExhibitions() {
       days: ['12 WED', '13 THU', '14 FRI', '15 SAT', '16 SUN'],
       timing: '11:00 AM to 09:00 PM',
       categories: 'Fashion | Handicrafts | Home Décor | Lifestyle | Furniture & Much More',
-      image: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800',
+      image: '/images/upcoming-images/upcomin-pic1.png',
       contact: '9158063030 | 8329539407 | 9168117661'
     },
     {
       id: 'ganesh-chaturthi-2026',
       badge: 'Ganesh Chaturthi Special 🪔',
-      headerBg: '#dc3545', // Crimson Red from Image 2
+      headerBg: '#dc3545',
       title: 'TARANG UTSAV 2026',
       subtitle: 'Goa’s Biggest MSME Expo',
       location: 'SGPDA Ground, Margao',
@@ -34,7 +37,7 @@ export default function UpcomingExhibitions() {
       days: ['27 WED', '28 THU', '29 FRI', '30 SAT', '31 SUN'],
       timing: '11:00 AM to 09:00 PM',
       categories: 'Fashion | Handicrafts | Home Décor | Lifestyle | Furniture & Much More',
-      image: 'https://images.unsplash.com/photo-1561999991-567a4a9a3b09?auto=format&fit=crop&q=80&w=800',
+      image: '/images/upcoming-images/upcomin-pic2.png',
       contact: '9158063030 | 9168117661 | 8329539407'
     }
   ];
@@ -42,7 +45,6 @@ export default function UpcomingExhibitions() {
   return (
     <section ref={sectionRef} className="py-5 bg-light position-relative overflow-hidden">
       
-      {/* Component Styles matching Image 2 Institutional Theme */}
       <style jsx global>{`
         .gov-portal-card {
           background: #ffffff;
@@ -53,7 +55,7 @@ export default function UpcomingExhibitions() {
         }
 
         .gov-portal-header {
-          background-color: #003353; /* Deep Navy Blue Header from Image 2 */
+          background-color: #003353;
           color: #ffffff;
           padding: 12px 20px;
           font-weight: 800;
@@ -92,13 +94,13 @@ export default function UpcomingExhibitions() {
           </div>
         </div>
 
-        {/* 2 Event Cards Matching Image 2 Stat Boxes */}
+        {/* 2 Event Cards */}
         <div className="row g-4 mb-5">
           {upcomingEvents.map((item, idx) => (
             <div key={idx} className="col-lg-6">
               <div className="gov-portal-card h-100 d-flex flex-column anim-fade-up hover-lift">
                 
-                {/* Event Card Colored Banner (Matched to Govt Stat Cards) */}
+                {/* Event Card Colored Banner */}
                 <div 
                   className="p-3 text-white text-center fw-bold fs-5 shadow-sm"
                   style={{ backgroundColor: item.headerBg }}
@@ -133,9 +135,21 @@ export default function UpcomingExhibitions() {
                       ))}
                     </div>
 
-                    {/* Image Showcase */}
-                    <div className="rounded-3 overflow-hidden border mb-3">
-                      <img src={item.image} alt={item.title} className="img-fluid w-100 object-fit-cover" style={{ height: '220px' }} />
+                    {/* Full Poster Image Showcase (Fixed scaling & made clickable) */}
+                    <div 
+                      className="rounded-3 overflow-hidden border mb-3 bg-dark d-flex align-items-center justify-content-center position-relative" 
+                      style={{ height: '380px', cursor: 'pointer' }}
+                      onClick={() => setSelectedImage(item.image)}
+                      title="Click to view full poster"
+                    >
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-100 h-100 object-fit-contain" 
+                      />
+                      <span className="position-absolute bottom-0 end-0 m-2 badge bg-dark bg-opacity-75 text-white fs-8">
+                        🔍 Click to zoom
+                      </span>
                     </div>
 
                     {/* Category List */}
@@ -159,7 +173,7 @@ export default function UpcomingExhibitions() {
           ))}
         </div>
 
-        {/* Bottom Support & Sponsorship Callout Box */}
+        {/* Bottom Support Callout Box */}
         <div className="gov-portal-card anim-fade-up">
           <div className="p-4 text-center bg-white">
             <p className="fw-bold text-dark fs-6 mb-2" style={{ lineHeight: '1.7' }}>
@@ -172,6 +186,31 @@ export default function UpcomingExhibitions() {
         </div>
 
       </div>
+
+      {/* Lightbox Modal for Full View */}
+      {selectedImage && (
+        <div 
+          className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-black bg-opacity-80" 
+          style={{ zIndex: 1050 }}
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="position-relative p-3 text-center" style={{ maxWidth: '90vw', maxHeight: '90vh' }} onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setSelectedImage(null)} 
+              className="position-absolute top-0 end-0 m-2 btn btn-dark rounded-circle p-2 d-flex align-items-center justify-content-center shadow"
+              style={{ width: 40, height: 40, zIndex: 1060 }}
+            >
+              <X size={22} />
+            </button>
+            <img 
+              src={selectedImage} 
+              alt="Full Poster View" 
+              className="rounded-4 shadow-lg object-fit-contain w-100 h-100" 
+              style={{ maxHeight: '85vh', maxWidth: '85vw' }} 
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

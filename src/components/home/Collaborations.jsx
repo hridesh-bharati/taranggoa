@@ -33,9 +33,10 @@ export default function Collaborations() {
   ];
 
   const posterImages = [
-    { src: 'https://images.unsplash.com/photo-1561999991-567a4a9a3b09?auto=format&fit=crop&q=80&w=600', title: 'Ganesh Chaturthi Utsav' },
-    { src: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=600', title: 'EmpowerHer Expo' },
-    { src: 'https://images.unsplash.com/photo-1512389142860-9c449e58a543?auto=format&fit=crop&q=80&w=600', title: 'Christmas Trade Fair' }
+    { src: '/images/recent-event-pop-up-bazar-pictures/recent-event-pop-bazar3.png', title: 'Ganesh Chaturthi Utsav' },
+    { src: '/images/recent-event-pop-up-bazar-pictures/recent-event-pop-bazar4.png', title: 'EmpowerHer Expo' },
+    { src: '/images/recent-event-pop-up-bazar-pictures/recent-event-pop-bazar5.png', title: 'Christmas Trade Fair' },
+    { src: '/images/recent-event-pop-up-bazar-pictures/recent-event-pop-bazar6.png', title: 'Pop-Up bazar poster' }
   ];
 
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
@@ -127,7 +128,7 @@ export default function Collaborations() {
               <div className="uni-card-body flex-grow-1 p-3 text-center d-flex flex-column justify-content-between">
                 <div className="overflow-hidden rounded-3 border mb-2">
                   <img
-                    src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=600"
+                    src="/images/recent-event-pop-up-bazar-pictures/recent-event-pop-bazar1.png"
                     alt="Utsav Meet"
                     className="img-fluid object-fit-cover highlights-img"
                   />
