@@ -18,15 +18,12 @@ export default function AdminDashboardPage() {
 
     async function loadDashboardData() {
       try {
-        // Fetch Real Users / Members using userService
         const userData = await userService.getAllUsers();
         if (isMounted) setMembers(userData || []);
 
-        // Fetch Inquiries from contactService
         const inquiryData = await contactService.getAllInquiries();
         if (isMounted) setInquiries(inquiryData || []);
 
-        // Real-time Subscription for Gallery / Media Items
         const unsubMedia = mediaService.subscribeToPosts((liveMedia) => {
           if (isMounted) setMediaCount(liveMedia?.length || 0);
         });
@@ -49,58 +46,76 @@ export default function AdminDashboardPage() {
   }, []);
 
   return (
-    <div className="container-fluid px-2 px-md-3 py-2">
-      {/* 1. Top Banner */}
-      <div className="admin-top-banner mb-3 mb-md-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 p-3 p-md-4 rounded-4">
+    <div className="container-fluid px-2 px-md-3 py-2 pb-5 mb-4">
+      
+      {/* Top Banner */}
+      <div 
+        className="mb-3 mb-md-4 d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 p-3 p-md-4 rounded-4 shadow-sm text-white"
+        style={{ background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)' }}
+      >
         <div>
-          <h3 className="fw-black m-0 text-white fs-4 fs-md-3" style={{ fontWeight: 900 }}>
+          <h3 className="fw-extrabold m-0 text-white fs-4 fs-md-3" style={{ fontWeight: 900 }}>
             <i className="bi bi-speedometer2 me-2"></i>Admin Console
           </h3>
-          <p className="m-0 text-white opacity-90 fs-7 mt-1 fw-semibold">
+          <p className="m-0 text-white-50 fs-7 mt-1 fw-semibold">
             <i className="bi bi-calendar-event me-1"></i> {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-extrabold shadow-sm fs-7 align-self-start align-self-sm-auto">
-          • Session 2026 Active
+        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold shadow-sm fs-7 align-self-start align-self-sm-auto">
+          • Session Active
         </span>
       </div>
 
-      {/* 2. Top Clickable Stat Cards */}
-      <div className="row g-2.5 g-md-3 mb-4">
+      {/* Stat Cards with Watermark */}
+      <div className="row g-2 g-md-3 mb-4">
         {/* Total Members Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/members" className="text-decoration-none">
-            <div className="card dash-card stat-card-purple p-3 h-100 position-relative hover-scale transition-all">
+            <div 
+              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
+              style={{ background: 'linear-gradient(135deg, #6b21a8 0%, #4c1d95 100%)' }}
+            >
               <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
                 <Users size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-black text-white" style={{ fontWeight: 900 }}>
+                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
                   {loading ? '...' : members.length}
                 </span>
               </div>
               <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>Total Members</small>
+                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Total Members</small>
                 <ArrowUpRight size={14} className="text-white opacity-75" />
               </div>
-              <Users size={110} className="card-watermark-icon" />
+              <Users 
+                size={110} 
+                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
+                style={{ transform: 'translate(15%, 20%)' }} 
+              />
             </div>
           </Link>
         </div>
 
-        {/* Stall Bookings Card */}
+        {/* All Events Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/eventdetails" className="text-decoration-none">
-            <div className="card dash-card stat-card-cyan p-3 h-100 position-relative hover-scale transition-all">
+            <div 
+              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
+              style={{ background: 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)' }}
+            >
               <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
                 <Store size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-black text-white" style={{ fontWeight: 900 }}>
+                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
                   {loading ? '...' : members.filter(m => m.stallBooked || m.category).length || 12}
                 </span>
               </div>
               <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>All Events</small>
+                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>All Events</small>
                 <ArrowUpRight size={14} className="text-white opacity-75" />
               </div>
-              <Store size={110} className="card-watermark-icon" />
+              <Store 
+                size={110} 
+                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
+                style={{ transform: 'translate(15%, 20%)' }} 
+              />
             </div>
           </Link>
         </div>
@@ -108,125 +123,143 @@ export default function AdminDashboardPage() {
         {/* Inquiries Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/inbox" className="text-decoration-none">
-            <div className="card dash-card stat-card-orange p-3 h-100 position-relative hover-scale transition-all">
+            <div 
+              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
+              style={{ background: 'linear-gradient(135deg, #f15a24 0%, #c2410c 100%)' }}
+            >
               <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
                 <Inbox size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-black text-white" style={{ fontWeight: 900 }}>
+                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
                   {loading ? '...' : inquiries.length}
                 </span>
               </div>
               <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>Inquiries</small>
+                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Inquiries</small>
                 <ArrowUpRight size={14} className="text-white opacity-75" />
               </div>
-              <Inbox size={110} className="card-watermark-icon" />
+              <Inbox 
+                size={110} 
+                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
+                style={{ transform: 'translate(15%, 20%)' }} 
+              />
             </div>
           </Link>
         </div>
 
-        {/* Media / Gallery Banners Card */}
+        {/* Expo Media Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/gallery" className="text-decoration-none">
-            <div className="card dash-card stat-card-pink p-3 h-100 position-relative hover-scale transition-all">
+            <div 
+              className="card border-0 rounded-4 p-3 h-100 text-white position-relative overflow-hidden shadow-sm hover-scale transition-all"
+              style={{ background: 'linear-gradient(135deg, #db2777 0%, #9d174d 100%)' }}
+            >
               <div className="d-flex align-items-center justify-content-between mb-2 position-relative z-1">
                 <GalleryIcon size={26} className="opacity-90 text-white" />
-                <span className="fs-1 fw-black text-white" style={{ fontWeight: 900 }}>
+                <span className="fs-1 fw-bold text-white" style={{ fontWeight: 900 }}>
                   {loading ? '...' : mediaCount}
                 </span>
               </div>
               <div className="d-flex align-items-center justify-content-between position-relative z-1">
-                <small className="fw-extrabold text-uppercase opacity-90 fs-8 text-white" style={{ letterSpacing: '0.5px' }}>Expo Media</small>
+                <small className="fw-bold text-uppercase fs-8 text-white-50" style={{ letterSpacing: '0.5px' }}>Expo Media</small>
                 <ArrowUpRight size={14} className="text-white opacity-75" />
               </div>
-              <GalleryIcon size={110} className="card-watermark-icon" />
+              <GalleryIcon 
+                size={110} 
+                className="position-absolute end-0 bottom-0 text-white opacity-10 pointer-events-none" 
+                style={{ transform: 'translate(15%, 20%)' }} 
+              />
             </div>
           </Link>
         </div>
       </div>
 
-      {/* 3. Performance & Charts */}
-      <div className="row g-3 g-md-4 mb-4">
-        <div className="col-lg-8">
-          <div className="card dash-card p-3 p-md-4 bg-white h-100">
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="fw-black text-dark m-0" style={{ fontWeight: 800 }}>Weekly Stall Bookings</h6>
-              <span className="badge bg-success-subtle text-success border border-success-subtle fw-bold">Live DB Sync</span>
-            </div>
-            <div className="bg-light rounded-4 p-4 text-center d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
-              <p className="text-secondary fw-bold mb-0 fs-7">📊 Live Database Analytics Performance Chart Active</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-lg-4">
-          <div className="card dash-card p-3 p-md-4 bg-white h-100">
-            <h6 className="fw-black text-dark mb-3" style={{ fontWeight: 800 }}>Artisan Category Split</h6>
-            <div className="bg-light rounded-4 p-4 text-center d-flex align-items-center justify-content-center" style={{ height: '200px' }}>
-              <p className="text-secondary fw-bold mb-0 fs-7">🍩 Total Categories: {new Set(members.map(m => m.category)).size || 4}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Recent Members & Inquiries (Real DB Data) */}
+      {/* Recent Members & Latest Inquiries Section */}
       <div className="row g-3 g-md-4">
-        <div className="col-lg-7">
-          <div className="card dash-card p-3 p-md-4 bg-white h-100">
-            <div className="d-flex align-items-center justify-content-between mb-3">
-              <h6 className="fw-black text-dark m-0" style={{ fontWeight: 800 }}>Recent Tarang Members</h6>
-              <Link href="/admin/members" className="btn btn-sm btn-light text-primary fw-bold rounded-pill fs-8">View All</Link>
+        {/* Recent Members */}
+        <div className="col-12 col-lg-7">
+          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+            <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+              <h6 className="fw-bold text-dark m-0" style={{ fontWeight: 800 }}>Recent Tarang Members</h6>
+              <Link href="/admin/members" className="btn btn-sm btn-light text-primary fw-bold rounded-pill fs-8">
+                View All
+              </Link>
             </div>
 
             <div className="table-responsive">
-              <table className="table align-middle mb-0">
+              <table className="table table-hover align-middle mb-0">
                 <tbody>
                   {loading ? (
-                    <tr><td className="text-center py-4"><Loader2 className="spinner-border text-primary spinner-border-sm" /> Loading members...</td></tr>
+                    <tr>
+                      <td colSpan="3" className="text-center py-4">
+                        <Loader2 className="spinner-border text-primary spinner-border-sm me-2" /> Loading members...
+                      </td>
+                    </tr>
                   ) : members.length === 0 ? (
-                    <tr><td className="text-center py-3 text-muted fs-8">No registered members found in database.</td></tr>
+                    <tr>
+                      <td colSpan="3" className="text-center py-3 text-muted fs-8">
+                        No registered members found in database.
+                      </td>
+                    </tr>
                   ) : (
-                    members.slice(0, 4).map((m, idx) => (
-                      <tr key={m.id || idx}>
-                        <td style={{ width: '45px' }}>
-                          <img 
-                            src={m.image || m.photoURL || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100"} 
-                            alt="Avatar" 
-                            className="avatar-img rounded-circle object-fit-cover" 
-                            style={{ width: 38, height: 38 }}
-                          />
-                        </td>
-                        <td>
-                          <strong className="d-block text-dark fs-7 fw-bold">{m.name || 'Member'}</strong>
-                          <small className="text-muted fs-8">{m.category || 'General Artisan'}</small>
-                        </td>
-                        <td className="text-end">
-                          <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold fs-8">
-                            {m.status || 'APPROVED'}
-                          </span>
-                        </td>
-                      </tr>
-                    ))
+                    members.slice(0, 5).map((m, idx) => {
+                      const memberId = m.uid || m.id;
+                      return (
+                        <tr key={memberId || idx}>
+                          <td style={{ width: '45px' }}>
+                            <Link href={`/profile/${memberId}`} className="text-decoration-none">
+                              <img 
+                                src={m.photoURL || m.image || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100"} 
+                                alt="Avatar" 
+                                className="rounded-circle object-fit-cover border" 
+                                style={{ width: 38, height: 38 }}
+                              />
+                            </Link>
+                          </td>
+                          <td>
+                            <Link href={`/profile/${memberId}`} className="text-decoration-none">
+                              <strong className="d-block text-dark fs-7 fw-bold hover-text-primary">
+                                {m.name || 'Member'}
+                              </strong>
+                            </Link>
+                            <small className="text-muted fs-8">{m.email || m.category || 'Member'}</small>
+                          </td>
+                          <td className="text-end">
+                            <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold fs-8">
+                              {m.status || 'APPROVED'}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
                   )}
                 </tbody>
               </table>
             </div>
-
           </div>
         </div>
 
-        <div className="col-lg-5">
-          <div className="card dash-card p-3 p-md-4 bg-white h-100">
-            <h6 className="fw-black text-dark mb-3" style={{ fontWeight: 800 }}>Latest Stall Inquiries</h6>
+        {/* Latest Inquiries */}
+        <div className="col-12 col-lg-5">
+          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+            <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
+              <h6 className="fw-bold text-dark m-0" style={{ fontWeight: 800 }}>Latest Inquiries</h6>
+              <Link href="/admin/inbox" className="btn btn-sm btn-light text-primary fw-bold rounded-pill fs-8">
+                View Inbox
+              </Link>
+            </div>
+
             <div className="d-flex flex-column gap-2">
               {loading ? (
-                <div className="text-center py-3"><Loader2 className="spinner-border text-primary spinner-border-sm" /></div>
+                <div className="text-center py-3">
+                  <Loader2 className="spinner-border text-primary spinner-border-sm" />
+                </div>
               ) : inquiries.length === 0 ? (
                 <p className="text-muted fs-8 text-center py-3 mb-0">No new inquiries received yet.</p>
               ) : (
-                inquiries.slice(0, 3).map((inq, i) => (
+                inquiries.slice(0, 4).map((inq, i) => (
                   <div key={inq.id || i} className="p-2.5 bg-light rounded-3 border">
                     <strong className="d-block text-dark fs-7 fw-bold">{inq.name || inq.fullName || 'Visitor'}</strong>
-                    <p className="text-secondary fs-8 mb-1 text-truncate">{inq.message || inq.query || 'Inquiry about Tarang Utsav stall availability.'}</p>
+                    <p className="text-secondary fs-8 mb-1 text-truncate">{inq.message || inq.query || 'Inquiry regarding stall booking.'}</p>
                     <small className="text-primary fw-bold fs-8">
                       {inq.createdAt?.toDate ? inq.createdAt.toDate().toLocaleDateString() : 'Recent'}
                     </small>
@@ -237,6 +270,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

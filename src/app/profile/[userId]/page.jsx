@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, use } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import FollowButton from '@/components/common/FollowButton';
@@ -24,9 +25,9 @@ import {
   Calendar,
   Award
 } from 'lucide-react';
-import Link from 'next/link';
 
 export default function PublicProfilePage({ params }) {
+  const router = useRouter();
   const resolvedParams = use(params);
   const userId = resolvedParams.userId;
 
@@ -86,15 +87,16 @@ export default function PublicProfilePage({ params }) {
 
       <div className="container py-4 flex-grow-1" style={{ maxWidth: 1000 }}>
         
-        {/* BACK TO COMMUNITY */}
-        <Link 
-          href="/community" 
+        {/* BACK TO PREVIOUS PAGE (-1 NAVIGATION) */}
+        <button 
+          type="button"
+          onClick={() => router.back()} 
           className="btn btn-sm btn-white border bg-white rounded-pill px-3 py-1.5 fw-bold text-secondary mb-3 d-inline-flex align-items-center gap-2 shadow-sm"
         >
-          <ArrowLeft size={16} /> Back to Community Hub
-        </Link>
+          <ArrowLeft size={16} /> Back 
+        </button>
 
-        {/* 🔵 BLUE HERO HEADER CARD (FIXED OVERLAP BUG) */}
+        {/* 🔵 BLUE HERO HEADER CARD */}
         <div className="card border-0 rounded-4 shadow-sm bg-white overflow-hidden mb-4">
           
           {/* Cover Banner */}
@@ -137,7 +139,7 @@ export default function PublicProfilePage({ params }) {
                   </span>
                 </div>
 
-                {/* Name, Badge and Designation (Proper Vertical Stacking) */}
+                {/* Name, Badge and Designation */}
                 <div className="pt-md-2 flex-grow-1">
                   <div className="d-flex align-items-center justify-content-center justify-content-md-start gap-2 flex-wrap mb-1">
                     <h4 className="fw-black text-dark m-0 fs-4">{profileData?.name || 'Community Member'}</h4>

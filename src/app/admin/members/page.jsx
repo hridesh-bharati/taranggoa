@@ -1,23 +1,23 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/services/user.service';
 import { showToast } from '@/utils/toast';
-import { Users, Search, Mail, Phone, ShieldCheck, UserCheck, Loader2, RefreshCw, Trash2 } from 'lucide-react';
-
-const ADMIN_EMAIL = 'hridesh027@gmail.com';
+import { Users, Mail, Phone, ShieldCheck, UserCheck, Loader2, Trash2 } from 'lucide-react';
 
 export default function AdminMembersPage() {
+  const { user: currentUser, isAdmin } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchUsers = async () => {
     setLoading(true);
     try {
       const data = await userService.getAllUsers();
-      setUsers(data);
+      setUsers(data || []);
     } catch {
       showToast('error', 'Failed to load users list');
     } finally {
@@ -29,10 +29,10 @@ export default function AdminMembersPage() {
     fetchUsers();
   }, []);
 
-  // Complete User Delete Function
   const handleDeleteUser = async (uid, email) => {
-    if (email?.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-      showToast('error', 'Main Admin account cannot be deleted!');
+    // Prevent deletion if targeting the main admin or current logged-in admin
+    if (email?.toLowerCase() === currentUser?.email?.toLowerCase() || isAdmin) {
+      showToast('error', 'Admin account cannot be deleted!');
       return;
     }
 
@@ -40,7 +40,7 @@ export default function AdminMembersPage() {
       setDeletingId(uid);
       try {
         await userService.deleteUser(uid);
-        setUsers((prevUsers) => prevUsers.filter((user) => user.uid !== uid));
+        setUsers((prevUsers) => prevUsers.filter((u) => u.uid !== uid));
         showToast('success', 'Member record deleted successfully');
       } catch {
         showToast('error', 'Failed to delete member');
@@ -50,77 +50,39 @@ export default function AdminMembersPage() {
     }
   };
 
-  const filteredUsers = users.filter((user) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      user.name?.toLowerCase().includes(term) ||
-      user.email?.toLowerCase().includes(term) ||
-      user.mobile?.includes(term)
-    );
-  });
-
   return (
     <div className="container-fluid py-3 px-3 px-md-4">
-      {/* Header & Controls Section */}
-      <div className="row align-items-center justify-content-between g-3 mb-4 pb-3 border-bottom">
-        <div className="col-12 col-lg-5">
-          <h4 className="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-            <Users className="text-primary" size={24} /> Registered Members
-          </h4>
-          <p className="text-muted text-secondary small mb-0">List of all registered users and admin access logs</p>
-        </div>
-
-        <div className="col-12 col-lg-7 d-flex align-items-center justify-content-lg-end gap-2">
-          <div className="input-group shadow-sm rounded-pill overflow-hidden bg-white border" style={{ maxWidth: 320 }}>
-            <span className="input-group-text bg-transparent border-0 text-muted ps-3">
-              <Search size={16} />
-            </span>
-            <input
-              type="text"
-              className="form-control border-0 bg-transparent py-2 shadow-none"
-              placeholder="Search name, email, phone..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      
+      {/* Compact Gradient Header */}
+      <div 
+        className="card border-0 rounded-4 shadow-sm p-3 mb-3"
+        style={{ background: 'linear-gradient(135deg, #eef2f7 0%, #e6edf5 100%)' }}
+      >
+        <div className="d-flex align-items-center justify-content-between">
+          <div>
+            <h5 className="fw-bold text-dark m-0 d-flex align-items-center gap-2">
+              <Users className="text-primary" size={22} /> Registered Members
+            </h5>
+            <small className="text-secondary fs-8">Manage system users and access privileges</small>
           </div>
 
-          <button 
-            onClick={fetchUsers} 
-            className="btn btn-white border rounded-circle p-2 text-secondary shadow-sm d-flex align-items-center justify-content-center flex-shrink-0"
-            title="Refresh Users List"
-            style={{ width: 40, height: 40 }}
-          >
-            <RefreshCw size={16} className={loading ? 'text-primary' : ''} />
-          </button>
+          <span className="badge bg-white text-primary border shadow-sm rounded-pill px-3 py-2 fw-bold fs-7">
+            {users.length} Users
+          </span>
         </div>
       </div>
 
-      {/* Stats Counter */}
-      <div className="row g-3 mb-4">
-        <div className="col-12 col-sm-6 col-md-4 col-lg-3">
-          <div className="card border-0 rounded-4 shadow-sm p-3 bg-white d-flex flex-row align-items-center gap-3">
-            <div className="bg-primary-subtle text-primary p-3 rounded-circle">
-              <Users size={22} />
-            </div>
-            <div>
-              <h5 className="fw-bold text-dark mb-0">{users.length}</h5>
-              <small className="text-muted fw-semibold">Total Accounts</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Content View */}
+      {/* Content Area */}
       {loading ? (
         <div className="text-center py-5">
-          <Loader2 className="spinner-border text-primary" />
+          <Loader2 className="spinner-border text-primary" style={{ width: '2rem', height: '2rem' }} />
         </div>
-      ) : filteredUsers.length === 0 ? (
-        <div className="card border-0 rounded-4 shadow-sm p-5 text-center bg-white">
-          <p className="text-muted fw-medium mb-0">No members found matching your search.</p>
+      ) : users.length === 0 ? (
+        <div className="card border-0 rounded-4 shadow-sm p-4 text-center bg-white my-3">
+          <p className="text-muted fw-medium mb-0">No registered members found.</p>
         </div>
       ) : (
-        <div className="mb-2 pb-5 mb-lg-0 pb-lg-0">
+        <div>
           {/* Desktop Table View */}
           <div className="card border-0 rounded-4 shadow-sm bg-white overflow-hidden d-none d-md-block">
             <div className="table-responsive">
@@ -135,26 +97,30 @@ export default function AdminMembersPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.map((u) => {
-                    const isUserAdmin = u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() || u.role === 'admin';
+                  {users.map((u) => {
+                    const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === currentUser?.email?.toLowerCase();
 
                     return (
                       <tr key={u.uid}>
                         <td className="ps-4 py-3">
-                          <div className="d-flex align-items-center gap-3">
-                            <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 40, height: 40 }}>
-                              {u.photoURL ? (
-                                <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
-                              ) : (
-                                <span className="fw-bold text-primary">
-                                  {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
-                                </span>
-                              )}
+                          <Link 
+                            href={`/profile/${u.uid}`} 
+                            className="text-decoration-none d-inline-block"
+                            title={`View ${u.name || 'User'}'s Profile`}
+                          >
+                            <div className="d-flex align-items-center gap-3">
+                              <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 38, height: 38 }}>
+                                {u.photoURL ? (
+                                  <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
+                                ) : (
+                                  <span className="fw-bold text-primary">
+                                    {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
+                                  </span>
+                                )}
+                              </div>
+                              <h6 className="fw-bold text-dark mb-0 hover-text-primary">{u.name || 'Unnamed User'}</h6>
                             </div>
-                            <div>
-                              <h6 className="fw-bold text-dark mb-0">{u.name || 'Unnamed User'}</h6>
-                            </div>
-                          </div>
+                          </Link>
                         </td>
 
                         <td className="py-3">
@@ -170,7 +136,7 @@ export default function AdminMembersPage() {
                         </td>
 
                         <td className="py-3">
-                          {isUserAdmin ? (
+                          {isTargetAdmin ? (
                             <span className="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-bold d-inline-flex align-items-center gap-1">
                               <ShieldCheck size={13} /> Admin
                             </span>
@@ -182,7 +148,7 @@ export default function AdminMembersPage() {
                         </td>
 
                         <td className="pe-4 py-3 text-end">
-                          {!isUserAdmin ? (
+                          {!isTargetAdmin ? (
                             <button
                               onClick={() => handleDeleteUser(u.uid, u.email)}
                               disabled={deletingId === u.uid}
@@ -210,26 +176,32 @@ export default function AdminMembersPage() {
 
           {/* Mobile Card Stack View */}
           <div className="d-md-none d-flex flex-column gap-3">
-            {filteredUsers.map((u) => {
-              const isUserAdmin = u.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase() || u.role === 'admin';
+            {users.map((u) => {
+              const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === currentUser?.email?.toLowerCase();
 
               return (
                 <div key={u.uid} className="card border-0 rounded-4 shadow-sm p-3 bg-white">
-                  <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                    <div className="d-flex align-items-center gap-3">
-                      <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 40, height: 40 }}>
-                        {u.photoURL ? (
-                          <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
-                        ) : (
-                          <span className="fw-bold text-primary">
-                            {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
-                          </span>
-                        )}
+                  <div className="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
+                    <Link 
+                      href={`/profile/${u.uid}`} 
+                      className="text-decoration-none"
+                      title={`View ${u.name || 'User'}'s Profile`}
+                    >
+                      <div className="d-flex align-items-center gap-2.5">
+                        <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 36, height: 36 }}>
+                          {u.photoURL ? (
+                            <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
+                          ) : (
+                            <span className="fw-bold text-primary">
+                              {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
+                            </span>
+                          )}
+                        </div>
+                        <h6 className="fw-bold text-dark mb-0 fs-6 hover-text-primary">{u.name || 'Unnamed User'}</h6>
                       </div>
-                      <h6 className="fw-bold text-dark mb-0">{u.name || 'Unnamed User'}</h6>
-                    </div>
+                    </Link>
                     
-                    {!isUserAdmin && (
+                    {!isTargetAdmin && (
                       <button
                         onClick={() => handleDeleteUser(u.uid, u.email)}
                         disabled={deletingId === u.uid}
@@ -241,7 +213,7 @@ export default function AdminMembersPage() {
                     )}
                   </div>
 
-                  <div className="d-flex flex-column gap-2 small text-secondary">
+                  <div className="d-flex flex-column gap-1.5 small text-secondary">
                     <div className="d-flex align-items-center gap-2">
                       <Mail size={14} className="text-muted flex-shrink-0" />
                       <span className="text-truncate">{u.email || 'N/A'}</span>
@@ -252,15 +224,15 @@ export default function AdminMembersPage() {
                     </div>
                   </div>
 
-                  <div className="mt-3 pt-2 border-top d-flex justify-content-between align-items-center">
-                    <span className="text-muted small">Role:</span>
-                    {isUserAdmin ? (
-                      <span className="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold d-inline-flex align-items-center gap-1">
-                        <ShieldCheck size={13} /> Admin
+                  <div className="mt-2 pt-2 border-top d-flex justify-content-between align-items-center">
+                    <span className="text-muted fs-8">Role:</span>
+                    {isTargetAdmin ? (
+                      <span className="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-1 fw-bold fs-8 d-inline-flex align-items-center gap-1">
+                        <ShieldCheck size={12} /> Admin
                       </span>
                     ) : (
-                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold d-inline-flex align-items-center gap-1">
-                        <UserCheck size={13} /> Member
+                      <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fw-bold fs-8 d-inline-flex align-items-center gap-1">
+                        <UserCheck size={12} /> Member
                       </span>
                     )}
                   </div>
@@ -268,6 +240,7 @@ export default function AdminMembersPage() {
               );
             })}
           </div>
+
         </div>
       )}
     </div>
