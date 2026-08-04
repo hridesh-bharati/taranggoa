@@ -216,11 +216,12 @@
 }
 
 /* Watermark Icon Styling */
-.card-watermark-left {
+/* 🌟 WATERMARK ICON AT BOTTOM RIGHT CORNER */
+.card-watermark-right {
   position: absolute;
-  left: -25px;
+  right: -25px;
   bottom: -25px;
-  opacity: 0.15;
+  opacity: 0.1;
   pointer-events: none;
   z-index: 0;
 }

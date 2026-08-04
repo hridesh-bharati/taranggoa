@@ -24,7 +24,6 @@ import {
   CartesianGrid,
 } from 'recharts';
 
-// Mini Doughnut Chart Component
 function MiniDonutChart({ value, color = '#ffffff' }) {
   const chartData = [
     { name: 'Active', value: value || 0 },
@@ -71,13 +70,11 @@ export default function AdminDashboardPage() {
 
     async function loadDashboardData() {
       try {
-        // 1. Fetch Real Database Users
         const userData = await userService.getAllUsers();
         if (isMounted) {
           const userList = userData || [];
           setMembers(userList);
 
-          // Calculate Dynamic User Registration Growth by Month
           const monthCounts = {};
           const monthsOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -112,15 +109,12 @@ export default function AdminDashboardPage() {
           setGrowthData(dynamicGrowth);
         }
 
-        // 2. Fetch Real Inquiries
         const inquiryData = await contactService.getAllInquiries();
         if (isMounted) setInquiries(inquiryData || []);
 
-        // 3. Fetch Real Events Count
         const allEvents = await eventController.fetchAllEvents();
         if (isMounted) setEventsCount(allEvents?.length || 0);
 
-        // 4. Realtime Media Listener
         const unsubMedia = mediaService.subscribeToPosts((liveMedia) => {
           if (isMounted) setMediaCount(liveMedia?.length || 0);
         });
@@ -165,18 +159,19 @@ export default function AdminDashboardPage() {
             {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </p>
         </div>
-        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold shadow-sm small align-self-start align-self-sm-auto">
-          • Session Active
+        <span className="badge bg-white text-dark px-3 py-2 rounded-pill fw-bold shadow-sm small align-self-start align-self-sm-auto d-inline-flex align-items-center gap-2">
+          <span className="spinner-grow spinner-grow-sm text-danger p-1" role="status" aria-hidden="true" style={{ width: '8px', height: '8px' }}></span>
+          <span>Session Active</span>
         </span>
       </div>
 
-      {/* 🌟 Glowing & Curved Stat Cards */}
+      {/* 🌟 Glowing & Curved Stat Cards with Bottom Right Watermark */}
       <div className="row g-3 mb-4">
         {/* Total Members Card */}
         <div className="col-6 col-xl-3">
           <Link href="/admin/members" className="text-decoration-none">
             <div className="card dash-card stat-card-purple p-3 p-md-4 h-100">
-              <Users size={150} className="card-watermark-left text-white" />
+              <Users size={150} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Users size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : members.length} color="#ffffff" />
@@ -195,7 +190,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/eventdetails" className="text-decoration-none">
             <div className="card dash-card stat-card-cyan p-3 p-md-4 h-100">
-              <Store size={150} className="card-watermark-left text-white" />
+              <Store size={150} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Store size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : eventsCount} color="#ffffff" />
@@ -214,7 +209,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/inbox" className="text-decoration-none">
             <div className="card dash-card stat-card-orange p-3 p-md-4 h-100">
-              <Inbox size={150} className="card-watermark-left text-white" />
+              <Inbox size={150} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <Inbox size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : inquiries.length} color="#ffffff" />
@@ -233,7 +228,7 @@ export default function AdminDashboardPage() {
         <div className="col-6 col-xl-3">
           <Link href="/admin/gallery" className="text-decoration-none">
             <div className="card dash-card stat-card-pink p-3 p-md-4 h-100">
-              <GalleryIcon size={150} className="card-watermark-left text-white" />
+              <GalleryIcon size={150} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
                 <GalleryIcon size={32} className="text-white" />
                 <MiniDonutChart value={loading ? 0 : mediaCount} color="#ffffff" />

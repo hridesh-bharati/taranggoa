@@ -314,7 +314,7 @@ export default function AdminLayout({ children }) {
           </div>
         </header>
 
-        <main className="p-3 flex-grow-1">{children}</main>
+        <main className="p-2 flex-grow-1">{children}</main>
       </div>
 
       {/* 4. MOBILE BOTTOM DOCK */}
