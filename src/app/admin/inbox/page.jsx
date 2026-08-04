@@ -72,7 +72,7 @@ export default function AdminInboxPage() {
   });
 
   return (
-    <div className="container-fluid py-3 py-md-4 px-3 px-lg-4 min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
+    <div className="container-fluid p-3 mb-6 pb-6 min-vh-100" style={{ backgroundColor: '#f8f9fa' }}>
       
       {/* Header & Search */}
       <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4 pb-3 border-bottom">
@@ -117,7 +117,7 @@ export default function AdminInboxPage() {
           <p className="text-muted fw-medium small mb-0">No contact messages found.</p>
         </div>
       ) : (
-        <div className="row g-4 align-items-start">
+        <div className="row g-4 mb-5 mb-lg-0  pb-2 align-items-start">
           {filteredInquiries.map((item) => (
             <div key={item.id} className="col-12 col-md-6 col-xl-4">
               <div 

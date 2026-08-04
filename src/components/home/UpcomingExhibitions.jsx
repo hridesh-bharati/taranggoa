@@ -76,7 +76,7 @@ export default function UpcomingExhibitions() {
         }
       `}</style>
 
-      <div className="container-fluid py-3 position-relative z-2">
+      <div className="container py-3 position-relative z-2">
         
         {/* Main Section Header */}
         <div className="gov-portal-card mb-5 anim-title">
@@ -135,22 +135,24 @@ export default function UpcomingExhibitions() {
                       ))}
                     </div>
 
-                 {/* Full Poster Image Showcase - Fixed to fill container nicely */}
-<div 
-  className="rounded-3 overflow-hidden border mb-3 position-relative" 
-  style={{ height: '380px', cursor: 'pointer' }}
-  onClick={() => setSelectedImage(item.image)}
-  title="Click to view full poster"
->
-  <img 
-    src={item.image} 
-    alt={item.title} 
-    className="w-100 h-100 object-fit-cover" 
-  />
-  <span className="position-absolute bottom-0 end-0 m-2 badge bg-dark bg-opacity-75 text-white fs-8">
-    🔍 Click to zoom
-  </span>
-</div>
+                    {/* Full Poster Image Showcase - Set to auto height to display square/portrait flyer entirely */}
+                    <div 
+                      className="rounded-3 overflow-hidden border mb-3 bg-white text-center position-relative shadow-sm" 
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => setSelectedImage(item.image)}
+                      title="Click to view full poster"
+                    >
+                      <img 
+                        src={item.image} 
+                        alt={item.title} 
+                        className="w-100 h-auto d-block" 
+                      />
+                      <div className="position-absolute bottom-0 end-0 m-2">
+                        <span className="badge bg-dark bg-opacity-75 text-white fs-8 px-2 py-1">
+                          🔍 Click to zoom
+                        </span>
+                      </div>
+                    </div>
 
                     {/* Category List */}
                     <p className="fw-bold text-center text-dark fs-7 mb-3 bg-warning-subtle p-2 rounded border border-warning">
