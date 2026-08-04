@@ -63,8 +63,9 @@ export default function AdminLayout({ children }) {
     { name: 'My Profile', href: '/admin/profile', icon: User, colorClass: 'icon-green' },
     { name: 'Tarang Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
     { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
-    // { name: 'Stall Bookings', href: '/admin/stalls', icon: Store, colorClass: 'icon-red', hasDropdown: true },
-    { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal', hasDropdown: true },
+    { name: 'New Event', href: '/admin/event', icon: Store, colorClass: 'icon-red' },
+    { name: 'All Events', href: '/admin/eventdetails', icon: Store, colorClass: 'icon-red' },
+    { name: 'Exhibition Logs', href: '/admin/logs', icon: CalendarCheck, colorClass: 'icon-teal'},
   ];
 
   const marketingLinks = [

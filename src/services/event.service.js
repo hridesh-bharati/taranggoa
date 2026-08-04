@@ -3,36 +3,52 @@ import {
   collection, 
   getDocs, 
   addDoc, 
+  updateDoc,
   deleteDoc, 
   doc, 
   query, 
-  orderBy, 
-  limit 
+  orderBy,
+  limit,
+  serverTimestamp 
 } from 'firebase/firestore';
 
 export const eventService = {
-  // Fetch Events (Latest 3 or All)
-  async getEvents(limitCount = null) {
-    let q = query(collection(db, 'events'), orderBy('createdAt', 'desc'));
-    if (limitCount) {
-      q = query(collection(db, 'events'), orderBy('createdAt', 'desc'), limit(limitCount));
-    }
+  // Read All Events
+  async getAllEvents() {
+    const q = query(collection(db, 'events'), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
   },
 
-  // Add New Event
+  // Read Limited Events for Home Page
+  async getHomeEvents(limitCount = 3) {
+    const q = query(collection(db, 'events'), orderBy('createdAt', 'desc'), limit(limitCount));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
+  },
+
+  // Create Event with Server Timestamp
   async createEvent(eventData) {
     const docRef = await addDoc(collection(db, 'events'), {
       ...eventData,
-      createdAt: new Date()
+      createdAt: serverTimestamp()
     });
     return { id: docRef.id, ...eventData };
   },
 
+  // Update Event with Server Timestamp
+  async updateEvent(id, eventData) {
+    const eventRef = doc(db, 'events', id);
+    await updateDoc(eventRef, {
+      ...eventData,
+      updatedAt: serverTimestamp()
+    });
+    return { id, ...eventData };
+  },
+
   // Delete Event
-  async deleteEvent(eventId) {
-    const eventRef = doc(db, 'events', eventId);
+  async deleteEvent(id) {
+    const eventRef = doc(db, 'events', id);
     await deleteDoc(eventRef);
     return { success: true };
   }
