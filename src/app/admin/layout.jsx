@@ -86,10 +86,10 @@ export default function AdminLayout({ children }) {
       title: 'EVENT & MEMBER MANAGEMENT',
       links: [
         { name: 'Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
+        { name: 'Membership Details', href: '/admin/membership-admin-page', icon: History, colorClass: 'icon-teal' },
         { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
         { name: 'Add Event', href: '/admin/event', icon: CalendarCheck, colorClass: 'icon-red' },
         { name: 'All Events', href: '/admin/eventdetails', icon: Store, colorClass: 'icon-teal' },
-        // { name: 'Exhibition Logs', href: '/admin/logs', icon: History, colorClass: 'icon-teal' },
       ]
     },
     {
