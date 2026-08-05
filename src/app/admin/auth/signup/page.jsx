@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { authController } from '@/controllers/auth.controller';
+import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
 
 export default function SignupPage() {
@@ -10,28 +9,42 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
+
+  const { signup, loginWithGoogle, loading } = useAuth();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+
+    // Client-side Validations
+    if (!email || !email.includes('@')) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     try {
-      await authController.signup(email, password, confirmPassword, router);
+      await signup(email, password, confirmPassword);
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError(err.message || 'Signup failed');
     }
   };
 
   const handleGoogleSignup = async () => {
     setError('');
     try {
-      await authController.loginWithGoogle(router);
+      await loginWithGoogle();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Google signup failed');
     }
   };
 
@@ -53,42 +66,42 @@ export default function SignupPage() {
         <form onSubmit={handleSignup}>
           <div className="mb-3">
             <label className="form-label fw-bold fs-7 text-dark">Email Address *</label>
-            <input 
-              type="email" 
-              required 
+            <input
+              type="email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6" 
+              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6"
               placeholder="e.g. user@example.com"
             />
           </div>
 
           <div className="mb-3">
             <label className="form-label fw-bold fs-7 text-dark">Password *</label>
-            <input 
-              type="password" 
-              required 
+            <input
+              type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6" 
+              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6"
               placeholder="Minimum 6 characters"
             />
           </div>
 
           <div className="mb-4">
             <label className="form-label fw-bold fs-7 text-dark">Confirm Password *</label>
-            <input 
-              type="password" 
-              required 
+            <input
+              type="password"
+              required
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6" 
+              className="form-control bg-light border-0 py-2.5 px-3 rounded-3 fs-6"
               placeholder="Re-enter password"
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="btn bg-logo-orange text-white rounded-pill w-100 py-2.5 fw-bold shadow-sm mb-3"
           >
@@ -101,13 +114,20 @@ export default function SignupPage() {
           <span className="position-absolute top-50 start-50 translate-middle bg-white px-3 text-muted fs-7 fw-semibold">OR</span>
         </div>
 
-        <button 
+        <button
           onClick={handleGoogleSignup}
           type="button"
+          disabled={loading}
           className="btn btn-outline-secondary rounded-pill w-100 py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
         >
-          <i className="bi bi-google text-danger fs-6"></i>
-          <span>Sign up with Google</span>
+          {loading ? (
+            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+          ) : (
+            <>
+              <i className="bi bi-google text-danger fs-6"></i>
+              <span>Sign up with Google</span>
+            </>
+          )}
         </button>
 
         <p className="text-center text-muted fs-7 mt-4 mb-0">

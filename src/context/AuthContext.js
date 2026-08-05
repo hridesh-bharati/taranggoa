@@ -1,62 +1,157 @@
-// src\context\AuthContext.js
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+} from 'react';
+import { onIdTokenChanged, getIdTokenResult } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { authController } from '@/controllers/auth.controller';
-import { useRouter } from 'next/navigation';
 
-const AuthContext = createContext({});
+const AuthContext = createContext(null);
+const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL?.toLowerCase() || '';
 
-const ADMIN_EMAIL = 'hridesh027@gmail.com';
-
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
-  const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+  const refreshServerSession = useCallback(async (firebaseUser) => {
+    if (!firebaseUser) return;
+    try {
+      const token = await firebaseUser.getIdToken();
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken: token }),
+      });
+    } catch (error) {
+      console.error('Session refresh error:', error);
+    }
+  }, []);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      // 🔴 If user switches accounts, clear old caches instantly
-      if (!currentUser && user) {
-        if (typeof window !== 'undefined') localStorage.clear();
+    const unsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
+      try {
+        if (firebaseUser) {
+          // Avoid duplicate session creation on first login
+          if (initialized) {
+            await refreshServerSession(firebaseUser);
+          }
+          setUser(firebaseUser);
+
+          const tokenResult = await getIdTokenResult(firebaseUser);
+          const claimAdmin = tokenResult.claims.admin === true;
+          const emailAdmin = Boolean(
+            ADMIN_EMAIL && firebaseUser.email?.toLowerCase() === ADMIN_EMAIL
+          );
+
+          setIsAdmin(claimAdmin || emailAdmin);
+        } else {
+          setUser(null);
+          setIsAdmin(false);
+        }
+      } catch (error) {
+        console.error('Auth listener error:', error);
+        setUser(null);
+        setIsAdmin(false);
+      } finally {
+        setLoading(false);
+        setInitialized(true);
       }
-      setUser(currentUser);
-      setLoading(false);
     });
-    return () => unsubscribe();
-  }, [user]);
+
+    // FIXED: Removed `initialized` from dependency array
+    return unsubscribe;
+  }, [refreshServerSession]);
 
   const login = async (email, password) => {
-    const result = await authController.handleLogin(email, password);
-    router.push(result.redirectUrl);
+    setLoading(true);
+    try {
+      const result = await authController.login(email, password);
+      setUser(result.user);
+      router.replace(result.redirectUrl);
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const signup = async (email, password) => {
-    const result = await authController.handleSignup(email, password);
-    router.push(result.redirectUrl);
+  const signup = async (email, password, confirmPassword) => {
+    setLoading(true);
+    try {
+      const result = await authController.signup(email, password, confirmPassword);
+      setUser(result.user);
+      router.replace(result.redirectUrl);
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const loginWithGoogle = async () => {
-    const result = await authController.handleGoogleLogin();
-    router.push(result.redirectUrl);
+    setLoading(true);
+    try {
+      const result = await authController.loginWithGoogle();
+      setUser(result.user);
+      router.replace(result.redirectUrl);
+      return result;
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const logout = async () => {
-    await authController.handleLogout();
-    router.push('/admin/auth/login');
+    setLoading(true);
+    try {
+      const result = await authController.logout();
+      setUser(null);
+      setIsAdmin(false);
+      router.replace(result?.redirectUrl || '/admin/auth/login');
+    } catch (error) {
+      throw error;
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const resetPassword = (email) => authController.handleResetPassword(email);
+  const resetPassword = (email) => authController.resetPassword(email);
 
-  return (
-    <AuthContext.Provider value={{ user, isAdmin, loading, signup, login, logout, resetPassword, loginWithGoogle }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      loading,
+      isAuthenticated: Boolean(user),
+      isAdmin,
+      login,
+      signup,
+      logout,
+      resetPassword,
+      loginWithGoogle,
+    }),
+    [user, loading, isAdmin]
   );
-};
 
-export const useAuth = () => useContext(AuthContext);
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used inside AuthProvider');
+  }
+  return context;
+}

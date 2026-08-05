@@ -1,115 +1,76 @@
-// src\controllers\auth.controller.js
+// controllers/auth.controller.js
+
 import { authService } from '@/services/auth.service';
 
-const ADMIN_EMAIL = 'hridesh027@gmail.com';
+// Clean Firebase error strings properly
+const formatError = (error) => {
+  return (
+    error?.message
+      ?.replace('Firebase: ', '')
+      ?.replace(/\(auth\/.*?\)\.?/g, '')
+      ?.trim() || 'Something went wrong'
+  );
+};
 
-const formatFirebaseError = (error) => {
-  return error.message ? error.message.replace('Firebase: ', '') : 'An unexpected error occurred.';
+const prepareUser = (user) => {
+  if (!user) throw new Error('User data is missing.');
+
+  const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim();
+  const userEmail = (user.email || '').toLowerCase().trim();
+  const isAdmin = Boolean(adminEmail && userEmail === adminEmail);
+
+  return {
+    user,
+    isAdmin,
+    redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard',
+  };
 };
 
 export const authController = {
-  // --- Email & Password Login ---
-  async login(email, password, router) {
+  async login(email, password) {
     try {
-      const res = await authService.login(email, password);
-      const userEmail = res.user.email?.toLowerCase();
-      const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
-      
-      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      if (router) router.push(targetPath);
-      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
+      const user = await authService.login(email, password);
+      return prepareUser(user);
     } catch (error) {
-      throw new Error(formatFirebaseError(error));
+      throw new Error(formatError(error));
     }
   },
 
-  // Alias for compatibility with AuthContext
-  async handleLogin(email, password) {
-    return await this.login(email, password, null);
-  },
-
-  // --- Email & Password Signup ---
-  async signup(email, password, confirmPassword, router) {
+  async signup(email, password, confirmPassword) {
     if (confirmPassword && password !== confirmPassword) {
-      throw new Error('Passwords do not match.');
-    }
-    if (password.length < 6) {
-      throw new Error('Password must be at least 6 characters long.');
+      throw new Error('Passwords do not match');
     }
 
     try {
-      const res = await authService.signup(email, password);
-      const userEmail = res.user.email?.toLowerCase();
-      const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
-
-      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      if (router) router.push(targetPath);
-      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
+      const user = await authService.signup(email, password);
+      return prepareUser(user);
     } catch (error) {
-      throw new Error(formatFirebaseError(error));
+      throw new Error(formatError(error));
     }
   },
 
-  // Alias for compatibility with AuthContext
-  async handleSignup(email, password) {
-    return await this.signup(email, password, null, null);
-  },
-
-  // --- Google OAuth Login / Signup ---
-  async loginWithGoogle(router) {
+  async loginWithGoogle() {
     try {
-      const res = await authService.loginWithGoogle();
-      const userEmail = res.user.email?.toLowerCase();
-      const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
-
-      const targetPath = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-      if (router) router.push(targetPath);
-      return { success: true, user: res.user, isAdmin, redirectUrl: targetPath };
+      const user = await authService.loginWithGoogle();
+      return prepareUser(user);
     } catch (error) {
-      throw new Error(formatFirebaseError(error));
+      throw new Error(formatError(error));
     }
   },
 
-  // Alias for compatibility with AuthContext
-  async handleGoogleLogin() {
-    return await this.loginWithGoogle(null);
+  async logout() {
+    try {
+      return await authService.logout();
+    } catch (error) {
+      throw new Error(formatError(error));
+    }
   },
 
-  // --- Password Reset ---
   async resetPassword(email) {
-    if (!email) {
-      throw new Error('Please enter a valid email address.');
-    }
     try {
-      await authService.resetPassword(email);
-      return { success: true, message: 'Password reset link sent to your email.' };
+      return await authService.resetPassword(email);
     } catch (error) {
-      throw new Error(formatFirebaseError(error));
+      throw new Error(formatError(error));
     }
   },
-
-  // Alias for compatibility with AuthContext
-  async handleResetPassword(email) {
-    return await this.resetPassword(email);
-  },
-
-  // --- Logout ---
-  async logout(router) {
-    try {
-      await authService.logout();
-      if (typeof window !== 'undefined') {
-        localStorage.clear();
-        sessionStorage.clear();
-      }
-      if (router) router.push('/admin/auth/login');
-      return { success: true };
-    } catch (error) {
-      throw new Error(formatFirebaseError(error));
-    }
-  },
-
-  // Alias for compatibility with AuthContext
-  async handleLogout() {
-    return await this.logout(null);
-  }
 };
