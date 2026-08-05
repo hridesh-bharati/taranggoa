@@ -1,4 +1,3 @@
-// src/components/layout/Navbar.jsx
 'use client';
 
 import Link from 'next/link';
@@ -24,7 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { profileController } from '@/controllers/profile.controller';
 import './Navbar.css';
 
-// Lazy load the LanguageTranslator component to boost performance
+// Lazy load LanguageTranslator
 const LanguageTranslator = lazy(() => import('@/components/layout/LanguageTranslator'));
 
 export default function Navbar() {
@@ -33,7 +32,9 @@ export default function Navbar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [loadTranslator, setLoadTranslator] = useState(false);
-  const { user, logout } = useAuth();
+
+  // 🔴 FIX 1: Context se directly `isAdmin` destructure kiya
+  const { user, logout, isAdmin: isContextAdmin } = useAuth();
 
   // Load Cached & Fresh Profile Data
   useEffect(() => {
@@ -62,8 +63,15 @@ export default function Navbar() {
   const displayPhoto = profileData?.photoURL || user?.photoURL;
   const userInitial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
-  // 🔴 DYNAMIC ROUTING: Detect Admin vs Regular Member routes
-  const isAdmin = profileData?.role === 'admin' || user?.email?.toLowerCase() === 'admin@taranggoa.org';
+  // 🔴 FIX 2: Dynamic Admin Checking using Environment Variable + Context
+  const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim();
+  const userEmail = (user?.email || '').toLowerCase().trim();
+
+  const isAdmin =
+    isContextAdmin ||
+    profileData?.role === 'admin' ||
+    (Boolean(ADMIN_EMAIL) && userEmail === ADMIN_EMAIL);
+
   const dashboardLink = isAdmin ? '/admin/dashboard' : '/user/dashboard';
   const profileLink = isAdmin ? '/admin/profile' : '/user/user-profile';
 
@@ -139,9 +147,9 @@ export default function Navbar() {
                   <span className="d-lg-none fw-bold small text-dark text-truncate">{displayName}</span>
                 </button>
 
-                {/* Dropdown Menu (Fixed Overflow for Mobile) */}
+                {/* Dropdown Menu */}
                 {showDropdown && (
-                  <div 
+                  <div
                     className="position-absolute end-0 mt-2 bg-white rounded-4 shadow-lg p-2 z-3 border"
                     style={{ minWidth: '220px', zIndex: 1070 }}
                   >
@@ -151,8 +159,8 @@ export default function Navbar() {
                     </div>
 
                     {/* Dynamic Dashboard Link */}
-                    <Link 
-                      href={dashboardLink} 
+                    <Link
+                      href={dashboardLink}
                       className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark mt-1"
                       onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
@@ -161,8 +169,8 @@ export default function Navbar() {
                     </Link>
 
                     {/* Dynamic Profile Link */}
-                    <Link 
-                      href={profileLink} 
+                    <Link
+                      href={profileLink}
                       className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark"
                       onClick={() => { setShowDropdown(false); setIsOpen(false); }}
                     >
@@ -172,7 +180,7 @@ export default function Navbar() {
 
                     <hr className="my-1 opacity-25" />
 
-                    <button 
+                    <button
                       onClick={() => {
                         setShowDropdown(false);
                         setIsOpen(false);
@@ -198,11 +206,11 @@ export default function Navbar() {
               </Link>
             )}
 
-            {/* Language Translator / Selector Integration */}
+            {/* Language Selector */}
             <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill px-2 py-1">
               {!loadTranslator ? (
-                <button 
-                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold border d-flex align-items-center gap-1 text-secondary" 
+                <button
+                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold border d-flex align-items-center gap-1 text-secondary"
                   onClick={() => setLoadTranslator(true)}
                   title="Change Language"
                 >

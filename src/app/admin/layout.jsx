@@ -1,3 +1,4 @@
+// src\app\admin\layout.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -57,9 +58,9 @@ export default function AdminLayout({ children }) {
   useEffect(() => {
     if (!loading && !isAuthPage) {
       if (!user) {
-        Promise.resolve().then(() => router.replace('/admin/auth/login'));
+        router.replace('/admin/auth/login');
       } else if (!isAdmin) {
-        Promise.resolve().then(() => router.replace('/'));
+        router.replace('/user/dashboard');
       }
     }
   }, [user, isAdmin, loading, router, isAuthPage]);

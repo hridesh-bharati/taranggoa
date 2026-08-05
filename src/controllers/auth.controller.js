@@ -2,7 +2,6 @@
 
 import { authService } from '@/services/auth.service';
 
-// Clean Firebase error strings properly
 const formatError = (error) => {
   return (
     error?.message
@@ -15,8 +14,9 @@ const formatError = (error) => {
 const prepareUser = (user) => {
   if (!user) throw new Error('User data is missing.');
 
-  const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim();
+  const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'hridesh027@gmail.com').toLowerCase().trim();
   const userEmail = (user.email || '').toLowerCase().trim();
+
   const isAdmin = Boolean(adminEmail && userEmail === adminEmail);
 
   return {

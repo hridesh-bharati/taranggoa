@@ -1,17 +1,18 @@
+// src\app\user\dashboard\page.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { communityService } from '@/services/community.service';
 import { profileController } from '@/controllers/profile.controller';
-import { 
-  FileText, 
-  Heart, 
-  MessageSquare, 
-  Image as ImageIcon, 
-  Sparkles, 
-  Clock, 
-  TrendingUp, 
+import {
+  FileText,
+  Heart,
+  MessageSquare,
+  Image as ImageIcon,
+  Sparkles,
+  Clock,
+  TrendingUp,
   ArrowUpRight,
   Loader2
 } from 'lucide-react';
@@ -57,7 +58,7 @@ export default function UserDashboardConsole() {
 
   return (
     <div className="container-fluid p-0">
-      
+
       {/* Top Banner */}
       <div className="usr-top-banner mb-4">
         <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
@@ -78,7 +79,7 @@ export default function UserDashboardConsole() {
 
       {/* STAT CARDS (Real-time DB Counts) */}
       <div className="row g-2.5 g-md-3 mb-4">
-        
+
         {/* Posts */}
         <div className="col-6 col-xl-3">
           <div className="usr-card usr-card-purple p-3 p-md-3.5 h-100 position-relative">
@@ -139,7 +140,7 @@ export default function UserDashboardConsole() {
 
       {/* Widgets Section */}
       <div className="row g-3 g-md-4 align-items-start">
-        
+
         {/* Left Recent Activity */}
         <div className="col-12 col-lg-8">
           <div className="usr-card bg-white p-3 p-md-4">
@@ -185,7 +186,7 @@ export default function UserDashboardConsole() {
         <div className="col-12 col-lg-4">
           <div className="usr-card bg-white p-3 p-md-4">
             <h6 className="fw-bold text-dark border-bottom pb-3 mb-3 fs-6">Account Overview</h6>
-            
+
             <div className="text-center py-2 mb-2">
               <div className="rounded-circle overflow-hidden border border-3 border-primary shadow-sm mx-auto mb-2" style={{ width: 68, height: 68 }}>
                 {profileData?.photoURL ? (
@@ -222,3 +223,4 @@ export default function UserDashboardConsole() {
     </div>
   );
 }
+
