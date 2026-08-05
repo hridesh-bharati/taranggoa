@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { membershipController } from '@/controllers/membership.controller';
 import { showToast } from '@/utils/toast';
 import {
+  Users,
   Check,
   X,
   Trash2,
@@ -15,6 +16,8 @@ import {
   Sparkles,
   ChevronDown,
   ShieldCheck,
+  Clock,
+  AlertTriangle,
   Tag
 } from 'lucide-react';
 
@@ -58,93 +61,106 @@ export default function AdminMembershipsPage() {
     }
   };
 
-  const getStatusBadge = (status) => {
-    switch (status) {
-      case 'approved':
-        return <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-0.5 fs-8 fw-semibold">Approved</span>;
-      case 'rejected':
-        return <span className="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-0.5 fs-8 fw-semibold">Rejected</span>;
-      default:
-        return <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2 py-0.5 fs-8 fw-semibold">Pending</span>;
-    }
-  };
-
   return (
-    <div className="container-fluid px-2 px-md-3 py-4">
+    <div className="container-fluid px-2 px-md-3 py-3 pb-5">
 
-      {/* Header Banner */}
-      <div className="card border-0 rounded-4 shadow-sm bg-primary bg-gradient text-white p-3 p-md-4 mb-4">
-        <div className="d-flex align-items-center justify-content-between">
+      {/* 🌟 Blue Header Banner (Matching Second Screenshot) */}
+      <div
+        className="card border-0 rounded-4 shadow-sm p-3 p-md-4 mb-4 position-relative overflow-hidden"
+        style={{ background: 'linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%)' }}
+      >
+        <Users size={140} className="card-watermark-right text-white" style={{ opacity: 0.12 }} />
+
+        <div className="d-flex align-items-center justify-content-between position-relative z-1">
           <div className="d-flex align-items-center gap-3">
-            <div className="p-2.5 bg-white bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center">
-              <Sparkles size={22} className="text-white" />
+            <div
+              className="d-flex align-items-center justify-content-center rounded-3 text-white shadow-sm flex-shrink-0"
+              style={{ width: 42, height: 42, background: 'rgba(255, 255, 255, 0.2)' }}
+            >
+              <Sparkles size={20} />
             </div>
             <div>
-              <h4 className="fw-bold text-white mb-0 fs-5 fs-md-4">Women Memberships</h4>
-              <p className="text-white-50 small mb-0 d-none d-sm-block">
+              <h4 className="fw-bold text-white mb-0 fs-6 fs-md-4">Women Memberships</h4>
+              <p className="text-white-50 small mb-0 fw-semibold d-none d-sm-block">
                 Manage PAN India membership submissions & applications
               </p>
             </div>
           </div>
 
-          <span className="badge bg-white text-primary rounded-pill px-3 py-2 fw-bold fs-7">
+          <span className="badge rounded-pill px-3.5 py-2 fw-bold fs-7 flex-shrink-0 text-primary bg-white shadow-sm">
             {list.length} Applications
           </span>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-center py-5 bg-white rounded-4 shadow-sm">
+        <div className="text-center py-5 bg-white rounded-4 shadow-sm border">
           <Loader2 className="spinner-border text-primary spinner-border-sm me-2" />
-          <span className="text-muted fw-bold small">Loading applications...</span>
+          <span className="text-muted fw-bold small">Loading membership records...</span>
         </div>
       ) : list.length === 0 ? (
-        <div className="text-center py-5 bg-white rounded-4 shadow-sm text-muted fw-semibold">
-          No applications found in database.
+        <div className="card border-0 rounded-4 shadow-sm p-4 text-center bg-white my-3">
+          <p className="text-muted fw-medium mb-0">No active or paid memberships found in database.</p>
         </div>
       ) : (
+        /* PC Grid View: 2 Cards per Row (col-12 col-md-6) */
         <div className="row g-3">
           {list.map((item) => {
             const isOpen = openId === item.id;
+            const statusUpper = (item.status || 'pending').toLowerCase();
+
             return (
               <div key={item.id} className="col-12 col-md-6">
+                <div className="card border-0 rounded-4 shadow-sm bg-white overflow-hidden">
 
-                {/* Polished Compact Card */}
-                <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
-
-                  {/* Card Header */}
+                  {/* Compact Header */}
                   <div
-                    className="card-body p-3 d-flex align-items-center justify-content-between"
+                    className="p-3 d-flex align-items-center justify-content-between"
                     onClick={() => setOpenId(isOpen ? null : item.id)}
                     style={{ cursor: 'pointer', userSelect: 'none' }}
                   >
-                    <div className="d-flex align-items-center gap-3 overflow-hidden me-2">
-
-                      {/* Compact Avatar */}
+                    <div className="d-flex align-items-center gap-2.5 overflow-hidden me-2">
+                      {/* Avatar */}
                       <div
-                        className="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold flex-shrink-0 shadow-sm"
+                        className="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold fs-6 flex-shrink-0 shadow-2xs"
                         style={{
                           width: 40,
                           height: 40,
-                          fontSize: '15px',
                           background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
                         }}
                       >
                         {(item.fullName || item.name || 'W').charAt(0).toUpperCase()}
                       </div>
 
-                      {/* Clean Single/Double Row Alignment */}
+                      {/* Header Main Info */}
                       <div className="overflow-hidden">
                         <div className="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                          <span className="fw-bold text-dark text-truncate fs-7">
+                          <strong className="text-dark fw-bold fs-7 text-truncate">
                             {item.fullName || item.name}
-                          </span>
-                          {getStatusBadge(item.status)}
-                          <span className="badge bg-light text-secondary border rounded-pill px-2 py-0.5 fs-8 fw-normal text-truncate ms-auto ms-sm-0">
-                            {item.category || 'Individual'}
+                          </strong>
+
+                          {/* Status Badge */}
+                          {statusUpper === 'approved' ? (
+                            <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-0.5 fs-9 fw-bold">
+                              Approved
+                            </span>
+                          ) : statusUpper === 'rejected' ? (
+                            <span className="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2.5 py-0.5 fs-9 fw-bold">
+                              Rejected
+                            </span>
+                          ) : (
+                            <span className="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-2.5 py-0.5 fs-9 fw-bold">
+                              Pending
+                            </span>
+                          )}
+
+                          {/* Category Badge */}
+                          <span className="badge bg-light text-secondary border rounded-pill px-2.5 py-0.5 fs-9 fw-normal text-truncate">
+                            {item.category || 'Individual Business Owner'}
                           </span>
                         </div>
 
+                        {/* Phone */}
                         <div className="d-flex align-items-center gap-1 text-muted fs-8 fw-medium">
                           <Phone size={12} className="text-success flex-shrink-0" />
                           <span>{item.phone}</span>
@@ -152,7 +168,8 @@ export default function AdminMembershipsPage() {
                       </div>
                     </div>
 
-                    <button className="btn btn-sm btn-light border-0 rounded-circle p-1.5 flex-shrink-0 ms-1 bg-opacity-75">
+                    {/* Expand/Collapse Button */}
+                    <button className="btn btn-sm btn-light rounded-circle p-1.5 flex-shrink-0 border-0 bg-opacity-75">
                       <ChevronDown
                         size={16}
                         className="text-secondary"
@@ -164,63 +181,69 @@ export default function AdminMembershipsPage() {
                     </button>
                   </div>
 
-                  {/* Accordion Body */}
+                  {/* 🔽 Accordion Body */}
                   {isOpen && (
-                    <div className="card-footer bg-light bg-opacity-50 border-top p-3">
+                    <div className="p-3 bg-light bg-opacity-50 border-top fs-8 text-secondary">
 
-                      {/* Details Grid */}
-                      <div className="row g-2 mb-3">
-                        <div className="col-12 col-sm-7">
-                          <div className="d-flex align-items-center gap-2 text-secondary fs-8">
+                      <div className="d-flex flex-column gap-2 mb-3">
+                        {/* Email & Fee */}
+                        <div className="d-flex align-items-center justify-content-between bg-white p-2.5 rounded-3 border">
+                          <span className="d-flex align-items-center gap-2 text-truncate">
                             <Mail size={14} className="text-primary flex-shrink-0" />
-                            <span className="text-truncate">{item.email || item.id}</span>
-                          </div>
+                            <strong className="text-dark text-truncate">{item.id || item.email}</strong>
+                          </span>
+                          <span className="badge bg-light text-dark border rounded-pill px-2.5 py-1 fw-bold fs-8">
+                            <Tag size={12} className="text-success me-1" /> Fee: ₹{item.amount || 999}
+                          </span>
                         </div>
 
-                        <div className="col-12 col-sm-5">
-                          <div className="d-flex align-items-center gap-2 text-secondary fs-8">
-                            <Tag size={14} className="text-success flex-shrink-0" />
-                            <span>Fee: <strong className="text-dark">₹{item.amount || 999}</strong></span>
-                          </div>
+                        {/* Location */}
+                        <div className="d-flex align-items-center gap-2 bg-white p-2.5 rounded-3 border">
+                          <MapPin size={14} className="text-danger flex-shrink-0" />
+                          <span className="text-dark fw-semibold">{item.city ? `${item.city}, ` : ''}{item.state}</span>
                         </div>
 
-                        <div className="col-12">
-                          <div className="d-flex align-items-center gap-2 text-secondary fs-8">
-                            <MapPin size={14} className="text-danger flex-shrink-0" />
-                            <span>{item.city ? `${item.city}, ` : ''}{item.state}</span>
-                          </div>
-                        </div>
-
+                        {/* Entity Name */}
                         {item.businessName && (
-                          <div className="col-12">
-                            <div className="d-flex align-items-center gap-2 text-secondary fs-8">
-                              <Briefcase size={14} className="text-purple-main flex-shrink-0" />
-                              <span className="text-truncate">Entity: <strong className="text-dark">{item.businessName}</strong></span>
-                            </div>
+                          <div className="d-flex align-items-center gap-2 bg-white p-2.5 rounded-3 border">
+                            <Briefcase size={14} className="text-purple-main flex-shrink-0" />
+                            <span className="text-dark fw-semibold text-truncate">
+                              Entity: <strong>{item.businessName}</strong>
+                            </span>
                           </div>
                         )}
+
+                        {/* Validity Dates */}
+                        <div className="d-flex align-items-center justify-content-between bg-white p-2.5 rounded-3 border fs-8">
+                          <span className="d-flex align-items-center gap-1 text-secondary">
+                            <Clock size={13} className="text-warning" /> Joined: <strong>{item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A'}</strong>
+                          </span>
+                          <span className="d-flex align-items-center gap-1 text-secondary">
+                            Renews: <strong className={item.isExpired ? 'text-danger' : 'text-success'}>{item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'N/A'}</strong>
+                          </span>
+                        </div>
                       </div>
 
                       {/* Action Bar */}
-                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-2 border-top">
-                        <small className="text-muted d-flex align-items-center gap-1 fs-8">
+                      <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-1">
+                        <small className="text-muted fs-8 fw-semibold d-flex align-items-center gap-1">
                           <ShieldCheck size={14} className="text-primary" /> Verified Action
                         </small>
 
                         <div className="d-flex align-items-center gap-2">
-                          {item.status !== 'approved' && (
+                          {statusUpper !== 'approved' && (
                             <button
                               onClick={(e) => { e.stopPropagation(); handleStatus(item.id, 'approved'); }}
-                              className="btn btn-sm btn-success rounded-pill px-3 py-1 fs-8 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                              className="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-semibold fs-8 d-inline-flex align-items-center gap-1 shadow-sm bg-white"
                             >
                               <Check size={13} /> Approve
                             </button>
                           )}
 
-                          {item.status !== 'rejected' && (
+                          {statusUpper !== 'rejected' && (
                             <button
                               onClick={(e) => { e.stopPropagation(); handleStatus(item.id, 'rejected'); }}
-                              className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fs-8 fw-semibold d-inline-flex align-items-center gap-1 shadow-sm"
+                              className="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-semibold fs-8 d-inline-flex align-items-center gap-1 shadow-sm bg-white"
                             >
                               <X size={13} /> Reject
                             </button>
@@ -228,7 +251,7 @@ export default function AdminMembershipsPage() {
 
                           <button
                             onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
-                            className="btn btn-sm btn-light border text-danger rounded-circle p-1.5 ms-1"
+                            className="btn btn-sm btn-light border text-danger rounded-circle p-1.5 shadow-2xs"
                             title="Delete"
                           >
                             <Trash2 size={13} />

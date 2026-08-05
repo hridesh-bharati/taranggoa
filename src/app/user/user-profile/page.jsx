@@ -1,3 +1,4 @@
+// src\app\user\user - profile\page.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -71,7 +72,7 @@ export default function UserProfilePage() {
         <div className="row g-4">
           <div className="col-12 text-center mb-2">
             <div className="position-relative d-inline-block">
-              <div 
+              <div
                 className="rounded-circle overflow-hidden border border-4 border-primary shadow-sm mx-auto bg-light d-flex align-items-center justify-content-center"
                 style={{ width: 110, height: 110 }}
               >
@@ -84,19 +85,19 @@ export default function UserProfilePage() {
                 )}
               </div>
 
-              <label 
-                htmlFor="userPhotoUpload" 
+              <label
+                htmlFor="userPhotoUpload"
                 className="position-absolute bottom-0 end-0 bg-primary text-white p-2 rounded-circle shadow border cursor-pointer"
                 title="Change Photo"
               >
                 <Camera size={16} />
-                <input 
-                  type="file" 
-                  id="userPhotoUpload" 
-                  accept="image/*" 
-                  className="d-none" 
+                <input
+                  type="file"
+                  id="userPhotoUpload"
+                  accept="image/*"
+                  className="d-none"
                   disabled={uploadingImage}
-                  onChange={handleImageChange} 
+                  onChange={handleImageChange}
                 />
               </label>
             </div>

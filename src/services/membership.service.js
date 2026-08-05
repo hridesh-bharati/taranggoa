@@ -15,39 +15,75 @@ import {
 const COLLECTION = 'memberships';
 
 export const membershipService = {
-  // Save/Update Application using Email as Document ID (Primary Key)
-  async createApplication(data) {
-    if (!data.email) throw new Error('Email is required as Primary Key.');
+  // 1. Create 1-Year Membership Document AFTER Payment
+  async createPaidMembership(formData, paymentResponse) {
+    if (!formData.email) throw new Error('Email is required as Primary Key.');
 
-    // Clean Email for Doc ID
-    const cleanEmail = data.email.toLowerCase().trim();
+    const cleanEmail = formData.email.toLowerCase().trim();
     const docRef = doc(db, COLLECTION, cleanEmail);
 
     const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
-      throw new Error('An application with this email already exists.');
+    if (docSnap.exists() && docSnap.data().membershipStatus === 'ACTIVE') {
+      throw new Error('An active membership already exists with this email.');
     }
 
-    await setDoc(docRef, {
-      ...data,
+    // Calculate 1 Year (365 Days) Expiry Date
+    const startDate = new Date();
+    const expiryDate = new Date();
+    expiryDate.setDate(startDate.getDate() + 365);
+
+    const payload = {
+      ...formData,
       email: cleanEmail,
       amount: 999,
-      status: 'pending',
-      paymentStatus: 'pending',
+      status: 'approved',
+      paymentStatus: 'PAID',
+      membershipStatus: 'ACTIVE',
+      razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
+      razorpayOrderId: paymentResponse.razorpay_order_id || '',
+      razorpaySignature: paymentResponse.razorpay_signature || '',
       createdAt: serverTimestamp(),
-    });
+      startDate: startDate.toISOString(),
+      expiryDate: expiryDate.toISOString(),
+    };
 
+    await setDoc(docRef, payload);
     return cleanEmail;
   },
 
-  // Fetch All
+  // 2. Fetch All Applications & Calculate Days Left for Expiry
   async getAllApplications() {
     const q = query(collection(db, COLLECTION), orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(docSnap => ({ id: docSnap.id, ...docSnap.data() }));
+    const now = new Date();
+
+    return snapshot.docs.map((docSnap) => {
+      const data = docSnap.data();
+      let remainingDays = 0;
+      let isExpired = false;
+
+      if (data.expiryDate) {
+        const expiry = new Date(data.expiryDate);
+        const diffTime = expiry - now;
+        remainingDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (remainingDays <= 0) {
+          isExpired = true;
+          remainingDays = 0;
+        }
+      }
+
+      return {
+        id: docSnap.id,
+        ...data,
+        remainingDays,
+        isExpired,
+        membershipStatus: isExpired ? 'EXPIRED' : 'ACTIVE'
+      };
+    });
   },
 
-  // Update Status
+  // Update Status (Approve/Reject/Suspend)
   async updateStatus(emailId, status) {
     const docRef = doc(db, COLLECTION, emailId);
     await updateDoc(docRef, { status });

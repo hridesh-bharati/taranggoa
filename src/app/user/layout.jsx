@@ -6,17 +6,17 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { profileController } from '@/controllers/profile.controller';
 import './UserDashboard.css';
-import { 
-  LayoutDashboard, 
-  User, 
-  FileText, 
-  Image as ImageIcon, 
-  Users, 
-  LogOut, 
-  Menu, 
-  X, 
-  Bell, 
-  Home, 
+import {
+  LayoutDashboard,
+  User,
+  FileText,
+  Image as ImageIcon,
+  Users,
+  LogOut,
+  Menu,
+  X,
+  Bell,
+  Home,
   ShieldCheck
 } from 'lucide-react';
 
@@ -54,13 +54,14 @@ export default function UserLayout({ children }) {
       title: 'COMMUNITY',
       items: [
         { name: 'Community Hub', href: '/community', icon: Users },
+        { name: 'Membership', href: '/user/user-membership-page', icon: Users },
       ]
     }
   ];
 
   return (
     <div className="usr-dashboard-container d-flex min-vh-100">
-      
+
       {/* 🔴 BACKDROP OVERLAY FOR MOBILE */}
       {drawerOpen && (
         <div className="usr-drawer-overlay d-lg-none" onClick={() => setDrawerOpen(false)} />
@@ -68,7 +69,7 @@ export default function UserLayout({ children }) {
 
       {/* 🔴 OFFCANVAS SIDEBAR (MOBILE & DESKTOP) */}
       <aside className={`usr-sidebar ${drawerOpen ? 'usr-drawer-open' : ''}`}>
-        
+
         {/* Sidebar Header */}
         <div className="p-3 border-bottom d-flex align-items-center justify-content-between">
           <div className="d-flex align-items-center gap-2">
@@ -135,7 +136,7 @@ export default function UserLayout({ children }) {
 
       {/* 🔴 RIGHT MAIN CONTENT WRAPPER */}
       <div className="usr-main-wrapper flex-grow-1 d-flex flex-column min-vh-100">
-        
+
         {/* Top Navbar */}
         <header className="bg-white border-bottom px-3 px-lg-4 py-3 d-flex align-items-center justify-content-between sticky-top z-2">
           <div className="d-flex align-items-center gap-2">
