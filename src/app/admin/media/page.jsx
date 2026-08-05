@@ -8,7 +8,7 @@ import { showToast } from '@/utils/toast';
 import { Image as ImageIcon, Video as VideoIcon, Send, Loader2, LayoutGrid, ShieldCheck } from 'lucide-react';
 
 export default function AdminMediaPage() {
-  const { user, isAdmin } = useAuth();  
+  const { user, isAdmin } = useAuth();
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState(null);
   const [fileType, setFileType] = useState('image');
@@ -76,7 +76,7 @@ export default function AdminMediaPage() {
 
   return (
     <div className="container-fluid py-3 px-3 px-lg-4" style={{ maxWidth: 800 }}>
-      
+
       {/* UPDATED MOBILE-FRIENDLY HEADER WITH ICON */}
       <div className="d-flex align-items-center justify-content-between mb-4 bg-white p-3 rounded-4 border border-light shadow-sm">
         <div className="d-flex align-items-center gap-3">
@@ -87,7 +87,6 @@ export default function AdminMediaPage() {
             <h5 className="fw-black text-dark mb-0 fs-5">
               {isAdmin ? 'Media & Video Manager' : 'Create Post'}
             </h5>
-            <small className="text-muted fw-medium fs-8">Share images, updates, and media</small>
           </div>
         </div>
 

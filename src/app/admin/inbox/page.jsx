@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react';
 import { contactService } from '@/services/contact.service';
 import { showToast } from '@/utils/toast';
-import { 
-  Inbox, 
-  Mail, 
-  Phone, 
-  Trash2, 
-  Clock, 
-  CheckCircle2, 
-  Loader2, 
+import {
+  Inbox,
+  Mail,
+  Phone,
+  Trash2,
+  Clock,
+  CheckCircle2,
+  Loader2,
   User
 } from 'lucide-react';
 
@@ -59,9 +59,9 @@ export default function AdminInboxPage() {
 
   return (
     <div className="container-fluid pb-2 mb-5 px-md-4">
-      
+
       {/* Compact Gradient Header */}
-      <div 
+      <div
         className="card border-0 rounded-4 shadow-sm p-3 mb-3"
         style={{ background: 'linear-gradient(135deg, #eef2f7 0%, #e6edf5 100%)' }}
       >
@@ -92,7 +92,7 @@ export default function AdminInboxPage() {
         <div className="row g-3">
           {inquiries.map((item) => (
             <div key={item.id} className="col-12 col-md-6 col-xl-4 p-0">
-              <div 
+              <div
                 className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white"
                 style={{
                   borderLeft: item.status === 'unread' ? '4px solid #0d6efd' : '4px solid #dee2e6'
@@ -101,12 +101,12 @@ export default function AdminInboxPage() {
                 {/* Card Header */}
                 <div className="p-3 border-bottom d-flex align-items-center justify-content-between bg-light">
                   <div className="d-flex align-items-center gap-2">
-                    <div 
+                    <div
                       className="rounded-circle text-white d-flex align-items-center justify-content-center fw-bold shadow-sm flex-shrink-0"
-                      style={{ 
-                        width: 36, 
-                        height: 36, 
-                        background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)' 
+                      style={{
+                        width: 36,
+                        height: 36,
+                        background: 'linear-gradient(135deg, #0a66c2 0%, #004182 100%)'
                       }}
                     >
                       {item.name ? item.name.charAt(0).toUpperCase() : <User size={16} />}
@@ -141,12 +141,12 @@ export default function AdminInboxPage() {
 
                     <div className="d-flex flex-column gap-1 fs-8 text-secondary mb-3 bg-white p-2 rounded-3 border">
                       <span className="d-flex align-items-center gap-2 text-truncate">
-                        <Mail size={13} className="text-primary flex-shrink-0" /> 
+                        <Mail size={13} className="text-primary flex-shrink-0" />
                         <span className="text-dark fw-medium text-truncate">{item.email}</span>
                       </span>
                       {item.phone && (
                         <span className="d-flex align-items-center gap-2 text-truncate">
-                          <Phone size={13} className="text-success flex-shrink-0" /> 
+                          <Phone size={13} className="text-success flex-shrink-0" />
                           <span className="text-dark fw-medium">{item.phone}</span>
                         </span>
                       )}
@@ -156,7 +156,7 @@ export default function AdminInboxPage() {
                   {/* Card Actions */}
                   <div className="d-flex align-items-center justify-content-between border-top pt-2 mt-auto">
                     {item.status === 'unread' ? (
-                      <button 
+                      <button
                         onClick={() => handleMarkAsRead(item.id)}
                         className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold fs-8 d-flex align-items-center gap-1 shadow-sm"
                       >
@@ -168,9 +168,9 @@ export default function AdminInboxPage() {
                       </span>
                     )}
 
-                    <button 
+                    <button
                       onClick={() => handleDelete(item.id)}
-                      className="btn btn-sm btn-light text-danger border rounded-circle p-1.5 shadow-sm" 
+                      className="btn btn-sm btn-light text-danger border rounded-circle p-1.5 shadow-sm"
                       title="Delete Inquiry"
                     >
                       <Trash2 size={13} />

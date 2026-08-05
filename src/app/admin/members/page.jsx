@@ -51,10 +51,10 @@ export default function AdminMembersPage() {
   };
 
   return (
-     <div className="container-fluid  p-0 pb-3 mb-5  px-md-4">
-      
+    <div className="container-fluid  p-0 pb-3 mb-5  px-md-4">
+
       {/* Compact Gradient Header */}
-      <div 
+      <div
         className="card border-0 rounded-4 shadow-sm p-3 mb-3"
         style={{ background: 'linear-gradient(135deg, #eef2f7 0%, #e6edf5 100%)' }}
       >
@@ -103,8 +103,8 @@ export default function AdminMembersPage() {
                     return (
                       <tr key={u.uid}>
                         <td className="ps-4 py-3">
-                          <Link 
-                            href={`/profile/${u.uid}`} 
+                          <Link
+                            href={`/profile/${u.uid}`}
                             className="text-decoration-none d-inline-block"
                             title={`View ${u.name || 'User'}'s Profile`}
                           >
@@ -182,17 +182,17 @@ export default function AdminMembersPage() {
               return (
                 <div key={u.uid} className="card border-0 rounded-4 shadow-sm p-3 bg-white">
                   <div className="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom">
-                    <Link 
-                      href={`/profile/${u.uid}`} 
+                    <Link
+                      href={`/profile/${u.uid}`}
                       className="text-decoration-none"
                       title={`View ${u.name || 'User'}'s Profile`}
                     >
-                      <div className="d-flex align-items-center gap-2.5">
+                      <div className="d-flex align-items-center gap-2">
                         <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 36, height: 36 }}>
                           {u.photoURL ? (
                             <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
                           ) : (
-                            <span className="fw-bold text-primary">
+                            <span className="fw-bold text-primary ms-2">
                               {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
                             </span>
                           )}
@@ -200,7 +200,7 @@ export default function AdminMembersPage() {
                         <h6 className="fw-bold text-dark mb-0 fs-6 hover-text-primary">{u.name || 'Unnamed User'}</h6>
                       </div>
                     </Link>
-                    
+
                     {!isTargetAdmin && (
                       <button
                         onClick={() => handleDeleteUser(u.uid, u.email)}

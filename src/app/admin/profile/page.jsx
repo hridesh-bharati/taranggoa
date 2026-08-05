@@ -74,11 +74,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="container-fluid py-3 px-3 px-lg-4">
+    <div className="container-fluid py-3 px-2 px-sm-3 px-lg-4">
       <form onSubmit={handleSubmit}>
-        
+
         {/* HEADER SECTION */}
-        <div className="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom border-2 border-danger">
+        <div className="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between mb-4 pb-3 border-bottom border-2 border-danger gap-3">
           <div>
             <h4 className="fw-black text-primary fw-bolder mb-1 fs-3">User Profile</h4>
             <small className="text-secondary fw-semibold">Manage your personal details and public info</small>
@@ -116,11 +116,11 @@ export default function ProfilePage() {
         </div>
 
         {/* CARDS CONTAINER */}
-        <div className="row g-4">
-          
+        <div className="row g-3 g-md-4">
+
           {/* LEFT COLORFUL AVATAR CARD */}
           <div className="col-12 col-lg-4">
-            <div className="card border-0 rounded-4 shadow p-4 text-center bg-white border-top border-4 border-primary">
+            <div className="card border-0 rounded-4 shadow p-3 p-sm-4 text-center bg-white border-top border-4 border-primary">
               <div className="mx-auto mb-3 position-relative" style={{ width: 110, height: 110 }}>
                 {formData.photoURL ? (
                   <img
@@ -132,7 +132,7 @@ export default function ProfilePage() {
                     }}
                   />
                 ) : (
-                  <div 
+                  <div
                     className="text-white rounded-circle w-100 h-100 d-flex align-items-center justify-content-center fw-bold fs-1 shadow bg-gradient"
                     style={{ backgroundColor: '#f15a24' }}
                   >
@@ -149,7 +149,7 @@ export default function ProfilePage() {
               </div>
 
               <h4 className="fw-bold mb-1 text-primary">{formData.name || 'Hridesh'}</h4>
-              <p className="text-secondary fs-7 mb-3 fw-bold">{formData.email}</p>
+              <p className="text-secondary fs-7 mb-3 fw-bold text-break">{formData.email}</p>
 
               <div className="pt-2">
                 <span className="badge bg-success text-white border-0 rounded-pill px-3 py-2 fw-bold fs-8 d-inline-flex align-items-center gap-1 shadow-sm">
@@ -160,9 +160,9 @@ export default function ProfilePage() {
           </div>
 
           {/* RIGHT COLORFUL FORM CARD */}
-          <div className="col-12 col-lg-8">
-            <div className="card border-0 rounded-4 shadow p-4 bg-white border-top border-4 border-danger">
-              <h6 className="fw-bold text-dark border-bottom pb-3 mb-4 fs-6 d-flex align-items-center gap-2">
+          <div className="col-12 col-lg-8 mb-2 pb-5 ">
+            <div className="card border-0 rounded-4 shadow p-3 p-sm-4 bg-white border-top border-4 border-danger">
+              <h6 className="fw-bold text-dark border-bottom pb-3 mb-3 fs-6 d-flex align-items-center gap-2">
                 <span className="badge bg-warning text-dark p-2 rounded-circle"><Info size={16} /></span>
                 <span className="text-primary fw-bold fs-5">Personal Details</span>
               </h6>
@@ -170,7 +170,7 @@ export default function ProfilePage() {
               <div className="row g-3">
                 {fields.map(({ label, name, icon: Icon, type, required, iconBg }) => (
                   <div key={name} className={`col-12 ${name === 'name' || name === 'mobile' ? 'col-md-6' : ''}`}>
-                    <label className="form-label fw-bold fs-7 text-dark">{label}</label>
+                    <label className="form-label fw-bold fs-7 text-dark mb-1">{label}</label>
                     <div className="input-group shadow-sm rounded-3 overflow-hidden">
                       <span className={`input-group-text border-0 ${iconBg}`}>
                         <Icon size={16} />

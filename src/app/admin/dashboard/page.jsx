@@ -180,7 +180,7 @@ export default function AdminDashboardPage() {
                 <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
                   Total Members
                 </small>
-                <ArrowUpRight size={16} className="text-white opacity-75" />
+                <ArrowUpRight size={16} className="text-white" />
               </div>
             </div>
           </Link>
@@ -199,7 +199,7 @@ export default function AdminDashboardPage() {
                 <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
                   All Events
                 </small>
-                <ArrowUpRight size={16} className="text-white opacity-75" />
+                <ArrowUpRight size={16} className="text-white " />
               </div>
             </div>
           </Link>
@@ -218,7 +218,7 @@ export default function AdminDashboardPage() {
                 <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
                   Inquiries
                 </small>
-                <ArrowUpRight size={16} className="text-white opacity-75" />
+                <ArrowUpRight size={16} className="text-white " />
               </div>
             </div>
           </Link>
@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
                 <small className="fw-bold text-uppercase text-white opacity-90 fs-8">
                   Expo Media
                 </small>
-                <ArrowUpRight size={16} className="text-white opacity-75" />
+                <ArrowUpRight size={16} className="text-white " />
               </div>
             </div>
           </Link>

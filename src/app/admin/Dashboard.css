@@ -78,13 +78,33 @@
 }
 
 /* Icon Badges Color Utility Classes */
-.icon-blue { background-color: #3b82f6; }
-.icon-cyan { background-color: #06b6d4; }
-.icon-yellow { background-color: #eab308; }
-.icon-purple { background-color: #a855f7; }
-.icon-red { background-color: #ef4444; }
-.icon-teal { background-color: #14b8a6; }
-.icon-green { background-color: #22c55e; }
+.icon-blue {
+  background-color: #3b82f6;
+}
+
+.icon-cyan {
+  background-color: #06b6d4;
+}
+
+.icon-yellow {
+  background-color: #eab308;
+}
+
+.icon-purple {
+  background-color: #a855f7;
+}
+
+.icon-red {
+  background-color: #ef4444;
+}
+
+.icon-teal {
+  background-color: #14b8a6;
+}
+
+.icon-green {
+  background-color: #22c55e;
+}
 
 /* Mobile Navigation */
 @media (max-width: 991.98px) {

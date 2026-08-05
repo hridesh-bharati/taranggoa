@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import useScrollReveal from '@/hooks/useScrollReveal';
@@ -13,6 +13,8 @@ export default function ContactPage() {
   useScrollReveal(sectionRef);
 
   const [submitting, setSubmitting] = useState(false);
+  const audioRef = useRef(null);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,42 +23,48 @@ export default function ContactPage() {
     message: ''
   });
 
+  // 🎵 Pre-load sound effect to remove latency/delay
+  useEffect(() => {
+    audioRef.current = new Audio('/audio/ring.mp3');
+    audioRef.current.preload = 'auto';
+  }, []);
+
   const contactCards = [
-    { 
-      icon: 'bi-geo-alt-fill', 
-      title: 'Our Head Office', 
-      detail1: 'Tarang Empowering Women', 
-      detail2: 'St. Estev / Panaji, Goa, India', 
+    {
+      icon: 'bi-geo-alt-fill',
+      title: 'Our Head Office',
+      detail1: 'Tarang Empowering Women',
+      detail2: 'St. Estev / Panaji, Goa, India',
       bgGradient: 'linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%)',
       borderColor: 'rgba(217, 78, 52, 0.25)',
       iconBg: 'linear-gradient(135deg, #d94e34 0%, #dc2626 100%)',
       iconShadow: '0 6px 15px rgba(217, 78, 52, 0.35)'
     },
-    { 
-      icon: 'bi-telephone-fill', 
-      title: 'Call / WhatsApp', 
-      detail1: '+91 98765 43210', 
-      detail2: '+91 832 2400000', 
+    {
+      icon: 'bi-telephone-fill',
+      title: 'Call / WhatsApp',
+      detail1: '+91 91726 79953',
+      detail2: '+91 832 2400000',
       bgGradient: 'linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)',
       borderColor: 'rgba(0, 136, 204, 0.25)',
       iconBg: 'linear-gradient(135deg, #0088cc 0%, #0284c7 100%)',
       iconShadow: '0 6px 15px rgba(0, 136, 204, 0.35)'
     },
-    { 
-      icon: 'bi-envelope-paper-fill', 
-      title: 'Email Address', 
-      detail1: 'info@taranggoa.org', 
-      detail2: 'support@taranggoa.org', 
+    {
+      icon: 'bi-envelope-paper-fill',
+      title: 'Email Address',
+      detail1: 'info@taranggoa.org',
+      detail2: 'support@taranggoa.org',
       bgGradient: 'linear-gradient(135deg, #ccfbf1 0%, #f0fdfa 100%)',
       borderColor: 'rgba(20, 184, 166, 0.25)',
       iconBg: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
       iconShadow: '0 6px 15px rgba(20, 184, 166, 0.35)'
     },
-    { 
-      icon: 'bi-clock-fill', 
-      title: 'Working Hours', 
-      detail1: 'Monday - Saturday', 
-      detail2: '10:00 AM - 06:00 PM', 
+    {
+      icon: 'bi-clock-fill',
+      title: 'Working Hours',
+      detail1: 'Monday - Saturday',
+      detail2: '10:00 AM - 06:00 PM',
       bgGradient: 'linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%)',
       borderColor: 'rgba(124, 179, 66, 0.3)',
       iconBg: 'linear-gradient(135deg, #7cb342 0%, #16a34a 100%)',
@@ -71,12 +79,39 @@ export default function ContactPage() {
       return;
     }
 
+    // 🔊 INSTANT AUDIO PLAY (Zero Delay on Click)
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {
+        // Browser autoplay policy fail-safe
+      });
+    }
+
     setSubmitting(true);
     try {
+      // 1. Save in Firestore DB for Admin Panel
       await contactService.sendMessage(formData);
-      showToast('success', 'Message sent successfully!');
+      showToast('success', 'Message saved & opening WhatsApp...');
+
+      // 2. Read Admin WhatsApp from Environment Variable
+      const adminWhatsApp = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP || '919172679953';
+
+      const waText = `*New Contact Inquiry - Tarang Goa*%0A%0A` +
+        `👤 *Name:* ${encodeURIComponent(formData.name)}%0A` +
+        `📧 *Email:* ${encodeURIComponent(formData.email)}%0A` +
+        `📞 *Phone:* ${encodeURIComponent(formData.phone || 'N/A')}%0A` +
+        `📌 *Subject:* ${encodeURIComponent(formData.subject || 'General Inquiry')}%0A` +
+        `💬 *Message:* ${encodeURIComponent(formData.message)}`;
+
+      const whatsappUrl = `https://wa.me/${adminWhatsApp}?text=${waText}`;
+
+      // Reset Form State
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    } catch {
+
+      // 3. Open WhatsApp in New Tab
+      window.open(whatsappUrl, '_blank');
+
+    } catch (err) {
       showToast('error', 'Failed to send message');
     } finally {
       setSubmitting(false);
@@ -89,9 +124,9 @@ export default function ContactPage() {
 
       <div ref={sectionRef}>
         {/* Header Hero Banner */}
-        <section 
+        <section
           className="py-5 text-white text-center position-relative overflow-hidden"
-          style={{ 
+          style={{
             backgroundImage: `linear-gradient(rgba(11, 12, 27, 0.85), rgba(11, 12, 27, 0.85)), url('https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=1600')`,
             backgroundSize: 'cover',
             backgroundPosition: 'center'
@@ -110,12 +145,12 @@ export default function ContactPage() {
           </div>
         </section>
 
-        {/* Colorful Cards Container */}
+        {/* Contact Info Cards */}
         <div className="container py-5">
           <div className="row g-3 g-md-4 mb-5">
             {contactCards.map((c, idx) => (
               <div key={idx} className="col-6 col-lg-3">
-                <div 
+                <div
                   className="card border-0 p-3 p-md-4 h-100 anim-fade-up"
                   style={{
                     background: c.bgGradient,
@@ -124,7 +159,7 @@ export default function ContactPage() {
                     boxShadow: '0 4px 15px rgba(0,0,0,0.04)'
                   }}
                 >
-                  <div 
+                  <div
                     className="d-flex align-items-center justify-content-center mb-3"
                     style={{
                       width: '54px',
@@ -156,34 +191,34 @@ export default function ContactPage() {
                   <div className="row g-3">
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Full Name <span className="text-danger">*</span></label>
-                      <input 
-                        type="text" 
-                        className="form-control bg-light border-0 py-2.5 rounded-3" 
-                        placeholder="Sweta Chari" 
+                      <input
+                        type="text"
+                        className="form-control bg-light border-0 py-2.5 rounded-3"
+                        placeholder="Sweta Chari"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        required 
+                        required
                       />
                     </div>
 
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Email Address <span className="text-danger">*</span></label>
-                      <input 
-                        type="email" 
-                        className="form-control bg-light border-0 py-2.5 rounded-3" 
-                        placeholder="sweta@example.com" 
+                      <input
+                        type="email"
+                        className="form-control bg-light border-0 py-2.5 rounded-3"
+                        placeholder="sweta@example.com"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        required 
+                        required
                       />
                     </div>
 
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Phone Number</label>
-                      <input 
-                        type="tel" 
-                        className="form-control bg-light border-0 py-2.5 rounded-3" 
-                        placeholder="+91 98765 43210" 
+                      <input
+                        type="tel"
+                        className="form-control bg-light border-0 py-2.5 rounded-3"
+                        placeholder="+91 98765 43210"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       />
@@ -191,10 +226,10 @@ export default function ContactPage() {
 
                     <div className="col-md-6 anim-desc">
                       <label className="form-label fw-bold small">Inquiry Subject</label>
-                      <input 
-                        type="text" 
-                        className="form-control bg-light border-0 py-2.5 rounded-3" 
-                        placeholder="Exhibition Stall / Membership" 
+                      <input
+                        type="text"
+                        className="form-control bg-light border-0 py-2.5 rounded-3"
+                        placeholder="Exhibition Stall / Membership"
                         value={formData.subject}
                         onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                       />
@@ -202,10 +237,10 @@ export default function ContactPage() {
 
                     <div className="col-12 anim-desc">
                       <label className="form-label fw-bold small">Your Message <span className="text-danger">*</span></label>
-                      <textarea 
-                        className="form-control bg-light border-0 p-3 rounded-3" 
-                        rows="4" 
-                        placeholder="Type your details or requirements here..." 
+                      <textarea
+                        className="form-control bg-light border-0 p-3 rounded-3"
+                        rows="4"
+                        placeholder="Type your details or requirements here..."
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         required
@@ -213,12 +248,17 @@ export default function ContactPage() {
                     </div>
 
                     <div className="col-12 mt-4 anim-btn-orange">
-                      <button 
-                        type="submit" 
-                        disabled={submitting} 
+                      <button
+                        type="submit"
+                        disabled={submitting}
                         className="btn btn-warning rounded-pill w-100 py-3 fw-bold text-dark shadow-sm d-flex align-items-center justify-content-center gap-2"
                       >
-                        {submitting ? <Loader2 size={18} className="spinner-border spinner-border-sm" /> : <i className="bi bi-send-fill"></i>} Submit Message
+                        {submitting ? (
+                          <Loader2 size={18} className="spinner-border spinner-border-sm" />
+                        ) : (
+                          <i className="bi bi-whatsapp fs-5 text-success"></i>
+                        )}
+                        Submit & Connect via WhatsApp
                       </button>
                     </div>
                   </div>
@@ -226,12 +266,12 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Google Location Map */}
+            {/* Map */}
             <div className="col-lg-5">
               <div className="card border-0 rounded-4 shadow-sm overflow-hidden bg-white h-100 min-vh-40 anim-fade-up">
-                <iframe 
+                <iframe
                   title="Panaji Map"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123062.88390757262!2d73.7583685!3d15.4988824!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbfea084f728f33%3A0x6a0669d0d8291410!2sPanaji%2C%20Goa!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d123062.88390757262!2d73.7583685!3d15.4988824!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbfea084f728f33%3A0x6a0669d0d8291410!2sPanaji%2C%20Goa!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
                   className="w-100 h-100 border-0"
                   loading="lazy"
                 ></iframe>
