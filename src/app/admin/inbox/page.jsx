@@ -61,17 +61,16 @@ export default function AdminInboxPage() {
     <div className="container-fluid pb-2 mb-5 px-md-4">
 
       {/* Compact Gradient Header */}
-      <div
-        className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient ">
+      <div className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient">
         <div className="d-flex align-items-center justify-content-between">
           <div>
             <h5 className="fw-bold text-white m-0 d-flex align-items-center gap-2">
               <Inbox className="text-light" size={22} /> Inbox
             </h5>
-            <small className="text-light fs-8">User inquiries and contact submissions</small>
+            <small className="text-light opacity-75">User inquiries and contact submissions</small>
           </div>
 
-          <span className="badge bg-white text-primary border shadow-sm rounded-pill px-3 py-2 fw-bold fs-7">
+          <span className="badge bg-white text-primary border shadow-sm rounded-pill px-3 py-2 fw-bold small">
             {inquiries.length} Messages
           </span>
         </div>
@@ -84,12 +83,12 @@ export default function AdminInboxPage() {
         </div>
       ) : inquiries.length === 0 ? (
         <div className="card border-0 rounded-4 shadow-sm p-4 text-center bg-white my-3">
-          <p className="text-muted fw-medium mb-0 fs-7">No contact messages found in database.</p>
+          <p className="text-muted fw-medium mb-0 small">No contact messages found in database.</p>
         </div>
       ) : (
         <div className="row g-3">
           {inquiries.map((item) => (
-            <div key={item.id} className="col-12 col-md-6 col-xl-4 p-0">
+            <div key={item.id} className="col-12 col-md-6 col-xl-4">
               <div
                 className="card border-0 rounded-4 overflow-hidden shadow-sm h-100 bg-white"
                 style={{
@@ -110,14 +109,14 @@ export default function AdminInboxPage() {
                       {item.name ? item.name.charAt(0).toUpperCase() : <User size={16} />}
                     </div>
                     <div className="overflow-hidden">
-                      <h6 className="fw-bold text-dark mb-0 text-truncate fs-7">{item.name || 'Anonymous User'}</h6>
-                      <small className="text-muted fs-8 d-flex align-items-center gap-1">
+                      <h6 className="fw-bold text-dark mb-0 text-truncate small">{item.name || 'Anonymous User'}</h6>
+                      <small className="text-muted d-flex align-items-center gap-1" style={{ fontSize: '0.75rem' }}>
                         <Clock size={11} /> {formatTime(item.createdAt)}
                       </small>
                     </div>
                   </div>
 
-                  <span className={`badge rounded-pill px-2.5 py-1 fs-8 fw-bold flex-shrink-0 ${item.status === 'unread' ? 'bg-primary text-white shadow-sm' : 'bg-white text-secondary border'}`}>
+                  <span className={`badge rounded-pill px-2 py-1 small fw-bold flex-shrink-0 ${item.status === 'unread' ? 'bg-primary text-white shadow-sm' : 'bg-white text-secondary border'}`}>
                     {item.status === 'unread' ? 'New' : 'Read'}
                   </span>
                 </div>
@@ -127,17 +126,17 @@ export default function AdminInboxPage() {
                   <div>
                     {item.subject && (
                       <div className="mb-2">
-                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2.5 py-1 fs-8 fw-bold">
+                        <span className="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 small fw-bold">
                           Topic: {item.subject}
                         </span>
                       </div>
                     )}
 
-                    <p className="fs-7 text-secondary bg-light p-3 rounded-3 border-0 mb-3 text-break" style={{ minHeight: 65, lineHeight: 1.5 }}>
+                    <p className="small text-secondary bg-light p-3 rounded-3 border-0 mb-3 text-break" style={{ minHeight: 65, lineHeight: 1.5 }}>
                       "{item.message}"
                     </p>
 
-                    <div className="d-flex flex-column gap-1 fs-8 text-secondary mb-3 bg-white p-2 rounded-3 border">
+                    <div className="d-flex flex-column gap-1 small text-secondary mb-3 bg-white p-2 rounded-3 border">
                       <span className="d-flex align-items-center gap-2 text-truncate">
                         <Mail size={13} className="text-primary flex-shrink-0" />
                         <span className="text-dark fw-medium text-truncate">{item.email}</span>
@@ -156,19 +155,19 @@ export default function AdminInboxPage() {
                     {item.status === 'unread' ? (
                       <button
                         onClick={() => handleMarkAsRead(item.id)}
-                        className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold fs-8 d-flex align-items-center gap-1 shadow-sm"
+                        className="btn btn-sm btn-outline-primary rounded-pill px-3 py-1 fw-semibold small d-flex align-items-center gap-1 shadow-sm"
                       >
                         <CheckCircle2 size={13} /> Mark Read
                       </button>
                     ) : (
-                      <span className="text-muted fs-8 fw-medium d-flex align-items-center gap-1">
+                      <span className="text-muted small fw-medium d-flex align-items-center gap-1">
                         <CheckCircle2 size={13} className="text-success" /> Processed
                       </span>
                     )}
 
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="btn btn-sm btn-light text-danger border rounded-circle p-1.5 shadow-sm"
+                      className="btn btn-sm btn-light text-danger border rounded-circle p-2 d-inline-flex align-items-center justify-content-center shadow-sm"
                       title="Delete Inquiry"
                     >
                       <Trash2 size={13} />

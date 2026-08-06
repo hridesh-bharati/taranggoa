@@ -143,7 +143,7 @@ export default function UserMSMEPage() {
     return (
       <div className="card border-0 rounded-3 shadow-sm p-5 text-center bg-white my-3">
         <Loader2 size={32} className="spinner-border text-primary mx-auto mb-2" />
-        <span className="text-muted fw-bold fs-7">Verifying Official Access...</span>
+        <span className="text-muted fw-bold small">Verifying Official Access...</span>
       </div>
     );
   }
@@ -151,7 +151,7 @@ export default function UserMSMEPage() {
   if (!isMemberActive) {
     return (
       <div className="card border-0 rounded-3 shadow-sm bg-white overflow-hidden my-3 text-center">
-        <div className="gov-top-band p-2.5 text-center fw-bold fs-8 text-uppercase">
+        <div className="gov-top-band p-2 text-center fw-bold small text-uppercase">
           🔒 OFFICIAL MEMBERSHIP PORTAL - TARANG WOMEN ENTREPRENEURS COMMUNITY
         </div>
         <div className="p-4 p-md-5">
@@ -159,7 +159,7 @@ export default function UserMSMEPage() {
             <Lock size={32} />
           </div>
           <h5 className="fw-bold text-dark mb-2">Active Membership Required</h5>
-          <p className="text-muted fs-7 mb-4 mx-auto" style={{ maxWidth: '480px' }}>
+          <p className="text-muted small mb-4 mx-auto" style={{ maxWidth: '480px' }}>
             MSME / Udyam Govt Registration Assistance is exclusively available for active Tarang Community Members. Please purchase or renew your membership pass.
           </p>
           <button onClick={() => router.push('/user/user-membership-page')} className="btn btn-gov-portal rounded-pill shadow-sm">
@@ -174,17 +174,17 @@ export default function UserMSMEPage() {
     <div className="d-flex flex-column gap-3 py-2">
       {/* Official Govt Portal Top Strip */}
       <div className="rounded-3 overflow-hidden shadow-sm">
-        <div className="gov-top-band p-2 px-3 fw-bold fs-8 text-uppercase text-center">
+        <div className="gov-top-band p-2 px-3 fw-bold small text-uppercase text-center">
           ✨ OFFICIAL MEMBERSHIP PORTAL - TARANG WOMEN ENTREPRENEURS COMMUNITY
         </div>
 
         <div className="gov-portal-header p-3 p-md-4">
           <div className="d-flex align-items-center justify-content-between">
             <div>
-              <span className="badge bg-warning text-dark fw-bold px-2.5 py-1 mb-1 fs-9 rounded-pill text-uppercase">
+              <span className="badge bg-warning text-dark fw-bold px-3 py-1 mb-2 rounded-pill text-uppercase small">
                 Scheme Assistance Portal
               </span>
-              <h4 className="fw-bold text-white mb-0 fs-6 fs-md-5">MSME / Udyam Registration Form</h4>
+              <h4 className="fw-bold text-white mb-1 fs-5">MSME / Udyam Registration Form</h4>
               <p className="text-white-50 small mb-0">Fill required credentials to apply for Govt MSME Certificate Guidance</p>
             </div>
             <Building2 size={40} className="text-white opacity-50 d-none d-sm-block" />
@@ -194,12 +194,12 @@ export default function UserMSMEPage() {
 
       {/* Main Official Form Card */}
       <div className="card border-0 rounded-3 shadow-sm bg-white overflow-hidden">
-        <div className="gov-card-header-main d-flex align-items-center justify-content-between">
-          <span className="d-flex align-items-center gap-2">
-            <ShieldCheck size={18} /> STEP 2: ONLINE APPLICATION FORM
+        <div className="gov-card-header-main p-3 d-flex align-items-center justify-content-between">
+          <span className="d-flex align-items-center gap-2 fw-bold small">
+            <ShieldCheck size={18} /> STEP 1: ONLINE APPLICATION FORM
           </span>
           {existingData && (
-            <span className={`badge rounded-pill px-3 py-1 fs-9 fw-bold ${existingData.status === 'COMPLETED' ? 'bg-success' : existingData.status === 'REJECTED' ? 'bg-danger' : 'bg-warning text-dark'}`}>
+            <span className={`badge rounded-pill px-3 py-1 fw-bold small ${existingData.status === 'COMPLETED' ? 'bg-success' : existingData.status === 'REJECTED' ? 'bg-danger' : 'bg-warning text-dark'}`}>
               STATUS: {existingData.status || 'PENDING'}
             </span>
           )}
@@ -216,7 +216,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Full Name *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Full Name *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><User size={16} /></span>
                 <input type="text" className="form-control gov-form-control" required value={formData.applicantName} onChange={(e) => setFormData({ ...formData, applicantName: e.target.value })} placeholder="Name as per Government ID" />
@@ -224,7 +224,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Phone / WhatsApp *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Phone / WhatsApp *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Phone size={16} /></span>
                 <input type="tel" className="form-control gov-form-control" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} placeholder="10 Digit Mobile Number" />
@@ -232,7 +232,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Aadhaar Number *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Aadhaar Number *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Fingerprint size={16} /></span>
                 <input type="text" className="form-control gov-form-control" required maxLength="12" value={formData.aadhaarNumber} onChange={(e) => setFormData({ ...formData, aadhaarNumber: e.target.value })} placeholder="12 Digit Aadhaar Number" />
@@ -240,7 +240,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">PAN Card Number *</label>
+              <label className="form-label fw-bold small text-dark mb-1">PAN Card Number *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><CreditCard size={16} /></span>
                 <input type="text" className="form-control gov-form-control text-uppercase" required maxLength="10" value={formData.panNumber} onChange={(e) => setFormData({ ...formData, panNumber: e.target.value.toUpperCase() })} placeholder="10 Digit PAN Number" />
@@ -248,7 +248,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">GSTIN Number (Optional)</label>
+              <label className="form-label fw-bold small text-dark mb-1">GSTIN Number (Optional)</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><FileCheck size={16} /></span>
                 <input type="text" className="form-control gov-form-control text-uppercase" maxLength="15" value={formData.gstinNumber} onChange={(e) => setFormData({ ...formData, gstinNumber: e.target.value.toUpperCase() })} placeholder="Optional 15 Digit GSTIN" />
@@ -256,7 +256,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Registered Email *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Registered Email *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Mail size={16} /></span>
                 <input type="email" className="form-control gov-form-control text-muted" disabled value={user?.email || formData.email} />
@@ -271,7 +271,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Business Name *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Business Name *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Building2 size={16} /></span>
                 <input type="text" className="form-control gov-form-control" required value={formData.firmName} onChange={(e) => setFormData({ ...formData, firmName: e.target.value })} placeholder="Firm / Business Name" />
@@ -279,7 +279,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Type of Business Entity *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Type of Business Entity *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Briefcase size={16} /></span>
                 <select className="form-select gov-form-control" value={formData.entityType} onChange={(e) => setFormData({ ...formData, entityType: e.target.value })}>
@@ -293,7 +293,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Category Scale *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Category Scale *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Tag size={16} /></span>
                 <select className="form-select gov-form-control" value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
@@ -305,7 +305,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Major Activity Sector *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Major Activity Sector *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Briefcase size={16} /></span>
                 <select className="form-select gov-form-control" value={formData.businessType} onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}>
@@ -318,7 +318,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">NIC Code (2-Digit Code)</label>
+              <label className="form-label fw-bold small text-dark mb-1">NIC Code (2-Digit Code)</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Tag size={16} /></span>
                 <input type="text" className="form-control gov-form-control" value={formData.nicCode} onChange={(e) => setFormData({ ...formData, nicCode: e.target.value })} placeholder="e.g. 10 (Food) / 14 (Apparel) / 62 (IT)" />
@@ -326,7 +326,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Activity Description</label>
+              <label className="form-label fw-bold small text-dark mb-1">Activity Description</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><FileText size={16} /></span>
                 <input type="text" className="form-control gov-form-control" value={formData.businessActivityDesc} onChange={(e) => setFormData({ ...formData, businessActivityDesc: e.target.value })} placeholder="Brief summary of product/service" />
@@ -341,7 +341,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Bank Account Number *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Bank Account Number *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Landmark size={16} /></span>
                 <input type="text" className="form-control gov-form-control" required value={formData.bankAccountNo} onChange={(e) => setFormData({ ...formData, bankAccountNo: e.target.value })} placeholder="Account Number" />
@@ -349,7 +349,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">IFSC Code *</label>
+              <label className="form-label fw-bold small text-dark mb-1">IFSC Code *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><Landmark size={16} /></span>
                 <input type="text" className="form-control gov-form-control text-uppercase" required maxLength="11" value={formData.ifscCode} onChange={(e) => setFormData({ ...formData, ifscCode: e.target.value.toUpperCase() })} placeholder="SBIN0001234" />
@@ -364,7 +364,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Investment in Plant & Machinery (₹) *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Investment in Plant & Machinery (₹) *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><IndianRupee size={16} /></span>
                 <input type="number" className="form-control gov-form-control" required value={formData.investmentAmount} onChange={(e) => setFormData({ ...formData, investmentAmount: e.target.value })} placeholder="Declared Investment in Rupees" />
@@ -372,7 +372,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Annual Turnover (₹) *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Annual Turnover (₹) *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><TrendingUp size={16} /></span>
                 <input type="number" className="form-control gov-form-control" required value={formData.annualTurnover} onChange={(e) => setFormData({ ...formData, annualTurnover: e.target.value })} placeholder="Declared Turnover in Rupees" />
@@ -387,7 +387,7 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">Office / Unit Address *</label>
+              <label className="form-label fw-bold small text-dark mb-1">Office / Unit Address *</label>
               <div className="input-group">
                 <span className="input-group-text gov-input-addon"><MapPin size={16} /></span>
                 <input type="text" className="form-control gov-form-control" required value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Plot No, Street, Landmark" />
@@ -395,17 +395,17 @@ export default function UserMSMEPage() {
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">City / District *</label>
+              <label className="form-label fw-bold small text-dark mb-1">City / District *</label>
               <input type="text" className="form-control gov-form-control" required value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} placeholder="City Name" />
             </div>
 
             <div className="col-12 col-md-6">
-              <label className="form-label fw-bold fs-8 text-dark mb-1">State *</label>
+              <label className="form-label fw-bold small text-dark mb-1">State *</label>
               <input type="text" className="form-control gov-form-control" required value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} placeholder="State Name" />
             </div>
 
             {/* Submit Button */}
-            <div className="col-12 text-end mt-4 pt-2 border-top">
+            <div className="col-12 text-end mt-4 pt-3 border-top">
               <button type="submit" disabled={submitting} className="btn btn-gov-portal shadow-sm">
                 {submitting ? <Loader2 size={16} className="spinner-border spinner-border-sm me-1" /> : <Send size={16} className="me-1" />}
                 {existingData ? 'Update Application' : 'Save & Submit MSME Form'}

@@ -78,6 +78,7 @@ export default function AdminDashboardPage() {
           const monthCounts = {};
           const monthsOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+          // 1. Group users strictly by their creation month
           userList.forEach((u) => {
             let dateObj = null;
             if (u.createdAt?.toDate) {
@@ -85,24 +86,24 @@ export default function AdminDashboardPage() {
             } else if (u.createdAt) {
               dateObj = new Date(u.createdAt);
             } else {
-              dateObj = new Date();
+              dateObj = new Date(); // fallback to current date
             }
 
             const monthName = monthsOrder[dateObj.getMonth()];
             monthCounts[monthName] = (monthCounts[monthName] || 0) + 1;
           });
 
+          // 2. Generate monthly registration trend (Monthly New Registrations)
           const currentMonthIndex = new Date().getMonth();
           const dynamicGrowth = [];
-          let cumulativeUsers = 0;
 
           for (let i = 5; i >= 0; i--) {
             const idx = (currentMonthIndex - i + 12) % 12;
             const mName = monthsOrder[idx];
-            cumulativeUsers += (monthCounts[mName] || 0);
+
             dynamicGrowth.push({
               month: mName,
-              users: cumulativeUsers || userList.length || 0,
+              users: monthCounts[mName] || 0, // Zero if no registrations in that month
             });
           }
 
@@ -135,6 +136,7 @@ export default function AdminDashboardPage() {
       isMounted = false;
     };
   }, []);
+
 
   const metricsData = [
     { name: 'Members', count: members.length, color: '#8b5cf6' },
@@ -266,9 +268,16 @@ export default function AdminDashboardPage() {
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
+                  <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 12 }} />
                   <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }} />
-                  <Area type="monotone" dataKey="users" stroke="#0a66c2" strokeWidth={3} fillOpacity={1} fill="url(#userGrowthGradient)" />
+                  <Area
+                    type="monotone"
+                    dataKey="users"
+                    stroke="#0a66c2"
+                    strokeWidth={3}
+                    fillOpacity={1}
+                    fill="url(#userGrowthGradient)"
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -305,11 +314,20 @@ export default function AdminDashboardPage() {
 
       {/* Recent Members & Latest Inquiries */}
       <div className="row g-3 g-md-4">
+        {/* Recent Members Card */}
         <div className="col-12 col-lg-7">
-          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+          <div className="card dash-card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
             <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-              <h6 className="fw-bold text-dark m-0">Recent Tarang Members</h6>
-              <Link href="/admin/members" className="btn btn-sm btn-light text-primary fw-bold rounded-pill small">
+              <div className="d-flex align-items-center gap-2">
+                <span className="app-icon-badge icon-purple p-2 rounded-3 text-white d-flex align-items-center justify-content-center">
+                  <Users size={18} />
+                </span>
+                <div>
+                  <h6 className="fw-bold text-dark m-0 fs-6">Recent Tarang Members</h6>
+                  <small className="text-muted" style={{ fontSize: '0.75rem' }}>Latest registered users</small>
+                </div>
+              </div>
+              <Link href="/admin/all-users-list" className="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3 py-1 border small">
                 View All
               </Link>
             </div>
@@ -320,12 +338,13 @@ export default function AdminDashboardPage() {
                   {loading ? (
                     <tr>
                       <td colSpan="3" className="text-center py-4">
-                        <Loader2 className="spinner-border text-primary spinner-border-sm me-2" /> Loading members...
+                        <Loader2 className="spinner-border text-primary spinner-border-sm me-2" />
+                        <span className="text-muted small">Loading members...</span>
                       </td>
                     </tr>
                   ) : members.length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="text-center py-3 text-muted small">
+                      <td colSpan="3" className="text-center py-4 text-muted small">
                         No registered members found in database.
                       </td>
                     </tr>
@@ -334,7 +353,7 @@ export default function AdminDashboardPage() {
                       const memberId = m.uid || m.id;
                       return (
                         <tr key={memberId || idx}>
-                          <td style={{ width: '45px' }}>
+                          <td style={{ width: '45px' }} className="py-2">
                             <Link href={`/profile/${memberId}`} className="text-decoration-none">
                               <img
                                 src={m.photoURL || m.image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100'}
@@ -344,15 +363,17 @@ export default function AdminDashboardPage() {
                               />
                             </Link>
                           </td>
-                          <td>
+                          <td className="py-2">
                             <Link href={`/profile/${memberId}`} className="text-decoration-none">
-                              <strong className="d-block text-dark small fw-bold hover-text-primary">
-                                {m.name || 'Member'}
+                              <strong className="d-block text-dark small fw-bold">
+                                {m.name || 'Member User'}
                               </strong>
                             </Link>
-                            <small className="text-muted">{m.email || m.category || 'Member'}</small>
+                            <small className="text-muted text-truncate d-block" style={{ fontSize: '0.75rem', maxWidth: '200px' }}>
+                              {m.email || m.category || 'Member'}
+                            </small>
                           </td>
-                          <td className="text-end">
+                          <td className="text-end py-2">
                             <span className="badge bg-success-subtle text-success border border-success-subtle rounded-pill fw-bold small">
                               {m.status || 'APPROVED'}
                             </span>
@@ -367,32 +388,46 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
+        {/* Latest Inquiries Card */}
         <div className="col-12 col-lg-5">
-          <div className="card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
+          <div className="card dash-card border-0 rounded-4 p-3 p-md-4 bg-white shadow-sm h-100">
             <div className="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-              <h6 className="fw-bold text-dark m-0">Latest Inquiries</h6>
-              <Link href="/admin/inbox" className="btn btn-sm btn-light text-primary fw-bold rounded-pill small">
+              <div className="d-flex align-items-center gap-2">
+                <span className="app-icon-badge icon-orange p-2 rounded-3 text-white d-flex align-items-center justify-content-center" style={{ backgroundColor: '#ea580c' }}>
+                  <Inbox size={18} />
+                </span>
+                <div>
+                  <h6 className="fw-bold text-dark m-0 fs-6">Latest Inquiries</h6>
+                  <small className="text-muted" style={{ fontSize: '0.75rem' }}>Recent contact form queries</small>
+                </div>
+              </div>
+              <Link href="/admin/inbox" className="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3 py-1 border small">
                 View Inbox
               </Link>
             </div>
 
             <div className="d-flex flex-column gap-2">
               {loading ? (
-                <div className="text-center py-3">
-                  <Loader2 className="spinner-border text-primary spinner-border-sm" />
+                <div className="text-center py-4">
+                  <Loader2 className="spinner-border text-primary spinner-border-sm me-2" />
+                  <span className="text-muted small">Loading inbox...</span>
                 </div>
               ) : inquiries.length === 0 ? (
-                <p className="text-muted small text-center py-3 mb-0">No new inquiries received yet.</p>
+                <p className="text-muted small text-center py-4 mb-0">No new inquiries received yet.</p>
               ) : (
                 inquiries.slice(0, 4).map((inq, i) => (
                   <div key={inq.id || i} className="p-3 bg-light rounded-3 border">
-                    <strong className="d-block text-dark small fw-bold">{inq.name || inq.fullName || 'Visitor'}</strong>
-                    <p className="text-secondary small mb-1 text-truncate">
+                    <div className="d-flex align-items-center justify-content-between mb-1">
+                      <strong className="text-dark small fw-bold text-truncate" style={{ maxWidth: '180px' }}>
+                        {inq.name || inq.fullName || 'Visitor'}
+                      </strong>
+                      <small className="text-muted" style={{ fontSize: '0.725rem' }}>
+                        {inq.createdAt?.toDate ? inq.createdAt.toDate().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recent'}
+                      </small>
+                    </div>
+                    <p className="text-secondary small mb-0 text-truncate">
                       {inq.message || inq.query || 'Inquiry regarding stall booking.'}
                     </p>
-                    <small className="text-primary fw-bold">
-                      {inq.createdAt?.toDate ? inq.createdAt.toDate().toLocaleDateString() : 'Recent'}
-                    </small>
                   </div>
                 ))
               )}
@@ -400,6 +435,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

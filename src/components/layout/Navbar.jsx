@@ -13,10 +13,7 @@ import {
   UserPlus,
   Globe,
   X,
-  AlignRight,
-  User,
-  LogOut,
-  LayoutDashboard
+  AlignRight
 } from 'lucide-react';
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -29,12 +26,11 @@ const LanguageTranslator = lazy(() => import('@/components/layout/LanguageTransl
 export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
   const [profileData, setProfileData] = useState(null);
   const [loadTranslator, setLoadTranslator] = useState(false);
 
-  // 🔴 FIX 1: Context se directly `isAdmin` destructure kiya
-  const { user, logout, isAdmin: isContextAdmin } = useAuth();
+  // Context se user and admin status retrieve karna
+  const { user, isAdmin: isContextAdmin } = useAuth();
 
   // Load Cached & Fresh Profile Data
   useEffect(() => {
@@ -64,7 +60,7 @@ export default function Navbar() {
   const displayPhoto = profileData?.photoURL || user?.photoURL;
   const userInitial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
-  // 🔴 FIX 2: Dynamic Admin Checking using Environment Variable + Context
+  // Dynamic Admin Checking using Environment Variable + Context
   const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim();
   const userEmail = (user?.email || '').toLowerCase().trim();
 
@@ -73,8 +69,8 @@ export default function Navbar() {
     profileData?.role === 'admin' ||
     (Boolean(ADMIN_EMAIL) && userEmail === ADMIN_EMAIL);
 
+  // Dynamic Dashboard Route Target
   const dashboardLink = isAdmin ? '/admin/dashboard' : '/user/dashboard';
-  const profileLink = isAdmin ? '/admin/profile' : '/user/user-profile';
 
   return (
     <nav className="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-1 py-lg-2 custom-navbar">
@@ -130,71 +126,26 @@ export default function Navbar() {
           {/* Right Action Group */}
           <div className="bottom-action-group pt-2 pt-lg-0 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 flex-shrink-0">
 
-            {/* Logged-In User Profile Avatar & Dropdown */}
+            {/* Logged-In User Profile Avatar (Direct Dashboard Navigation) */}
             {user ? (
-              <div className="position-relative">
-                <button
-                  type="button"
-                  onClick={() => setShowDropdown(!showDropdown)}
-                  className="btn p-0 border-0 d-flex align-items-center gap-2 w-100 justify-content-start justify-content-lg-center"
+              <Link
+                href={dashboardLink}
+                className="d-flex align-items-center gap-2 text-decoration-none"
+                onClick={() => setIsOpen(false)}
+                title="Go to Dashboard"
+              >
+                <div
+                  className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden flex-shrink-0"
+                  style={{ width: 38, height: 38 }}
                 >
-                  <div className="bg-logo-orange text-white rounded-circle d-flex align-items-center justify-content-center fw-bold shadow-sm overflow-hidden flex-shrink-0" style={{ width: 38, height: 38 }}>
-                    {displayPhoto ? (
-                      <img src={displayPhoto} alt="User" className="rounded-circle w-100 h-100 object-fit-cover" />
-                    ) : (
-                      userInitial
-                    )}
-                  </div>
-                  <span className="d-lg-none fw-bold small text-dark text-truncate">{displayName}</span>
-                </button>
-
-                {/* Dropdown Menu */}
-                {showDropdown && (
-                  <div
-                    className="position-absolute end-0 mt-2 bg-white rounded-4 shadow-lg p-2 z-3 border"
-                    style={{ minWidth: '220px', zIndex: 1070 }}
-                  >
-                    <div className="px-3 py-2 border-bottom">
-                      <p className="fw-bold mb-0 text-dark small text-truncate">{displayName}</p>
-                      <small className="text-muted text-truncate d-block small">{user.email}</small>
-                    </div>
-
-                    {/* Dynamic Dashboard Link */}
-                    <Link
-                      href={dashboardLink}
-                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark mt-1"
-                      onClick={() => { setShowDropdown(false); setIsOpen(false); }}
-                    >
-                      <LayoutDashboard size={16} className="text-primary" />
-                      <span>Dashboard</span>
-                    </Link>
-
-                    {/* Dynamic Profile Link */}
-                    <Link
-                      href={profileLink}
-                      className="dropdown-item d-flex align-items-center gap-2 p-2 rounded-3 small fw-medium text-dark"
-                      onClick={() => { setShowDropdown(false); setIsOpen(false); }}
-                    >
-                      <User size={16} className="text-success" />
-                      <span>My Profile</span>
-                    </Link>
-
-                    <hr className="my-1 opacity-25" />
-
-                    <button
-                      onClick={() => {
-                        setShowDropdown(false);
-                        setIsOpen(false);
-                        logout();
-                      }}
-                      className="dropdown-item text-danger d-flex align-items-center gap-2 p-2 rounded-3 small fw-semibold w-100 border-0 bg-transparent"
-                    >
-                      <LogOut size={16} />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+                  {displayPhoto ? (
+                    <img src={displayPhoto} alt="User" className="rounded-circle w-100 h-100 object-fit-cover" />
+                  ) : (
+                    userInitial
+                  )}
+                </div>
+                <span className="d-lg-none fw-bold small text-dark text-truncate">{displayName}</span>
+              </Link>
             ) : (
               /* Login CTA */
               <Link

@@ -12,8 +12,8 @@ import {
   User,
   Users,
   Inbox,
-  CalendarCheck,
-  Store,
+  Calendar,
+  CalendarPlus,
   Building2,
   Upload,
   Image as GalleryIcon,
@@ -27,7 +27,9 @@ import {
   Bell,
   Home,
   PlusSquare,
-  History
+  Briefcase,
+  UserCheck,
+  Layers
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -78,25 +80,30 @@ export default function AdminLayout({ children }) {
 
   const navigationGroups = [
     {
-      title: 'CORE SYSTEM',
+      title: 'MAIN SYSTEM',
       links: [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
-        { name: 'Entrepreneurs', href: '/entrepreneurs', icon: LayoutDashboard, colorClass: 'icon-blue' },
+        { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
       ]
     },
     {
-      title: 'EVENT & MEMBER MANAGEMENT',
+      title: 'MEMBER MANAGEMENT',
       links: [
         { name: 'Users List', href: '/admin/all-users-list', icon: Users, colorClass: 'icon-cyan' },
-        { name: 'Membership', href: '/admin/membership-admin-page', icon: History, colorClass: 'icon-teal' },
+        { name: 'Membership', href: '/admin/membership-admin-page', icon: UserCheck, colorClass: 'icon-teal' },
         { name: 'MSME Requests', href: '/admin/msme', icon: Building2, colorClass: 'icon-yellow' },
-        { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
-        { name: 'Add Event', href: '/admin/event', icon: CalendarCheck, colorClass: 'icon-red' },
-        { name: 'All Events', href: '/admin/eventdetails', icon: Store, colorClass: 'icon-teal' },
       ]
     },
     {
-      title: 'OFFERS MANAGEMENT',
+      title: 'EVENTS & INBOX',
+      links: [
+        { name: 'Add Event', href: '/admin/event', icon: CalendarPlus, colorClass: 'icon-red' },
+        { name: 'All Events', href: '/admin/eventdetails', icon: Calendar, colorClass: 'icon-teal' },
+        { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
+      ]
+    },
+    {
+      title: 'OFFERS & PROMOTIONS',
       links: [
         { name: 'Create Offer', href: '/admin/offers', icon: Tag, colorClass: 'icon-green' },
         { name: 'Manage Offers', href: '/admin/offers/delete', icon: Trash2, colorClass: 'icon-red' },
@@ -110,7 +117,7 @@ export default function AdminLayout({ children }) {
       ]
     },
     {
-      title: 'PROFILE',
+      title: 'ACCOUNT',
       links: [
         { name: 'My Profile', href: '/admin/profile', icon: User, colorClass: 'icon-green' },
       ]
