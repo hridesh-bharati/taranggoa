@@ -11,7 +11,7 @@
   --purple-hover-bg: #f3e8ff;
   --text-dark: #1e293b;
   --text-muted: #64748b;
-  
+
   /* Icon Badge Colors (Navbar & Drawer matching) */
   --badge-blue: #0088cc;
   --badge-cyan: #06b6d4;
@@ -23,24 +23,51 @@
   --badge-indigo: #6366f1;
 
   /* --- TARANG LOGO OFFICIAL BRAND PALETTE --- */
-  --logo-blue: #0081cb;     /* Top Left Sky Blue Figure */
-  --logo-orange: #f15a24;   /* Top Right Warm Orange Figure */
-  --logo-yellow: #f8a100;   /* Right Yellow/Gold Figure */
-  --logo-green: #8cc63f;    /* Bottom Right Olive Green Figure */
-  --logo-brown: #9e4624;    /* Center Swirl Brown Accent */
+  --logo-blue: #0081cb;
+  /* Top Left Sky Blue Figure */
+  --logo-orange: #f15a24;
+  /* Top Right Warm Orange Figure */
+  --logo-yellow: #f8a100;
+  /* Right Yellow/Gold Figure */
+  --logo-green: #8cc63f;
+  /* Bottom Right Olive Green Figure */
+  --logo-brown: #9e4624;
+  /* Center Swirl Brown Accent */
 }
 
 /* Base Utility Classes */
-.bg-purple-main { background-color: var(--primary-purple) !important; }
-.bg-purple-dark { background-color: var(--purple-dark) !important; }
-.bg-purple-light { background-color: var(--purple-bg) !important; }
-.text-purple-main { color: var(--primary-purple) !important; }
+.bg-purple-main {
+  background-color: var(--primary-purple) !important;
+}
+
+.bg-purple-dark {
+  background-color: var(--purple-dark) !important;
+}
+
+.bg-purple-light {
+  background-color: var(--purple-bg) !important;
+}
+
+.text-purple-main {
+  color: var(--primary-purple) !important;
+}
 
 /* Custom Text & BG classes for Logo Palette */
-.text-logo-orange { color: var(--logo-orange) !important; }
-.bg-logo-orange { background-color: var(--logo-orange) !important; }
-.text-logo-blue { color: var(--logo-blue) !important; }
-.text-logo-green { color: var(--logo-green) !important; }
+.text-logo-orange {
+  color: var(--logo-orange) !important;
+}
+
+.bg-logo-orange {
+  background-color: var(--logo-orange) !important;
+}
+
+.text-logo-blue {
+  color: var(--logo-blue) !important;
+}
+
+.text-logo-green {
+  color: var(--logo-green) !important;
+}
 
 /* Custom Badge Icon Box */
 .icon-badge-box {
@@ -60,6 +87,10 @@
   border: 8px solid #f5b000;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
+.bg-primary-gradient {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+  color: #fff;
+}

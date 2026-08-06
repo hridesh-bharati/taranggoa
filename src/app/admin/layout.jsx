@@ -14,6 +14,7 @@ import {
   Inbox,
   CalendarCheck,
   Store,
+  Building2,
   Upload,
   Image as GalleryIcon,
   Tag,
@@ -80,13 +81,15 @@ export default function AdminLayout({ children }) {
       title: 'CORE SYSTEM',
       links: [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
+        { name: 'Entrepreneurs', href: '/entrepreneurs', icon: LayoutDashboard, colorClass: 'icon-blue' },
       ]
     },
     {
       title: 'EVENT & MEMBER MANAGEMENT',
       links: [
-        { name: 'Members', href: '/admin/members', icon: Users, colorClass: 'icon-cyan' },
-        { name: 'Membership Details', href: '/admin/membership-admin-page', icon: History, colorClass: 'icon-teal' },
+        { name: 'Users List', href: '/admin/all-users-list', icon: Users, colorClass: 'icon-cyan' },
+        { name: 'Membership', href: '/admin/membership-admin-page', icon: History, colorClass: 'icon-teal' },
+        { name: 'MSME Requests', href: '/admin/msme', icon: Building2, colorClass: 'icon-yellow' },
         { name: 'Inquiries', href: '/admin/inbox', icon: Inbox, colorClass: 'icon-purple' },
         { name: 'Add Event', href: '/admin/event', icon: CalendarCheck, colorClass: 'icon-red' },
         { name: 'All Events', href: '/admin/eventdetails', icon: Store, colorClass: 'icon-teal' },

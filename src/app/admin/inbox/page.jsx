@@ -62,15 +62,13 @@ export default function AdminInboxPage() {
 
       {/* Compact Gradient Header */}
       <div
-        className="card border-0 rounded-4 shadow-sm p-3 mb-3"
-        style={{ background: 'linear-gradient(135deg, #eef2f7 0%, #e6edf5 100%)' }}
-      >
+        className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient ">
         <div className="d-flex align-items-center justify-content-between">
           <div>
-            <h5 className="fw-bold text-dark m-0 d-flex align-items-center gap-2">
-              <Inbox className="text-primary" size={22} /> Inbox
+            <h5 className="fw-bold text-white m-0 d-flex align-items-center gap-2">
+              <Inbox className="text-light" size={22} /> Inbox
             </h5>
-            <small className="text-secondary fs-8">User inquiries and contact submissions</small>
+            <small className="text-light fs-8">User inquiries and contact submissions</small>
           </div>
 
           <span className="badge bg-white text-primary border shadow-sm rounded-pill px-3 py-2 fw-bold fs-7">

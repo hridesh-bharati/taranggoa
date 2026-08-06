@@ -17,7 +17,8 @@ import {
   X,
   Bell,
   Home,
-  ShieldCheck
+  ShieldCheck,
+  Building2
 } from 'lucide-react';
 
 export default function UserLayout({ children }) {
@@ -51,10 +52,11 @@ export default function UserLayout({ children }) {
       ]
     },
     {
-      title: 'COMMUNITY',
+      title: 'ENTREPRENEURS',
       items: [
-        { name: 'Community Hub', href: '/community', icon: Users },
+        { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Users },
         { name: 'Membership', href: '/user/user-membership-page', icon: Users },
+        { name: 'MSME Scheme', href: '/user/msme', icon: Building2 },
       ]
     }
   ];
