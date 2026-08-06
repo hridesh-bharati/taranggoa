@@ -159,10 +159,10 @@ export default function Navbar() {
             )}
 
             {/* Language Selector */}
-            <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill px-2 py-1">
+            <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill ">
               {!loadTranslator ? (
                 <button
-                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold border d-flex align-items-center gap-1 text-secondary"
+                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold   d-flex align-items-center gap-1 text-secondary"
                   onClick={() => setLoadTranslator(true)}
                   title="Change Language"
                 >
@@ -170,7 +170,7 @@ export default function Navbar() {
                   <span>Translate</span>
                 </button>
               ) : (
-                <Suspense fallback={<small className="text-muted">Loading...</small>}>
+                <Suspense fallback={<small className="text-muted p-3">Loading...</small>}>
                   <LanguageTranslator />
                 </Suspense>
               )}

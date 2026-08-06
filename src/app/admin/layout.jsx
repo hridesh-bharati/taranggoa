@@ -1,4 +1,3 @@
-// src\app\admin\layout.jsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -29,7 +28,8 @@ import {
   PlusSquare,
   Briefcase,
   UserCheck,
-  Layers
+  Eye,
+  Plus
 } from 'lucide-react';
 import './Dashboard.css';
 
@@ -84,6 +84,8 @@ export default function AdminLayout({ children }) {
       links: [
         { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard, colorClass: 'icon-blue' },
         { name: 'Entrepreneurs', href: '/entrepreneurs', icon: Briefcase, colorClass: 'icon-green' },
+        { name: 'Add Exhibition', href: '/admin/exhibitions/add', icon: Plus, colorClass: 'icon-red' },
+        { name: 'View Exhibitions', href: '/admin/exhibitions/view', icon: Eye, colorClass: 'icon-purple' },
       ]
     },
     {
@@ -203,7 +205,7 @@ export default function AdminLayout({ children }) {
               </span>
               {!desktopCollapsed && (
                 <div className="text-truncate">
-                  <img src="/logo.png" className='img-fluid w-100' alt="" />
+                  <img src="/logo.png" className='img-fluid w-100' alt="Logo" />
                 </div>
               )}
             </div>
@@ -270,7 +272,6 @@ export default function AdminLayout({ children }) {
       <div className="flex-grow-1 d-flex flex-column overflow-x-hidden">
         <header className="bg-white border-bottom p-2 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
 
-          {/* Topbar Left Side */}
           <div className="d-flex align-items-center gap-2">
             <button
               className="btn btn-light rounded-circle p-1.5 border text-dark d-none d-lg-flex align-items-center justify-content-center"
@@ -282,12 +283,9 @@ export default function AdminLayout({ children }) {
             </button>
           </div>
 
-          {/* Topbar Right Side */}
           <div className="d-flex align-items-center gap-2">
-            {/* Mobile Logo */}
             <img src="/logo.png" className='img-fluid w-25 d-lg-none d-flex' alt="Logo" />
 
-            {/* Mobile Home Icon (Logo ke baad) */}
             <Link
               href="/"
               className="btn btn-light rounded-circle p-2 text-dark border d-flex d-lg-none align-items-center justify-content-center flex-shrink-0"
@@ -297,7 +295,6 @@ export default function AdminLayout({ children }) {
               <Home size={18} />
             </Link>
 
-            {/* GLOBAL SEARCH BOX */}
             <GlobalSearch />
 
             <button className="btn btn-light rounded-circle p-2 text-dark border position-relative" title="Notifications">
@@ -305,7 +302,6 @@ export default function AdminLayout({ children }) {
               <span className="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
             </button>
 
-            {/* Desktop Home Button */}
             <Link
               href="/"
               className="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-bold d-none d-sm-flex align-items-center gap-1"

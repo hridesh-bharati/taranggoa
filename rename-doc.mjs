@@ -1,3 +1,5 @@
+// rename - doc.mjs
+
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, getDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
