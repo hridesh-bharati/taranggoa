@@ -47,7 +47,6 @@ export default function ExhibitionsList({ list, onDeleteSuccess }) {
                 <div><Phone size={13} className="text-success me-1 d-inline" />{item.contact}</div>
               </div>
 
-              {/* Edit & Delete Actions */}
               <div className="d-flex flex-column gap-1 flex-shrink-0">
                 <button
                   onClick={() => router.push(`/admin/exhibitions/add?id=${item.id}`)}

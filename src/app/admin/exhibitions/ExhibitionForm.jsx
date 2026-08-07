@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { exhibitionsController } from '@/controllers/exhibitions.controller';
 import { showToast } from '@/utils/toast';
@@ -17,7 +17,7 @@ const FORM_FIELDS = [
   { name: 'contact', label: 'Contact Numbers *', type: 'tel', placeholder: '9158063030 | 8329539407', required: true, col: 'col-12 col-md-6' }
 ];
 
-export default function ExhibitionForm({ onSuccess }) {
+function ExhibitionFormContent({ onSuccess }) {
   const searchParams = useSearchParams();
   const editId = searchParams.get('id');
   const isEdit = Boolean(editId);
@@ -40,7 +40,6 @@ export default function ExhibitionForm({ onSuccess }) {
     contact: ''
   });
 
-  // Fetch data if edit URL parameter exists
   useEffect(() => {
     if (isEdit) {
       setLoadingData(true);
@@ -148,7 +147,6 @@ export default function ExhibitionForm({ onSuccess }) {
           </div>
         ))}
 
-        {/* Poster Image File */}
         <div className="col-12">
           <label className="form-label fw-bold text-secondary mb-1">Poster Image File *</label>
 
@@ -196,5 +194,18 @@ export default function ExhibitionForm({ onSuccess }) {
         </div>
       </form>
     </div>
+  );
+}
+
+export default function ExhibitionForm(props) {
+  return (
+    <Suspense fallback={
+      <div className="card border-0 rounded-3 bg-white p-5 text-center shadow-sm">
+        <Loader2 className="spinner-border text-primary spinner-border-sm me-2" />
+        <span className="text-muted fw-bold small">Loading form...</span>
+      </div>
+    }>
+      <ExhibitionFormContent {...props} />
+    </Suspense>
   );
 }
