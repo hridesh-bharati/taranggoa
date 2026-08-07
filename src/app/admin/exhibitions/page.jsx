@@ -1,6 +1,6 @@
 'use client';
 
-import ExhibitionForm from '@/app/admin/exhibitions/exhibitionForm';
+import ExhibitionForm from './ExhibitionForm';
 import { useRouter } from 'next/navigation';
 import { Plus, Eye } from 'lucide-react';
 
