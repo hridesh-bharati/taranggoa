@@ -1,4 +1,3 @@
-// src\lib\firebase.js
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
@@ -22,13 +21,14 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 
-// Analytics only runs on Browser side
+// Analytics only initializes on client-side
 let analytics = null;
 if (typeof window !== 'undefined') {
   isSupported().then((supported) => {
     if (supported) {
       analytics = getAnalytics(app);
     }
-  });
+  }).catch((err) => console.error('Analytics initialization error:', err));
 }
+
 export { app, auth, db, googleProvider, analytics };
