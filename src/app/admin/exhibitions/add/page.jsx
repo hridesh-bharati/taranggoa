@@ -3,7 +3,6 @@
 import exhibitionForm from '../exhibitionForm';
 import { useRouter } from 'next/navigation';
 import { Plus, Eye } from 'lucide-react';
-
 export default function AddExhibitionPage() {
   const router = useRouter();
 

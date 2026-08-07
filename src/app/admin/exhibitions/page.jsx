@@ -1,6 +1,6 @@
 'use client';
 
-import ExhibitionForm from '../ExhibitionForm';
+import ehibitionForm from '../exhibitionForm';
 import { useRouter } from 'next/navigation';
 import { Plus, Eye } from 'lucide-react';
 
