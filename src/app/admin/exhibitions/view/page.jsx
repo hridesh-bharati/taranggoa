@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { exhibitionsController } from '@/controllers/exhibitions.controller';
-import exhibitionsList from '../exhibitionsList';
+import exhibitionsList from '@/app/admin/exhibitions/exhibitionsList';
 import { useRouter } from 'next/navigation';
 import { Eye, Plus, Loader2 } from 'lucide-react';
 
