@@ -1,5 +1,3 @@
-// src/services/auth.service.js
-
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -7,36 +5,22 @@ import {
   signOut,
   signInWithPopup,
 } from 'firebase/auth';
-
 import { auth, googleProvider } from '@/lib/firebase';
 
 const createServerSession = async (user) => {
-  const idToken = await user.getIdToken(true);
-  const res = await fetch('/api/auth/session', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ idToken }),
-  });
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(errorData?.message || 'Failed to create server session.');
-  }
-};
-
-/**
- * Clears the server-side HttpOnly session cookie.
- */
-const destroyServerSession = async () => {
   try {
-    await fetch('/api/auth/logout', {
+    const idToken = await user.getIdToken();
+    const res = await fetch('/api/auth/session', {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
+      body: JSON.stringify({ idToken }),
     });
+
+    if (!res.ok) throw new Error('Failed to create server session.');
   } catch (error) {
-    console.error('Server session destroy failed:', error);
+    await signOut(auth).catch(() => { });
+    throw error;
   }
 };
 
@@ -60,18 +44,14 @@ export const authService = {
   },
 
   async logout() {
-    await destroyServerSession();
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch(() => { });
     await signOut(auth);
-    return {
-      success: true,
-      redirectUrl: '/admin/auth/login',
-    };
+    return { success: true, redirectUrl: '/admin/auth/login' };
   },
 
   async resetPassword(email) {
-    if (!email) {
-      throw new Error('Email is required to reset password.');
-    }
-    return sendPasswordResetEmail(auth, email);
+    if (!email) throw new Error('Email is required.');
+    await sendPasswordResetEmail(auth, email);
+    return { success: true, message: 'Password reset link sent to your email inbox.' };
   },
 };

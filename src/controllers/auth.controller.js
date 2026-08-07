@@ -1,23 +1,18 @@
-// controllers/auth.controller.js
-
 import { authService } from '@/services/auth.service';
+import { getIdTokenResult } from 'firebase/auth';
 
 const formatError = (error) => {
-  return (
-    error?.message
-      ?.replace('Firebase: ', '')
-      ?.replace(/\(auth\/.*?\)\.?/g, '')
-      ?.trim() || 'Something went wrong'
-  );
+  const code = error?.code || error?.message || '';
+  if (code.includes('auth/invalid-credential')) return 'Invalid email or password.';
+  if (code.includes('auth/email-already-in-use')) return 'Email already registered.';
+  if (code.includes('auth/popup-closed-by-user')) return 'Sign-in popup was closed.';
+  if (code.includes('auth/too-many-requests')) return 'Too many attempts. Try again later.';
+  return error?.message?.replace('Firebase: ', '').replace(/\(auth\/.*?\)\.?/g, '').trim() || 'Authentication failed.';
 };
 
-const prepareUser = (user) => {
-  if (!user) throw new Error('User data is missing.');
-
-  const adminEmail = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || 'hridesh027@gmail.com').toLowerCase().trim();
-  const userEmail = (user.email || '').toLowerCase().trim();
-
-  const isAdmin = Boolean(adminEmail && userEmail === adminEmail);
+const prepareUser = async (user) => {
+  const tokenResult = await getIdTokenResult(user, true);
+  const isAdmin = Boolean(tokenResult.claims?.admin);
 
   return {
     user,
@@ -30,47 +25,40 @@ export const authController = {
   async login(email, password) {
     try {
       const user = await authService.login(email, password);
-      return prepareUser(user);
-    } catch (error) {
-      throw new Error(formatError(error));
+      return await prepareUser(user);
+    } catch (err) {
+      throw new Error(formatError(err));
     }
   },
 
   async signup(email, password, confirmPassword) {
-    if (confirmPassword && password !== confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
-
+    if (confirmPassword && password !== confirmPassword) throw new Error('Passwords do not match.');
     try {
       const user = await authService.signup(email, password);
-      return prepareUser(user);
-    } catch (error) {
-      throw new Error(formatError(error));
+      return await prepareUser(user);
+    } catch (err) {
+      throw new Error(formatError(err));
     }
   },
 
   async loginWithGoogle() {
     try {
       const user = await authService.loginWithGoogle();
-      return prepareUser(user);
-    } catch (error) {
-      throw new Error(formatError(error));
+      return await prepareUser(user);
+    } catch (err) {
+      throw new Error(formatError(err));
     }
   },
 
   async logout() {
-    try {
-      return await authService.logout();
-    } catch (error) {
-      throw new Error(formatError(error));
-    }
+    return authService.logout();
   },
 
   async resetPassword(email) {
     try {
       return await authService.resetPassword(email);
-    } catch (error) {
-      throw new Error(formatError(error));
+    } catch (err) {
+      throw new Error(formatError(err));
     }
   },
 };

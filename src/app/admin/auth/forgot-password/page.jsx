@@ -1,3 +1,4 @@
+// src\app\admin\auth\forgot-password\page.jsx
 'use client';
 
 import { useState } from 'react';
