@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { exhibitionsController } from '@/controllers/exhibitions.controller';
-import ExhibitionsList from '../ExhibitionsList';
+import exhibitionsList from '../exhibitionsList';
 import { useRouter } from 'next/navigation';
 import { Eye, Plus, Loader2 } from 'lucide-react';
 
@@ -44,7 +44,7 @@ export default function ViewExhibitionsPage() {
           <span className="text-muted fw-bold small">Loading exhibitions...</span>
         </div>
       ) : (
-        <ExhibitionsList list={list} onDeleteSuccess={(id) => setList(prev => prev.filter(i => i.id !== id))} />
+        <exhibitionsList list={list} onDeleteSuccess={(id) => setList(prev => prev.filter(i => i.id !== id))} />
       )}
     </div>
   );
