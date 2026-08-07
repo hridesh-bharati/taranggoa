@@ -1,3 +1,5 @@
+
+// src\app\admin\exhibitions\exhibitionsList.jsx
 'use client';
 
 import { useRouter } from 'next/navigation';
