@@ -1,7 +1,6 @@
-// src\app\admin\exhibitions\add\page.jsx
 'use client';
 
-import ExhibitionForm from '../exhibitionForm';
+import ExhibitionForm from '../ExhibitionForm';
 import { useRouter } from 'next/navigation';
 import { Plus, Eye } from 'lucide-react';
 

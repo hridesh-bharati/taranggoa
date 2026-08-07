@@ -1,10 +1,10 @@
 'use client';
 
-import ExhibitionForm from './exhibitionForm';
+import ExhibitionForm from '../ExhibitionForm';
 import { useRouter } from 'next/navigation';
 import { Plus, Eye } from 'lucide-react';
 
-export default function AdminExhibitionsRootPage() {
+export default function AddExhibitionPage() {
   const router = useRouter();
 
   return (
