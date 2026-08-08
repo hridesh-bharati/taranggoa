@@ -1,6 +1,8 @@
 import { authService } from '@/services/auth.service';
 import { getIdTokenResult } from 'firebase/auth';
 
+const ADMIN_EMAIL = 'hridesh027@gmail.com';
+
 const formatError = (error) => {
   const code = error?.code || error?.message || '';
   if (code.includes('auth/invalid-credential')) return 'Invalid email or password.';
@@ -11,8 +13,10 @@ const formatError = (error) => {
 };
 
 const prepareUser = async (user) => {
-  const tokenResult = await getIdTokenResult(user, true);
-  const isAdmin = Boolean(tokenResult.claims?.admin);
+  const tokenResult = await getIdTokenResult(user);
+
+  // Check both Firebase Custom Claim AND specific Admin Email
+  const isAdmin = Boolean(tokenResult.claims?.admin) || user?.email?.toLowerCase() === ADMIN_EMAIL;
 
   return {
     user,

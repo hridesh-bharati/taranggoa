@@ -46,6 +46,7 @@
     opacity: 0;
     transform: translateY(-80px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -57,9 +58,12 @@
     opacity: 0;
     transform: translateX(120px);
   }
+
   80% {
-    transform: translateX(-10px); /* Bounce Jhatka */
+    transform: translateX(-10px);
+    /* Bounce Jhatka */
   }
+
   100% {
     opacity: 1;
     transform: translateX(0);
@@ -71,6 +75,7 @@
     opacity: 0;
     transform: translateY(40px);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0);
@@ -93,6 +98,7 @@
   0% {
     transform: translateY(0%);
   }
+
   100% {
     transform: translateY(-50%);
   }
@@ -108,13 +114,27 @@
 
 /* Image Fade Animation */
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: scale(0.98); }
-  15% { opacity: 1; transform: scale(1); }
-  85% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.02); }
+  0% {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  85% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
 }
 
 .fade-image-active {
   animation: fadeInOut 4s ease-in-out infinite;
 }
-

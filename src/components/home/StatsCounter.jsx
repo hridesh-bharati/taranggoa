@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 export default function StatsCounter() {
   const stats = [
@@ -12,43 +12,59 @@ export default function StatsCounter() {
   ];
 
   const [counts, setCounts] = useState(stats.map(() => 0));
-  const [hasStarted, setHasStarted] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = useRef(null);
 
+  // IntersectionObserver for live trigger when section enters viewport
   useEffect(() => {
-    setHasStarted(true);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
   }, []);
 
+  // Live ultra-fast counting animation (0.1 seconds / 100ms duration)
   useEffect(() => {
-    if (!hasStarted) return;
+    if (!isVisible) return;
 
-    // Duration increased to 4 seconds (4000ms) for a slower, smoother count effect
-    const duration = 4000; 
+    const duration = 9000;
     const fps = 60;
-    const totalFrames = (duration / 1000) * fps;
+    const totalFrames = Math.max(1, Math.round((duration / 1000) * fps));
     let currentFrame = 0;
 
     const timer = setInterval(() => {
       currentFrame++;
-      const progress = currentFrame / totalFrames;
-      
-      // Easing function for smooth acceleration and deceleration (easeOutExpo)
-      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const progress = Math.min(currentFrame / totalFrames, 1);
 
       setCounts(
         stats.map((stat) => {
-          const currentVal = Math.floor(stat.target * easeProgress);
+          const currentVal = Math.floor(stat.target * progress);
           return currentVal > stat.target ? stat.target : currentVal;
         })
       );
 
       if (currentFrame >= totalFrames) {
         clearInterval(timer);
-        setCounts(stats.map(stat => stat.target));
+        setCounts(stats.map((stat) => stat.target));
       }
     }, 1000 / fps);
 
     return () => clearInterval(timer);
-  }, [hasStarted]);
+  }, [isVisible]);
 
   const formatNumber = (num, shouldFormat) => {
     if (shouldFormat) {
@@ -58,9 +74,10 @@ export default function StatsCounter() {
   };
 
   return (
-    <section 
-      className="py-5 text-white position-relative overflow-hidden" 
-      style={{ 
+    <section
+      ref={sectionRef}
+      className="py-5 text-white position-relative overflow-hidden"
+      style={{
         backgroundImage: 'linear-gradient(rgba(15, 23, 42, 0.6), rgba(30, 27, 75, 0.7)), url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1920&q=80")',
         backgroundSize: 'cover',
         backgroundPosition: 'center'
@@ -73,7 +90,7 @@ export default function StatsCounter() {
         <div className="row g-4 justify-content-center">
           {stats.map((stat, idx) => (
             <div key={idx} className="col-10 col-sm-6 col-md-4 col-lg-2">
-              <div 
+              <div
                 className="p-4 rounded-4 h-100 d-flex flex-column justify-content-center align-items-center"
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',

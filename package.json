@@ -24,6 +24,7 @@
     "sweetalert2": "^11.26.25"
   },
   "devDependencies": {
+    "@types/react": "19.2.18",
     "eslint": "^9",
     "eslint-config-next": "16.2.12"
   }

@@ -356,7 +356,7 @@ export default function AdminDashboardPage() {
                           <td style={{ width: '45px' }} className="py-2">
                             <Link href={`/profile/${memberId}`} className="text-decoration-none">
                               <img
-                                src={m.photoURL || m.image || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100'}
+                                src={m.photoURL || m.image || '/images/avatar.png'}
                                 alt="Avatar"
                                 className="rounded-circle object-fit-cover border"
                                 style={{ width: 38, height: 38 }}

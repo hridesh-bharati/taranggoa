@@ -17,7 +17,7 @@ export default function Hero() {
   ];
 
   return (
-    <section 
+    <section
       ref={sectionRef}
       className="hero-section position-relative"
       style={{
@@ -32,10 +32,10 @@ export default function Hero() {
     >
       <div className="container position-relative z-2">
         <div className="row align-items-center">
-          
+
           {/* Left Side Content */}
           <div className="col-12 col-lg-6 text-start">
-            
+
             {/* Title */}
             <h1 className="hero-title mb-2 anim-title">
               Empowering <br />
@@ -59,7 +59,7 @@ export default function Hero() {
                 <span>Explore Exhibitions</span>
                 <i className="bi bi-arrow-right fs-6 ms-1"></i>
               </Link>
-              
+
               <Link href="/membership" className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center gap-2 anim-btn-outline">
                 <i className="bi bi-person-plus fs-6"></i>
                 <span>Become a Member</span>
@@ -70,8 +70,8 @@ export default function Hero() {
             <div className="row g-2 max-w-lg mt-2 anim-fade-up">
               {features.map((item, idx) => (
                 <div key={idx} className="col-3 text-center hover-lift">
-                  <div 
-                    className="feature-icon-circle mb-1-5" 
+                  <div
+                    className="feature-icon-circle mb-1-5"
                     style={{ backgroundColor: item.bgColor }}
                   >
                     <i className={`bi ${item.icon} text-white fs-5`}></i>

@@ -1,16 +1,15 @@
 'use client';
-
 import { useRef, useState, useEffect } from 'react';
 import Link from 'next/link';
 import useScrollReveal from '@/hooks/useScrollReveal';
-import { 
-  Megaphone, 
-  ListChecks, 
-  Newspaper, 
-  Sparkles, 
-  Award, 
-  ChevronRight, 
-  ArrowRight 
+import {
+  Megaphone,
+  ListChecks,
+  Newspaper,
+  Sparkles,
+  Award,
+  ChevronRight,
+  ArrowRight
 } from 'lucide-react';
 import './Collaborations.css';
 
@@ -49,8 +48,7 @@ export default function Collaborations() {
   }, [posterImages.length]);
 
   return (
-    <section ref={sectionRef} className="py-5 bg-light position-relative overflow-hidden">
-      
+    <section ref={sectionRef} className="py-5 position-relative overflow-hidden">
       {/* Ticker Announcement Bar */}
       <div className="container-fluid px-3 px-md-5 mb-4 anim-fade-up">
         <div className="ticker-bar d-flex align-items-center gap-3 p-2 px-3 shadow-sm rounded-3">
@@ -69,7 +67,7 @@ export default function Collaborations() {
         {/* 3-Column Institutional Grid */}
         <div className="row g-4 align-items-stretch mb-4">
 
-          {/* Card 1: Key Collaborations (Vertical Scroll Marquee) */}
+          {/* Card 1: Key Collaborations */}
           <div className="col-lg-4 col-md-6">
             <div className="uni-card h-100 d-flex flex-column anim-fade-up">
               <div className="uni-card-header d-flex align-items-center gap-2 px-3 py-3 text-white">
@@ -91,7 +89,7 @@ export default function Collaborations() {
             </div>
           </div>
 
-          {/* Card 2: Events in Focus (Fade Image Slider) */}
+          {/* Card 2: Events in Focus */}
           <div className="col-lg-4 col-md-6">
             <div className="uni-card h-100 d-flex flex-column anim-fade-up">
               <div className="uni-card-header d-flex align-items-center gap-2 px-3 py-3 text-white">
@@ -103,9 +101,8 @@ export default function Collaborations() {
                   {posterImages.map((img, idx) => (
                     <div
                       key={idx}
-                      className={`position-absolute top-0 start-0 w-100 h-100 transition-fade ${
-                        idx === currentImgIndex ? 'image-scale-enter' : 'image-scale-exit'
-                      }`}
+                      className={`position-absolute top-0 start-0 w-100 h-100 transition-fade ${idx === currentImgIndex ? 'image-scale-enter' : 'image-scale-exit'
+                        }`}
                     >
                       <img src={img.src} alt={img.title} className="img-fluid w-100 h-100 object-fit-cover" />
                       <div className="position-absolute bottom-0 start-0 end-0 p-2 px-3 bg-dark bg-opacity-75 text-white">
@@ -136,8 +133,8 @@ export default function Collaborations() {
                 <p className="text-secondary fs-7 mb-3 lh-base fw-medium">
                   "Connecting over 5000+ women entrepreneurs and artisans directly with consumers across India."
                 </p>
-                <Link 
-                  href="/gallery" 
+                <Link
+                  href="/gallery"
                   className="btn fw-bold text-white w-100 rounded-pill py-2 d-flex align-items-center justify-content-center gap-2 shadow-sm border-0"
                   style={{ backgroundColor: '#0056bf', transition: 'all 0.3s ease' }}
                 >
@@ -156,11 +153,11 @@ export default function Collaborations() {
             <Award size={20} className="text-warning" />
             <span className="fw-bold">Annual Flagship Showcase - Tarang Utsav</span>
           </div>
-          <div className="uni-card-body p-0 overflow-hidden">
+          <div className="uni-card-body p-0 overflow-hidden w-100">
             <img
-              src="https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=1200"
+              src="/images/upcoming-images/tarang-goa-utshav-picture.webp"
               alt="Utsav Banner"
-              className="img-fluid w-100 object-fit-cover bottom-banner-img"
+              className="bottom-banner-img"
             />
           </div>
         </div>

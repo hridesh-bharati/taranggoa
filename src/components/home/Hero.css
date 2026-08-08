@@ -22,13 +22,19 @@
 .hero-title {
   color: #1c1d1f;
   font-weight: 800;
-  font-size: clamp(2.2rem, 3.8vw, 3.2rem); /* Font bada kiya h PC ke liye */
+  font-size: clamp(2.2rem, 3.8vw, 3.2rem);
+  /* Font bada kiya h PC ke liye */
   line-height: 1.12;
   letter-spacing: -0.5px;
 }
 
-.text-blue-custom { color: #0a58ca !important; }
-.text-orange-custom { color: #e64a19 !important; }
+.text-blue-custom {
+  color: #0a58ca !important;
+}
+
+.text-orange-custom {
+  color: #e64a19 !important;
+}
 
 /* Multi-color Line Divider */
 .hero-line-divider {
@@ -41,7 +47,8 @@
 /* Paragraph Text Size Fix */
 .hero-desc {
   color: #2b2b2b;
-  font-size: 0.92rem; /* Thoda bada readable font */
+  font-size: 0.92rem;
+  /* Thoda bada readable font */
   line-height: 1.5;
   font-weight: 500;
   max-width: 480px;
@@ -55,7 +62,8 @@
   color: #ffffff !important;
   font-size: 0.9rem;
   padding: 10px 22px;
-  opacity: 1 !important; /* Forces visibility so it doesn't hide */
+  opacity: 1 !important;
+  /* Forces visibility so it doesn't hide */
   transition: all 0.25 ease-in-out;
   box-shadow: 0 4px 12px rgba(0, 86, 191, 0.25);
 }
