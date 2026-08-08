@@ -1,6 +1,3 @@
-// src\controllers\phonepe.controller.js
-import { showToast } from '@/utils/toast';
-
 export const phonePeController = {
   async initiateMembershipPayment({ userDetails, onError }) {
     try {
@@ -19,7 +16,7 @@ export const phonePeController = {
         throw new Error(data.message || 'PhonePe payment initialization failed.');
       }
 
-      // PhonePe PG Checkout Page par Redirect karein
+      // PhonePe PG Checkout Page par Redirect
       if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
@@ -28,5 +25,5 @@ export const phonePeController = {
     } catch (err) {
       onError(err);
     }
-  }
+  },
 };

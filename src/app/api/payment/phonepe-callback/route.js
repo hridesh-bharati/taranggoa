@@ -1,10 +1,12 @@
-// src\app\api\payment\phonepe - callback\route.js
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import adminApp from '@/lib/firebase-admin';
+import { getFirestore } from 'firebase-admin/firestore';
+
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL?.replace(/\/$/, '') || 'http://localhost:3000';
 
   try {
     const formData = await request.formData();
@@ -18,15 +20,16 @@ export async function POST(request) {
 
     if (code === 'PAYMENT_SUCCESS' && userEmail) {
       const cleanEmail = userEmail.toLowerCase().trim();
-      const membershipRef = doc(db, 'memberships', cleanEmail);
+      const db = getFirestore(adminApp);
+      const membershipRef = db.collection('memberships').doc(cleanEmail);
 
       const startDate = new Date();
       const expiryDate = new Date();
       expiryDate.setFullYear(startDate.getFullYear() + 1);
 
-      // Fetch existing membership to preserve previous details
-      const existingDoc = await getDoc(membershipRef);
-      const existingData = existingDoc.exists() ? existingDoc.data() : {};
+      // Fetch existing document via Admin SDK
+      const docSnap = await membershipRef.get();
+      const existingData = docSnap.exists ? docSnap.data() : {};
 
       const newPayment = {
         amount: amountPaid,
@@ -38,9 +41,8 @@ export async function POST(request) {
 
       const paymentHistory = existingData.paymentHistory ? [...existingData.paymentHistory, newPayment] : [newPayment];
 
-      // Save / Update Firestore Membership
-      await setDoc(
-        membershipRef,
+      // Merge and update Membership
+      await membershipRef.set(
         {
           email: cleanEmail,
           status: 'approved',
