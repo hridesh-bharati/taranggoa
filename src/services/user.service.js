@@ -1,3 +1,4 @@
+// src\services\user.service.js
 import { db } from '@/lib/firebase';
 import { collection, getDocs, doc, updateDoc, deleteDoc, query } from 'firebase/firestore';
 

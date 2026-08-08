@@ -15,7 +15,7 @@ export async function POST(request) {
 
     if (!merchantId || !saltKey || !baseUrl) {
       return NextResponse.json(
-        { success: false, message: 'PhonePe environment configuration missing.' },
+        { success: false, message: 'PhonePe env variables missing.' },
         { status: 500 }
       );
     }
@@ -27,12 +27,11 @@ export async function POST(request) {
     const email = String(userDetails.email || '').trim().toLowerCase();
     const phone = String(userDetails.phone || '').replace(/\D/g, '');
 
-    if (!email) {
-      return NextResponse.json({ success: false, message: 'User email is required.' }, { status: 400 });
-    }
-
-    if (!phone || phone.length !== 10) {
-      return NextResponse.json({ success: false, message: 'Valid 10-digit mobile number is required.' }, { status: 400 });
+    if (!email || !phone || phone.length !== 10) {
+      return NextResponse.json(
+        { success: false, message: 'Valid email and 10-digit mobile required.' },
+        { status: 400 }
+      );
     }
 
     const merchantTransactionId = `TXN${Date.now()}${crypto.randomInt(100000, 999999)}`;
@@ -76,33 +75,17 @@ export async function POST(request) {
       phonePeData = { raw: rawResponse };
     }
 
-    console.log('PhonePe HTTP Status:', phonePeRes.status);
-    console.log('PhonePe API Response:', JSON.stringify(phonePeData, null, 2));
-
     const redirectUrl = phonePeData?.data?.instrumentResponse?.redirectInfo?.url;
 
     if (phonePeRes.ok && phonePeData?.success === true && redirectUrl) {
-      return NextResponse.json({
-        success: true,
-        redirectUrl,
-        transactionId: merchantTransactionId,
-      });
+      return NextResponse.json({ success: true, redirectUrl, transactionId: merchantTransactionId });
     }
 
     return NextResponse.json(
-      {
-        success: false,
-        message: phonePeData?.message || phonePeData?.code || 'PhonePe Payment Initialization Failed',
-        code: phonePeData?.code || null,
-        phonePeStatus: phonePeRes.status,
-      },
+      { success: false, message: phonePeData?.message || 'PhonePe payment initiation failed.' },
       { status: 400 }
     );
   } catch (error) {
-    console.error('PhonePe Initiate Error:', error);
-    return NextResponse.json(
-      { success: false, message: error?.message || 'Server error initiating PhonePe Payment.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error?.message || 'Server error' }, { status: 500 });
   }
 }

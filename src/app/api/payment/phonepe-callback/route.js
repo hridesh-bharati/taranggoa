@@ -27,7 +27,6 @@ export async function POST(request) {
       const expiryDate = new Date();
       expiryDate.setFullYear(startDate.getFullYear() + 1);
 
-      // Fetch existing document via Admin SDK
       const docSnap = await membershipRef.get();
       const existingData = docSnap.exists ? docSnap.data() : {};
 
@@ -41,7 +40,6 @@ export async function POST(request) {
 
       const paymentHistory = existingData.paymentHistory ? [...existingData.paymentHistory, newPayment] : [newPayment];
 
-      // Merge and update Membership
       await membershipRef.set(
         {
           email: cleanEmail,
@@ -58,21 +56,12 @@ export async function POST(request) {
         { merge: true }
       );
 
-      return NextResponse.redirect(
-        `${baseUrl}/user/user-membership-page?status=success&txn=${transactionId}`,
-        { status: 303 }
-      );
+      return NextResponse.redirect(`${baseUrl}/user/user-membership-page?status=success&txn=${transactionId}`, { status: 303 });
     }
 
-    return NextResponse.redirect(
-      `${baseUrl}/user/user-membership-page?status=failed`,
-      { status: 303 }
-    );
+    return NextResponse.redirect(`${baseUrl}/user/user-membership-page?status=failed`, { status: 303 });
   } catch (error) {
-    console.error('PhonePe Callback Processing Error:', error);
-    return NextResponse.redirect(
-      `${baseUrl}/user/user-membership-page?status=error`,
-      { status: 303 }
-    );
+    console.error('PhonePe Callback Error:', error);
+    return NextResponse.redirect(`${baseUrl}/user/user-membership-page?status=error`, { status: 303 });
   }
 }

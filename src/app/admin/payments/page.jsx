@@ -10,7 +10,7 @@ export default function AdminPaymentsPage() {
   useEffect(() => {
     async function loadPayments() {
       try {
-        const data = await paymentController.fetchPayments();
+        const data = await paymentController.fetchAllPayments();
         setPayments(data);
       } catch (err) {
         console.error('Failed to load payments:', err);
@@ -84,15 +84,10 @@ export default function AdminPaymentsPage() {
                     </td>
                     <td>
                       <span
-                        className={`badge rounded-pill fs-9 ${p.gateway?.toLowerCase().includes('phonepe')
-                          ? 'text-white'
-                          : 'bg-info text-dark'
-                          }`}
-                        style={
-                          p.gateway?.toLowerCase().includes('phonepe')
-                            ? { backgroundColor: '#5f259f' }
-                            : {}
-                        }
+                        className="badge rounded-pill fs-9 text-white"
+                        style={{
+                          backgroundColor: p.gateway?.toLowerCase().includes('phonepe') ? '#5f259f' : '#0d6efd',
+                        }}
                       >
                         {p.gateway || 'PhonePe'}
                       </span>
