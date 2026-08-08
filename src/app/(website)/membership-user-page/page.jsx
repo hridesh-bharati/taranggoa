@@ -1,9 +1,10 @@
+// src/app/(website)/membership-user-page/page.jsx
 'use client';
 
 import { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
-import { phonePeController } from '@/controllers/phonepe.controller';
+import { paymentController } from '@/controllers/payment.controller';
 import { showToast } from '@/utils/toast';
 import '@/styles/membership.css';
 import {
@@ -73,11 +74,11 @@ export default function MembershipClientPage() {
     setCurrentStep(3);
   };
 
-  // Step 3 PhonePe Payment Initiation
+  // Step 3 PhonePe Payment Initiation via Single Controller
   const handlePhonePePayment = () => {
     setLoading(true);
 
-    phonePeController.initiateMembershipPayment({
+    paymentController.initiateMembershipPayment({
       userDetails: form,
       onError: (err) => {
         showToast('error', err.message || 'PhonePe payment initialization failed.');
@@ -307,17 +308,17 @@ export default function MembershipClientPage() {
                 <div className="d-flex flex-column gap-2 small">
                   <div className="d-flex justify-content-between align-items-center pb-1 border-bottom">
                     <span className="text-muted fw-semibold">Applicant Name</span>
-                    <strong className="text-dark">{form.fullName || 'Hridesh'}</strong>
+                    <strong className="text-dark">{form.fullName}</strong>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center pb-1 border-bottom">
                     <span className="text-muted fw-semibold">Registered Email</span>
-                    <strong className="text-dark">{form.email || 'hridesh027@gmail.com'}</strong>
+                    <strong className="text-dark">{form.email}</strong>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center pb-1 border-bottom">
                     <span className="text-muted fw-semibold">Business Establishment</span>
-                    <strong className="text-dark">{form.businessName || 'Drishtee Computer Centre'}</strong>
+                    <strong className="text-dark">{form.businessName}</strong>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center pb-1 border-bottom">
