@@ -131,7 +131,7 @@ export default function AdminMembershipsPage() {
               <Sparkles size={20} />
             </div>
             <div>
-              <h4 className="fw-bold text-white mb-0 fs-6 fs-md-4">Women Memberships</h4>
+              <h4 className="fw-bold text-white mb-0 fs-6 fs-md-4">Memberships</h4>
               <p className="text-white-50 small mb-0 fw-semibold d-none d-sm-block">
                 Manage PAN India membership submissions & applications
               </p>

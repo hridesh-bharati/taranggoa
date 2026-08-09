@@ -1,4 +1,3 @@
-// src\app\admin\members\page.jsx isme aa rha  user ka pic saare DB cooneected nhi h kjya.. email key bole the nn
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,10 +5,12 @@ import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/services/user.service';
 import { showToast } from '@/utils/toast';
+import { db } from '@/lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import { Users, Mail, Phone, ShieldCheck, UserCheck, Loader2, Trash2 } from 'lucide-react';
 
 export default function AdminMembersPage() {
-  const { user: currentUser, isAdmin } = useAuth();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
@@ -17,8 +18,34 @@ export default function AdminMembersPage() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const data = await userService.getAllUsers();
-      setUsers(data || []);
+      // 1. Fetch users and memberships concurrently
+      const [usersData, membershipsSnap] = await Promise.all([
+        userService.getAllUsers().catch(() => []),
+        getDocs(collection(db, 'memberships')).catch(() => ({ docs: [] })),
+      ]);
+
+      // 2. Map Profile Photos from Memberships using Email as Key
+      const photoMap = {};
+      membershipsSnap.docs.forEach((docSnap) => {
+        const m = docSnap.data();
+        const emailKey = (m.email || docSnap.id || '').toLowerCase().trim();
+        if (m.photoURL || m.image) {
+          photoMap[emailKey] = m.photoURL || m.image;
+        }
+      });
+
+      // 3. Sync & Enrich Users List with Photos
+      const enrichedUsers = (usersData || []).map((u) => {
+        const userEmailKey = (u.email || '').toLowerCase().trim();
+        const syncedPhoto = u.photoURL || u.image || photoMap[userEmailKey] || photoMap[u.uid] || '';
+
+        return {
+          ...u,
+          photoURL: syncedPhoto,
+        };
+      });
+
+      setUsers(enrichedUsers);
     } catch {
       showToast('error', 'Failed to load users list');
     } finally {
@@ -30,9 +57,12 @@ export default function AdminMembersPage() {
     fetchUsers();
   }, []);
 
-  const handleDeleteUser = async (uid, email) => {
-    // Prevent deletion if targeting the main admin or current logged-in admin
-    if (email?.toLowerCase() === currentUser?.email?.toLowerCase() || isAdmin) {
+  const handleDeleteUser = async (uid, email, role) => {
+    const currentAdminEmail = currentUser?.email?.toLowerCase()?.trim();
+    const targetEmail = email?.toLowerCase()?.trim();
+
+    // Fix: Check if target user is Admin or Main Admin email
+    if (targetEmail === currentAdminEmail || role === 'admin' || targetEmail === 'hridesh027@gmail.com') {
       showToast('error', 'Admin account cannot be deleted!');
       return;
     }
@@ -52,11 +82,10 @@ export default function AdminMembersPage() {
   };
 
   return (
-    <div className="container-fluid  p-0 pb-3 mb-5  px-md-4">
+    <div className="container-fluid p-0 pb-3 mb-5 px-md-4">
 
       {/* Compact Gradient Header */}
-      <div
-        className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient">
+      <div className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient">
         <div className="d-flex align-items-center justify-content-between">
           <div>
             <h5 className="fw-bold text-white m-0 d-flex align-items-center gap-2">
@@ -97,7 +126,7 @@ export default function AdminMembersPage() {
                 </thead>
                 <tbody>
                   {users.map((u) => {
-                    const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === currentUser?.email?.toLowerCase();
+                    const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === 'hridesh027@gmail.com';
 
                     return (
                       <tr key={u.uid}>
@@ -149,7 +178,7 @@ export default function AdminMembersPage() {
                         <td className="pe-4 py-3 text-end">
                           {!isTargetAdmin ? (
                             <button
-                              onClick={() => handleDeleteUser(u.uid, u.email)}
+                              onClick={() => handleDeleteUser(u.uid, u.email, u.role)}
                               disabled={deletingId === u.uid}
                               className="btn btn-sm btn-outline-danger rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
                               title="Delete Member"
@@ -176,7 +205,7 @@ export default function AdminMembersPage() {
           {/* Mobile Card Stack View */}
           <div className="d-md-none d-flex flex-column gap-3">
             {users.map((u) => {
-              const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === currentUser?.email?.toLowerCase();
+              const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === 'hridesh027@gmail.com';
 
               return (
                 <div key={u.uid} className="card border-0 rounded-4 shadow-sm p-3 bg-white">
@@ -191,7 +220,7 @@ export default function AdminMembersPage() {
                           {u.photoURL ? (
                             <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
                           ) : (
-                            <span className="fw-bold text-primary ms-2">
+                            <span className="fw-bold text-primary">
                               {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
                             </span>
                           )}
@@ -202,7 +231,7 @@ export default function AdminMembersPage() {
 
                     {!isTargetAdmin && (
                       <button
-                        onClick={() => handleDeleteUser(u.uid, u.email)}
+                        onClick={() => handleDeleteUser(u.uid, u.email, u.role)}
                         disabled={deletingId === u.uid}
                         className="btn btn-sm btn-outline-danger border-0 p-1"
                         title="Delete Member"
