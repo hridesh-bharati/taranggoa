@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase-admin';
+import admin from '@/lib/firebase-admin';
 
 export const runtime = 'nodejs';
-const COOKIE_NAME = 'session';
-const SESSION_DURATION = 5 * 24 * 60 * 60 * 1000; // 5 days
+export const dynamic = 'force-dynamic';
 
 export async function POST(request) {
   try {
@@ -11,49 +10,37 @@ export async function POST(request) {
 
     if (!idToken) {
       return NextResponse.json(
-        { success: false, message: 'ID token required' },
+        { success: false, message: 'ID Token required' },
         { status: 400 }
       );
     }
 
-    // Verify Firebase ID token fast locally (NO revocation network trip)
-    const decodedToken = await adminAuth.verifyIdToken(idToken);
+    // 5 days session cookie duration
+    const expiresIn = 60 * 60 * 24 * 5 * 1000;
+    const sessionCookie = await admin.auth().createSessionCookie(idToken, { expiresIn });
 
-    if (!decodedToken?.uid) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid Firebase token' },
-        { status: 401 }
-      );
-    }
+    const response = NextResponse.json({ success: true, message: 'Session created' });
 
-    // Create secure server-side session cookie
-    const sessionCookie = await adminAuth.createSessionCookie(idToken, {
-      expiresIn: SESSION_DURATION,
-    });
-
-    const response = NextResponse.json({
-      success: true,
-      message: 'Session created',
-    });
-
-    response.cookies.set(COOKIE_NAME, sessionCookie, {
+    response.cookies.set('session', sessionCookie, {
+      maxAge: expiresIn / 1000,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
       path: '/',
-      maxAge: 5 * 24 * 60 * 60,
+      sameSite: 'lax',
     });
 
     return response;
   } catch (error) {
-    console.error('SESSION ERROR:', {
-      code: error?.code,
-      message: error?.message,
-    });
-
+    console.error('Session API Error:', error);
     return NextResponse.json(
-      { success: false, message: 'Unable to create secure session' },
-      { status: 401 }
+      { success: false, message: error.message || 'Failed to create session' },
+      { status: 500 }
     );
   }
+}
+
+export async function DELETE() {
+  const response = NextResponse.json({ success: true, message: 'Session deleted' });
+  response.cookies.set('session', '', { maxAge: 0, path: '/' });
+  return response;
 }
