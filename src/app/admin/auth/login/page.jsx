@@ -11,7 +11,11 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const { login, loginWithGoogle, loading } = useAuth();
+  // Isolated Local Loading States
+  const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
+  const { login, loginWithGoogle } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -22,19 +26,23 @@ export default function LoginPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       await login(email, password);
     } catch (err) {
       setError(err.message || 'Login failed');
+      setSubmitting(false);
     }
   };
 
   const handleGoogleLogin = async () => {
     setError('');
+    setGoogleSubmitting(true);
     try {
       await loginWithGoogle();
     } catch (err) {
       setError(err.message || 'Google login failed');
+      setGoogleSubmitting(false);
     }
   };
 
@@ -70,7 +78,6 @@ export default function LoginPage() {
           <div className="mb-3">
             <div className="d-flex justify-content-between align-items-center mb-1">
               <label className="form-label fw-bold fs-7 text-dark m-0">Password *</label>
-              {/* FIXED ROUTE */}
               <Link href="/admin/auth/forgot-password" className="text-logo-orange fs-7 fw-bold text-decoration-none">Forgot?</Link>
             </div>
             <div className="position-relative">
@@ -94,10 +101,10 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting || googleSubmitting}
             className="btn bg-logo-orange text-white rounded-pill w-100 py-2.5 fw-bold shadow-sm mb-3"
           >
-            {loading ? 'Logging In...' : 'Log In'}
+            {submitting ? 'Logging In...' : 'Log In'}
           </button>
         </form>
 
@@ -109,11 +116,11 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleLogin}
           type="button"
-          disabled={loading}
+          disabled={submitting || googleSubmitting}
           className="btn btn-outline-secondary rounded-pill w-100 py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
         >
-          {loading ? (
-            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+          {googleSubmitting ? (
+            <span className="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true" />
           ) : (
             <>
               <i className="bi bi-google text-danger fs-6"></i>

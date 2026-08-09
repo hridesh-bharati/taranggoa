@@ -13,11 +13,7 @@ const adminApp =
   getApps().length > 0
     ? getApps()[0]
     : initializeApp({
-      credential: cert({
-        projectId,
-        clientEmail,
-        privateKey,
-      }),
+      credential: cert({ projectId, clientEmail, privateKey, }),
     });
 
 export const adminAuth = getAuth(adminApp);

@@ -11,13 +11,16 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
-  const { signup, loginWithGoogle, loading } = useAuth();
+  // Isolated Local Loading States
+  const [submitting, setSubmitting] = useState(false);
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
+
+  const { signup, loginWithGoogle } = useAuth();
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Client-side Validations
     if (!email || !email.includes('@')) {
       setError('Please enter a valid email address.');
       return;
@@ -33,19 +36,23 @@ export default function SignupPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       await signup(email, password, confirmPassword);
     } catch (err) {
       setError(err.message || 'Signup failed');
+      setSubmitting(false);
     }
   };
 
   const handleGoogleSignup = async () => {
     setError('');
+    setGoogleSubmitting(true);
     try {
       await loginWithGoogle();
     } catch (err) {
       setError(err.message || 'Google signup failed');
+      setGoogleSubmitting(false);
     }
   };
 
@@ -103,10 +110,10 @@ export default function SignupPage() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={submitting || googleSubmitting}
             className="btn bg-logo-orange text-white rounded-pill w-100 py-2.5 fw-bold shadow-sm mb-3"
           >
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {submitting ? 'Creating Account...' : 'Sign Up'}
           </button>
         </form>
 
@@ -118,11 +125,11 @@ export default function SignupPage() {
         <button
           onClick={handleGoogleSignup}
           type="button"
-          disabled={loading}
+          disabled={submitting || googleSubmitting}
           className="btn btn-outline-secondary rounded-pill w-100 py-2.5 fw-bold d-flex align-items-center justify-content-center gap-2"
         >
-          {loading ? (
-            <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true" />
+          {googleSubmitting ? (
+            <span className="spinner-border spinner-border-sm text-danger" role="status" aria-hidden="true" />
           ) : (
             <>
               <i className="bi bi-google text-danger fs-6"></i>
