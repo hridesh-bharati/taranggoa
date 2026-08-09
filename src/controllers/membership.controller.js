@@ -1,3 +1,4 @@
+// src\controllers\membership.controller.js
 import { membershipService } from '@/services/membership.service';
 
 export const membershipController = {

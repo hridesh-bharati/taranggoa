@@ -13,12 +13,12 @@ export const paymentService = {
 
     const data = await res.json();
     if (!res.ok || !data.success) {
-      throw new Error(data.message || 'Payment initialization failed.');
+      throw new Error(data.message || 'PhonePe payment initialization failed.');
     }
     return data;
   },
 
-  // 2. Fetch All Membership Payments
+  // 2. Fetch All Membership Payments (PhonePe Only)
   async getMembershipPayments() {
     const snapshot = await getDocs(collection(db, 'memberships'));
     const payments = [];
@@ -34,7 +34,7 @@ export const paymentService = {
             name: data.fullName || data.name || 'Member',
             amount: item.amount || data.amount || 999,
             paymentId: item.paymentId || data.lastTransactionId || 'N/A',
-            gateway: item.gateway || (data.phonepeMerchantId ? 'PhonePe' : 'Razorpay'),
+            gateway: 'PhonePe',
             status: item.status || data.paymentStatus || 'PAID',
             createdAt: item.date || data.startDate || new Date().toISOString(),
           });
@@ -47,7 +47,7 @@ export const paymentService = {
           name: data.fullName || data.name || 'Member',
           amount: data.amount || 999,
           paymentId: data.lastTransactionId || 'N/A',
-          gateway: data.phonepeMerchantId ? 'PhonePe' : 'Razorpay',
+          gateway: 'PhonePe',
           status: data.paymentStatus || 'PAID',
           createdAt: data.startDate || data.updatedAt || new Date().toISOString(),
         });
@@ -70,7 +70,7 @@ export const paymentService = {
           name: data.name || 'Vendor',
           amount: data.amount || 0,
           paymentId: data.paymentId || data.transactionId || 'N/A',
-          gateway: data.gateway || 'Online',
+          gateway: data.gateway || 'PhonePe',
           status: data.status || 'PAID',
           createdAt: data.createdAt || new Date().toISOString(),
         };

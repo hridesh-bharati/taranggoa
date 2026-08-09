@@ -1,3 +1,4 @@
+// src\services\membership.service.js
 import { db } from '@/lib/firebase';
 import {
   collection,
@@ -15,7 +16,7 @@ import {
 const COLLECTION = 'memberships';
 
 export const membershipService = {
-  // 1. Create 1-Year Membership Document AFTER Payment
+  // 1. Create 1-Year Membership Document AFTER PhonePe Payment Success
   async createPaidMembership(formData, paymentResponse) {
     if (!formData.email) throw new Error('Email is required as Primary Key.');
 
@@ -39,9 +40,9 @@ export const membershipService = {
       status: 'approved',
       paymentStatus: 'PAID',
       membershipStatus: 'ACTIVE',
-      razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
-      razorpayOrderId: paymentResponse.razorpay_order_id || '',
-      razorpaySignature: paymentResponse.razorpay_signature || '',
+      gateway: 'PhonePe',
+      phonepeMerchantId: paymentResponse?.merchantId || '',
+      lastTransactionId: paymentResponse?.transactionId || paymentResponse?.paymentId || '',
       createdAt: serverTimestamp(),
       startDate: startDate.toISOString(),
       expiryDate: expiryDate.toISOString(),
