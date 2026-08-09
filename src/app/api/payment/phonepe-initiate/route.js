@@ -4,6 +4,7 @@ import crypto from 'crypto';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+// PhonePe Production URL
 const PROD_URL = 'https://api.phonepe.com/apis/hermes/pg/v1/pay';
 
 export async function POST(request) {
@@ -12,7 +13,7 @@ export async function POST(request) {
     const saltKey = process.env.PHONEPE_SALT_KEY?.trim();
     const saltIndex = process.env.PHONEPE_SALT_INDEX?.trim() || '1';
 
-    // Automatically detect production Vercel domain if env is localhost or missing
+    // Vercel Domain / Host detection
     const host = request.headers.get('host') || 'taranggoa-three.vercel.app';
     const protocol = host.includes('localhost') ? 'http' : 'https';
 
@@ -22,8 +23,9 @@ export async function POST(request) {
     }
 
     if (!merchantId || !saltKey) {
+      console.error('PhonePe Env Missing:', { merchantId: Boolean(merchantId), saltKey: Boolean(saltKey) });
       return NextResponse.json(
-        { success: false, message: 'PhonePe Merchant ID or Salt Key missing in environment.' },
+        { success: false, message: 'PhonePe Merchant Credentials Missing in Server Env.' },
         { status: 500 }
       );
     }
@@ -42,32 +44,46 @@ export async function POST(request) {
       );
     }
 
+    // Clean IDs
     const merchantTransactionId = `TXN${Date.now()}${crypto.randomInt(100000, 999999)}`;
-    const merchantUserId = `USER_${crypto.createHash('sha256').update(email).digest('hex').slice(0, 20)}`;
+    const merchantUserId = `USER_${crypto.createHash('sha256').update(email).digest('hex').slice(0, 16)}`;
     const callbackUrl = `${baseUrl}/api/payment/phonepe-callback?email=${encodeURIComponent(email)}`;
 
+    // PhonePe Payload Structure
     const payload = {
-      merchantId,
-      merchantTransactionId,
-      merchantUserId,
-      amount: Math.round(amount * 100),
+      merchantId: merchantId,
+      merchantTransactionId: merchantTransactionId,
+      merchantUserId: merchantUserId,
+      amount: Math.round(amount * 100), // in paise
       redirectUrl: callbackUrl,
       redirectMode: 'POST',
-      callbackUrl,
+      callbackUrl: callbackUrl,
       mobileNumber: phone,
-      paymentInstrument: { type: 'PAY_PAGE' },
+      paymentInstrument: {
+        type: 'PAY_PAGE'
+      }
     };
 
+    // 1. Base64 Payload
     const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-    const checksumString = base64Payload + '/pg/v1/pay' + saltKey;
-    const sha256 = crypto.createHash('sha256').update(checksumString).digest('hex');
+
+    // 2. SHA256 Checksum Calculation: SHA256(base64Payload + "/pg/v1/pay" + saltKey) + "###" + saltIndex
+    const apiEndpoint = '/pg/v1/pay';
+    const checksumString = base64Payload + apiEndpoint + saltKey;
+
+    const sha256 = crypto
+      .createHash('sha256')
+      .update(checksumString)
+      .digest('hex');
+
     const xVerifyHeader = `${sha256}###${saltIndex}`;
 
+    // PhonePe API Call
     const phonePeRes = await fetch(PROD_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'X-VERIFY': xVerifyHeader,
       },
       body: JSON.stringify({ request: base64Payload }),
@@ -83,6 +99,8 @@ export async function POST(request) {
       phonePeData = { raw: rawResponse };
     }
 
+    console.log('PhonePe API Status:', phonePeRes.status, phonePeData);
+
     const redirectUrl = phonePeData?.data?.instrumentResponse?.redirectInfo?.url;
 
     if (phonePeRes.ok && phonePeData?.success === true && redirectUrl) {
@@ -93,18 +111,16 @@ export async function POST(request) {
       });
     }
 
-    console.error('PhonePe API Error Response:', phonePeData);
-
     return NextResponse.json(
       {
         success: false,
-        message: phonePeData?.message || phonePeData?.code || 'PhonePe Payment Initialization Failed',
-        phonePeCode: phonePeData?.code || null,
+        message: phonePeData?.message || phonePeData?.code || '401 Unauthorized Gateway Request',
+        phonePeCode: phonePeData?.code || String(phonePeRes.status),
       },
       { status: 400 }
     );
   } catch (error) {
-    console.error('Server Initiate Catch Error:', error);
+    console.error('Server Catch Error:', error);
     return NextResponse.json(
       { success: false, message: error?.message || 'Server error initiating payment.' },
       { status: 500 }
