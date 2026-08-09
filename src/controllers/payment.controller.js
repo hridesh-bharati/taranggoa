@@ -1,3 +1,4 @@
+// src\controllers\payment.controller.js
 import { paymentService } from '@/services/payment.service';
 
 export const paymentController = {
