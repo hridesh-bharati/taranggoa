@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { eventController } from '@/controllers/event.controller';
-import { Trash2, Edit3, Loader2, Calendar, MapPin, Image as ImageIcon, Plus, Images, X, Search } from 'lucide-react';
+import { Trash2, Edit3, Loader2, Calendar, MapPin, Image as ImageIcon, Plus, Images, X, Search, UploadCloud } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminEventDetailsPage() {
@@ -45,6 +45,27 @@ export default function AdminEventDetailsPage() {
     });
   };
 
+  // Edit me Nayi Images Processing
+  const handleEditImagesChange = async (e) => {
+    try {
+      const newImages = await eventController.processImageFiles(e.target.files);
+      setEditForm((prev) => ({
+        ...prev,
+        images: [...prev.images, ...newImages]
+      }));
+    } catch {
+      alert('Failed to process image files.');
+    }
+  };
+
+  // Edit me Se Image Hataney Ka Handler
+  const handleRemoveEditImage = (indexToRemove) => {
+    setEditForm((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, idx) => idx !== indexToRemove)
+    }));
+  };
+
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
@@ -53,7 +74,7 @@ export default function AdminEventDetailsPage() {
       setEditIdItem(null);
       await loadEvents();
     } catch (err) {
-      alert(err.message);
+      alert(err.message || 'Failed to update event');
     } finally {
       setUpdating(false);
     }
@@ -71,14 +92,14 @@ export default function AdminEventDetailsPage() {
       {/* Header & Search */}
       <div className="d-flex align-items-center justify-content-between gap-2 mb-4 pb-2 border-bottom">
         <h4 className="fw-extrabold text-dark m-0">Events ({filtered.length})</h4>
-        
+
         <div className="d-flex gap-2">
-          <input 
-            type="text" 
-            placeholder="Search..." 
-            className="form-control form-control-sm rounded-pill px-3" 
-            value={search} 
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }} 
+          <input
+            type="text"
+            placeholder="Search..."
+            className="form-control form-control-sm rounded-pill px-3"
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
           />
           <Link href="/admin/event" className="btn btn-sm bg-logo-orange text-white rounded-pill px-3 fw-bold text-nowrap d-flex align-items-center gap-1">
             <Plus size={16} /> New
@@ -94,13 +115,71 @@ export default function AdminEventDetailsPage() {
             <button type="button" onClick={() => setEditIdItem(null)} className="btn btn-sm"><X size={16} /></button>
           </div>
           <div className="row g-2">
-            <div className="col-md-6"><input className="form-control fs-7" value={editForm.title} onChange={e => setEditForm({...editForm, title: e.target.value})} required /></div>
-            <div className="col-md-3"><input type="date" className="form-control fs-7" value={editForm.date} onChange={e => setEditForm({...editForm, date: e.target.value})} required /></div>
-            <div className="col-md-3"><input className="form-control fs-7" value={editForm.location} onChange={e => setEditForm({...editForm, location: e.target.value})} required /></div>
-            <div className="col-12"><textarea className="form-control fs-7" rows="2" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})} required /></div>
+            <div className="col-md-6">
+              <label className="form-label small fw-bold mb-1">Title</label>
+              <input className="form-control fs-7" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} required />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label small fw-bold mb-1">Date</label>
+              <input type="date" className="form-control fs-7" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} required />
+            </div>
+            <div className="col-md-3">
+              <label className="form-label small fw-bold mb-1">Location</label>
+              <input className="form-control fs-7" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} required />
+            </div>
+            <div className="col-12">
+              <label className="form-label small fw-bold mb-1">Description</label>
+              <textarea className="form-control fs-7" rows="2" value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} required />
+            </div>
+
+            {/* Images Edit Field */}
+            <div className="col-12 mt-2">
+              <label className="form-label small fw-bold mb-1 d-flex align-items-center justify-content-between">
+                <span className="d-flex align-items-center gap-1">
+                  <UploadCloud size={16} className="text-primary" /> Update / Add Images
+                </span>
+                <span className="badge bg-primary-subtle text-primary border border-primary-subtle fs-8">
+                  {editForm.images.length} Images
+                </span>
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                className="form-control form-control-sm rounded-3 py-1 fs-7"
+                onChange={handleEditImagesChange}
+              />
+
+              {/* Edit Image Previews */}
+              {editForm.images.length > 0 && (
+                <div className="mt-2 row g-2">
+                  {editForm.images.map((imgSrc, idx) => (
+                    <div key={idx} className="col-3 col-md-2 position-relative">
+                      <div className="rounded-3 overflow-hidden border bg-light position-relative" style={{ height: '60px' }}>
+                        <img src={imgSrc} alt={`Preview ${idx}`} className="w-100 h-100 object-fit-cover" />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveEditImage(idx)}
+                          className="btn btn-danger p-0 rounded-circle position-absolute top-0 end-0 m-1 d-flex align-items-center justify-content-center"
+                          style={{ width: '18px', height: '18px', fontSize: '10px' }}
+                          title="Remove image"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          <div className="d-flex justify-content-end gap-2 mt-2">
-            <button type="submit" disabled={updating} className="btn btn-sm btn-primary rounded-pill px-3">{updating ? 'Saving...' : 'Save'}</button>
+
+          <div className="d-flex justify-content-end gap-2 mt-3">
+            <button type="button" onClick={() => setEditIdItem(null)} className="btn btn-sm btn-light rounded-pill px-3">Cancel</button>
+            <button type="submit" disabled={updating} className="btn btn-sm btn-primary rounded-pill px-3">
+              {updating ? 'Saving...' : 'Save Changes'}
+            </button>
           </div>
         </form>
       )}

@@ -99,7 +99,7 @@ export default function MembershipClientPage() {
       <div className="container-fluid container-lg py-4 flex-grow-1">
 
         {/* Top Pagination Stepper */}
-        <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white p-3 p-md-4 w-100">
+        <div className="card border-0 shadow-sm rounded-3 mb-4 bg-white p-1 p-md-4 w-100">
           <div className="d-flex justify-content-between align-items-center position-relative w-100 px-2 px-md-5">
             <div className="position-absolute top-50 start-0 end-0 translate-middle-y bg-secondary bg-opacity-20" style={{ height: '4px', zIndex: 1, margin: '0 40px' }}></div>
             <div
@@ -294,7 +294,7 @@ export default function MembershipClientPage() {
                 <CreditCard size={32} />
               </div>
 
-              <h5 className="fw-bold text-dark mb-1">Complete Payment via PhonePe</h5>
+              <h5 className="fw-bold text-dark mb-1">Complete Payment</h5>
               <p className="text-muted small mb-4">
                 You will be redirected securely to PhonePe UPI / Net Banking / Card Checkout.
               </p>

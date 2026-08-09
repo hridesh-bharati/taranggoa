@@ -1,3 +1,4 @@
+// src\app\api\upload\route.js
 import { NextResponse } from 'next/server';
 import { uploadImageToCloudinary } from '@/lib/cloudinary';
 
@@ -20,7 +21,7 @@ export async function POST(request) {
 
     const result = await uploadImageToCloudinary(buffer, folder, publicId);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       url: result.secure_url,
       resource_type: result.resource_type || (isVideo ? 'video' : 'image')
     });

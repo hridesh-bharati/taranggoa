@@ -1,15 +1,16 @@
+// src\services\event.service.js
 import { db } from '@/lib/firebase';
-import { 
-  collection, 
-  getDocs, 
-  addDoc, 
+import {
+  collection,
+  getDocs,
+  addDoc,
   updateDoc,
-  deleteDoc, 
-  doc, 
-  query, 
+  deleteDoc,
+  doc,
+  query,
   orderBy,
   limit,
-  serverTimestamp 
+  serverTimestamp
 } from 'firebase/firestore';
 
 export const eventService = {

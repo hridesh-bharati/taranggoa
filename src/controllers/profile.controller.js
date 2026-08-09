@@ -8,7 +8,7 @@ const formatError = (error) => {
   return error.message ? error.message.replace('Firebase: ', '') : 'An unexpected error occurred.';
 };
 
-// 🔴 Helper: Update Photo URL across all user posts in Firestore
+// Helper: Update Photo URL across all user posts in Firestore
 const syncPhotoToUserPosts = async (userId, newPhotoUrl) => {
   try {
     if (!userId || !newPhotoUrl) return;
@@ -48,6 +48,7 @@ export const profileController = {
     }
   },
 
+  // Upload Image to Cloudinary via /api/upload
   async uploadImage(file, userId) {
     if (!userId) throw new Error('User ID is required for image upload.');
 
@@ -61,14 +62,13 @@ export const profileController = {
     });
 
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to upload image');
-    
-    // Add timestamp query parameter to bust browser cache
-    const freshUrl = `${data.url}?v=${Date.now()}`;
-    return freshUrl;
+    if (!res.ok) throw new Error(data.error || 'Failed to upload image to Cloudinary.');
+
+    // Return clean Cloudinary secure URL
+    return data.url;
   },
 
-  async fetchProfile(uid, defaultEmail, onFreshData) {
+  async fetchProfile(uid, defaultEmail, onFreshData, defaultName = '') {
     if (!uid) return null;
     const cachedData = this.getCache(uid);
 
@@ -78,7 +78,7 @@ export const profileController = {
 
       if (!profile) {
         finalData = {
-          name: 'Hridesh',
+          name: defaultName || defaultEmail?.split('@')[0] || 'User',
           email: defaultEmail || '',
           mobile: '',
           about: '',
@@ -104,7 +104,7 @@ export const profileController = {
       await profileService.updateUserProfile(uid, profileData);
       this.setCache(uid, profileData);
 
-      // Sync updated photo in all previous posts
+      // Sync updated Cloudinary photo in all previous posts
       if (profileData.photoURL) {
         await syncPhotoToUserPosts(uid, profileData.photoURL);
       }

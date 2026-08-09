@@ -1,21 +1,22 @@
 import { db } from '@/lib/firebase';
-import { 
-  collection, 
-  addDoc, 
-  onSnapshot, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  orderBy, 
-  serverTimestamp, 
-  arrayUnion, 
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+  arrayUnion,
   arrayRemove,
-  getDoc
+  getDoc,
+  increment
 } from 'firebase/firestore';
 
 export const communityService = {
-  // 1. Create Article / Community Post
+  // 1. Create Post in Firebase with Cloudinary Media URL
   async createCommunityPost(postData) {
     const docRef = await addDoc(collection(db, 'community_posts'), {
       ...postData,
@@ -63,7 +64,7 @@ export const communityService = {
     });
   },
 
-  // 6. Add Discussion Comment
+  // 6. Add Discussion Comment (Atomic increment)
   async addDiscussion(postId, commentData) {
     await addDoc(collection(db, `community_posts/${postId}/discussions`), {
       ...commentData,
@@ -71,27 +72,23 @@ export const communityService = {
     });
 
     const postRef = doc(db, 'community_posts', postId);
-    const postSnap = await getDoc(postRef);
-    const count = (postSnap.data()?.commentsCount || 0) + 1;
-    await updateDoc(postRef, { commentsCount: count });
+    await updateDoc(postRef, { commentsCount: increment(1) });
   },
 
   // 7. Edit Discussion Comment
   async editDiscussion(postId, commentId, newText) {
     const commentRef = doc(db, `community_posts/${postId}/discussions`, commentId);
-    await updateDoc(commentRef, { 
+    await updateDoc(commentRef, {
       text: newText,
-      updatedAt: serverTimestamp() 
+      updatedAt: serverTimestamp()
     });
   },
 
-  // 8. Delete Discussion Comment
+  // 8. Delete Discussion Comment (Atomic decrement)
   async deleteDiscussion(postId, commentId) {
     await deleteDoc(doc(db, `community_posts/${postId}/discussions`, commentId));
 
     const postRef = doc(db, 'community_posts', postId);
-    const postSnap = await getDoc(postRef);
-    const currentCount = postSnap.data()?.commentsCount || 1;
-    await updateDoc(postRef, { commentsCount: Math.max(0, currentCount - 1) });
+    await updateDoc(postRef, { commentsCount: increment(-1) });
   }
 };

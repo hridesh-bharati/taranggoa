@@ -383,13 +383,10 @@ export default function AdminMembershipsPage() {
                   <span className="text-muted">Payment Status:</span> <strong className="text-success">{printData.paymentStatus || 'PAID'}</strong>
                 </div>
                 <div className="col-6 mb-1">
-                  <span className="text-muted">Payment Mode:</span> <strong>Online / Razorpay UPI</strong>
+                  <span className="text-muted">Payment Gateway:</span> <strong>PhonePe PG / UPI</strong>
                 </div>
-                <div className="col-6">
-                  <span className="text-muted">Razorpay Payment ID:</span> <span className="font-monospace fw-bold">{printData.razorpayPaymentId || 'N/A'}</span>
-                </div>
-                <div className="col-6">
-                  <span className="text-muted">Razorpay Order ID:</span> <span className="font-monospace fw-bold">{printData.razorpayOrderId || 'N/A'}</span>
+                <div className="col-12">
+                  <span className="text-muted">PhonePe Transaction ID:</span> <span className="font-monospace fw-bold">{printData.lastTransactionId || 'N/A'}</span>
                 </div>
               </div>
             </div>

@@ -1,8 +1,7 @@
-// src\controllers\membership.controller.js
 import { membershipService } from '@/services/membership.service';
 
 export const membershipController = {
-  // Save Membership in DB only after Payment Success
+  // Save Membership in DB only after PhonePe Payment Success
   async submitPaidMembership(formData, paymentResponse) {
     if (!formData.fullName || !formData.phone || !formData.email) {
       throw new Error('Please fill all required fields.');

@@ -1,4 +1,4 @@
-// src\app\user\user - profile\page.jsx
+// src\app\user\user-profile\page.jsx
 'use client';
 
 import { useState, useEffect } from 'react';

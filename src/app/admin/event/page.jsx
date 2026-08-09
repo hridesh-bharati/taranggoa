@@ -55,10 +55,10 @@ export default function AdminPushEventPage() {
     <div className="container-fluid p-0 p-md-3 pb-5 mb-5">
       <div className="row justify-content-center g-0">
         <div className="col-12 col-lg-9">
-          
+
           {/* Main Card - Full Width on Mobile */}
           <div className="card border-0 rounded-0 rounded-md-4 shadow-sm bg-white overflow-hidden">
-            
+
             {/* Direct Header Bar */}
             <div className="p-3 p-md-4 bg-primary text-white d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center gap-2">
@@ -66,8 +66,8 @@ export default function AdminPushEventPage() {
                 <h5 className="fw-bold m-0 text-white fs-6 fs-md-5">Push New Event</h5>
               </div>
 
-              <Link 
-                href="/admin/eventdetails" 
+              <Link
+                href="/admin/eventdetails"
                 className="btn btn-sm btn-light text-primary fw-bold rounded-pill px-3 py-1 d-flex align-items-center gap-1.5 shadow-sm"
               >
                 <Eye size={15} />
@@ -78,40 +78,40 @@ export default function AdminPushEventPage() {
             {/* Form Section */}
             <div className="p-3 p-md-4">
               <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
-                
+
                 <div>
                   <label className="form-label fw-bold text-dark small mb-1">Event Title</label>
-                  <input 
-                    type="text" 
-                    placeholder="Enter Event Title" 
-                    className="form-control rounded-3 py-2 fs-7" 
-                    value={form.title} 
-                    onChange={(e) => setForm({ ...form, title: e.target.value })} 
-                    required 
+                  <input
+                    type="text"
+                    placeholder="Enter Event Title"
+                    className="form-control rounded-3 py-2 fs-7"
+                    value={form.title}
+                    onChange={(e) => setForm({ ...form, title: e.target.value })}
+                    required
                   />
                 </div>
 
                 <div className="row g-2 g-md-3">
                   <div className="col-12 col-md-6">
                     <label className="form-label fw-bold text-dark small mb-1">Event Date</label>
-                    <input 
-                      type="date" 
-                      className="form-control rounded-3 py-2 fs-7" 
-                      value={form.date} 
-                      onChange={(e) => setForm({ ...form, date: e.target.value })} 
-                      required 
+                    <input
+                      type="date"
+                      className="form-control rounded-3 py-2 fs-7"
+                      value={form.date}
+                      onChange={(e) => setForm({ ...form, date: e.target.value })}
+                      required
                     />
                   </div>
 
                   <div className="col-12 col-md-6">
                     <label className="form-label fw-bold text-dark small mb-1">Event Location</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Kala Academy, Panaji" 
-                      className="form-control rounded-3 py-2 fs-7" 
-                      value={form.location} 
-                      onChange={(e) => setForm({ ...form, location: e.target.value })} 
-                      required 
+                    <input
+                      type="text"
+                      placeholder="e.g. Kala Academy, Panaji"
+                      className="form-control rounded-3 py-2 fs-7"
+                      value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
+                      required
                     />
                   </div>
                 </div>
@@ -126,13 +126,13 @@ export default function AdminPushEventPage() {
                       {form.images.length} Selected
                     </span>
                   </label>
-                  
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    multiple 
-                    className="form-control rounded-3 py-2 fs-7" 
-                    onChange={handleImagesChange} 
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="form-control rounded-3 py-2 fs-7"
+                    onChange={handleImagesChange}
                   />
 
                   {/* Previews */}
@@ -160,20 +160,20 @@ export default function AdminPushEventPage() {
 
                 <div>
                   <label className="form-label fw-bold text-dark small mb-1">Description</label>
-                  <textarea 
-                    rows="4" 
-                    placeholder="Write event description details..." 
-                    className="form-control rounded-3 fs-7" 
-                    value={form.description} 
-                    onChange={(e) => setForm({ ...form, description: e.target.value })} 
-                    required 
+                  <textarea
+                    rows="4"
+                    placeholder="Write event description details..."
+                    className="form-control rounded-3 fs-7"
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    required
                   ></textarea>
                 </div>
 
                 <div className="pt-2">
-                  <button 
-                    type="submit" 
-                    disabled={submitting} 
+                  <button
+                    type="submit"
+                    disabled={submitting}
                     className="btn text-white fw-bold rounded-3 w-100 py-2.5 d-flex align-items-center justify-content-center gap-2 shadow-sm"
                     style={{ backgroundColor: '#f15a24' }}
                   >
@@ -197,3 +197,6 @@ export default function AdminPushEventPage() {
     </div>
   );
 }
+
+
+

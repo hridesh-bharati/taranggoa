@@ -1,4 +1,3 @@
-// src\app\user\user-membership-page\page.jsx User ka Membership detils 
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -124,7 +123,7 @@ export default function UserMembershipPage() {
           <h5 className="fw-bold text-dark mb-2">No Active Membership Found</h5>
           <p className="text-muted fs-7 mb-4">You have not registered for an official membership pass yet.</p>
           <div>
-            <a href="/membership" className="btn rounded-pill px-4 py-2.5 fw-bold fs-7 text-white shadow-sm" style={{ backgroundColor: '#800020' }}>
+            <a href="/membership-user-page" className="btn rounded-pill px-4 py-2.5 fw-bold fs-7 text-white shadow-sm" style={{ backgroundColor: '#800020' }}>
               Apply Now (₹999 / Year)
             </a>
           </div>
@@ -142,7 +141,7 @@ export default function UserMembershipPage() {
     {
       amount: membership.amount || 999,
       date: membership.startDate || new Date().toISOString(),
-      paymentId: membership.razorpayPaymentId || 'N/A',
+      paymentId: membership.lastTransactionId || 'N/A',
       status: membership.paymentStatus || 'PAID'
     }
   ];
@@ -150,7 +149,6 @@ export default function UserMembershipPage() {
   return (
     <div className="d-flex flex-column gap-3 py-2">
 
-      {/* Print CSS */}
       <style jsx global>{`
         @media print {
           body * { visibility: hidden; }
@@ -336,6 +334,7 @@ export default function UserMembershipPage() {
                         <th>Date</th>
                         <th>Amount</th>
                         <th>Transaction ID</th>
+                        <th>Gateway</th>
                         <th>Status</th>
                       </tr>
                     </thead>
@@ -345,7 +344,8 @@ export default function UserMembershipPage() {
                           <td className="fw-bold">{idx + 1}</td>
                           <td>{pay.date ? new Date(pay.date).toLocaleDateString('en-IN') : 'N/A'}</td>
                           <td className="fw-bold text-primary">₹{pay.amount || 999}.00</td>
-                          <td className="font-monospace">{pay.paymentId || 'N/A'}</td>
+                          <td className="font-monospace">{pay.paymentId || membership.lastTransactionId || 'N/A'}</td>
+                          <td><span className="badge bg-purple-subtle text-purple fw-bold">{pay.gateway || 'PhonePe PG'}</span></td>
                           <td>
                             <span className="badge bg-success text-white rounded-pill px-2 py-0.5 fs-9">
                               {pay.status || 'PAID'}
@@ -419,7 +419,7 @@ export default function UserMembershipPage() {
           <div className="p-3 bg-light rounded-3 mb-4 fs-8">
             <div className="row">
               <div className="col-6">Payment Status: <strong className="text-success">{membership.paymentStatus || 'PAID'}</strong></div>
-              <div className="col-6 text-end">Razorpay ID: <span className="font-monospace fw-bold">{membership.razorpayPaymentId || 'N/A'}</span></div>
+              <div className="col-6 text-end">PhonePe Txn ID: <span className="font-monospace fw-bold">{membership.lastTransactionId || 'N/A'}</span></div>
             </div>
           </div>
 
@@ -436,7 +436,6 @@ export default function UserMembershipPage() {
   );
 }
 
-// Fixed Spacing & Flex Layout Component
 function DetailItem({ icon: Icon, label, value, col = 'col-12 col-md-6', highlight = '' }) {
   return (
     <div className={col}>

@@ -1,93 +1,68 @@
-import { db } from '@/lib/firebase';
-import {
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  getDocs,
-  updateDoc,
-  deleteDoc,
-  serverTimestamp
-} from 'firebase/firestore';
+import { msmeService } from '@/services/msme.service';
+import { showToast } from '@/utils/toast';
 
-export const msmeService = {
-  // 1. Submit or Update Full MSME Application
-  async submitApplication(email, applicationData) {
-    if (!email) throw new Error('Email is required');
-    const cleanEmail = email.toLowerCase().trim();
-    const docRef = doc(db, 'msme_applications', cleanEmail);
-
-    const payload = {
-      // Core Identification
-      applicantName: applicationData.applicantName || '',
-      aadhaarNumber: applicationData.aadhaarNumber || '',
-      panNumber: applicationData.panNumber || '',
-      gstinNumber: applicationData.gstinNumber || '',
-      phone: applicationData.phone || '',
-      email: cleanEmail,
-
-      // Entity & Business Details
-      firmName: applicationData.firmName || '',
-      entityType: applicationData.entityType || 'Proprietorship',
-      category: applicationData.category || 'Micro',
-      businessType: applicationData.businessType || 'Manufacturing',
-      nicCode: applicationData.nicCode || '',
-      businessActivityDesc: applicationData.businessActivityDesc || '',
-
-      // Bank Details
-      bankAccountNo: applicationData.bankAccountNo || '',
-      ifscCode: applicationData.ifscCode || '',
-
-      // Financials
-      investmentAmount: applicationData.investmentAmount || '',
-      annualTurnover: applicationData.annualTurnover || '',
-
-      // Address
-      address: applicationData.address || '',
-      city: applicationData.city || '',
-      state: applicationData.state || '',
-
-      status: applicationData.status || 'PENDING',
-      updatedAt: serverTimestamp(),
-      createdAt: applicationData.createdAt || serverTimestamp(),
-    };
-
-    await setDoc(docRef, payload, { merge: true });
-    return true;
+export const msmeController = {
+  // Fetch Single User Application
+  async fetchUserApplication(email) {
+    try {
+      return await msmeService.getApplicationByEmail(email);
+    } catch (error) {
+      console.error('Fetch MSME Error:', error);
+      showToast('error', 'Failed to load MSME details.');
+      return null;
+    }
   },
 
-  // 2. Fetch User MSME Data
-  async getApplicationByEmail(email) {
-    if (!email) return null;
-    const cleanEmail = email.toLowerCase().trim();
-    const docRef = doc(db, 'msme_applications', cleanEmail);
-    const snap = await getDoc(docRef);
-    return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+  // Save / Submit Form
+  async submitForm(email, formData) {
+    try {
+      if (!formData.applicantName || !formData.phone || !formData.firmName) {
+        throw new Error('Please fill all required basic fields.');
+      }
+      await msmeService.submitApplication(email, formData);
+      showToast('success', 'MSME Registration Request Saved Successfully!');
+      return true;
+    } catch (error) {
+      console.error('Submit MSME Error:', error);
+      showToast('error', error.message || 'Failed to submit MSME application.');
+      throw error;
+    }
   },
 
-  // 3. Fetch All MSME Applications for Admin
-  async getAllApplications() {
-    const colRef = collection(db, 'msme_applications');
-    const snap = await getDocs(colRef);
-    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  // Admin: Fetch All
+  async fetchAllApplications() {
+    try {
+      return await msmeService.getAllApplications();
+    } catch (error) {
+      console.error('Admin MSME Fetch Error:', error);
+      showToast('error', 'Failed to load MSME applications list.');
+      return [];
+    }
   },
 
-  // 4. Update Status (Admin)
-  async updateStatus(email, status) {
-    const cleanEmail = email.toLowerCase().trim();
-    const docRef = doc(db, 'msme_applications', cleanEmail);
-    await updateDoc(docRef, {
-      status,
-      updatedAt: serverTimestamp(),
-    });
-    return true;
+  // Admin: Status Change
+  async changeStatus(email, status) {
+    try {
+      await msmeService.updateStatus(email, status);
+      showToast('success', `Status updated to ${status}`);
+      return true;
+    } catch (error) {
+      console.error('Status Update Error:', error);
+      showToast('error', 'Failed to update status.');
+      throw error;
+    }
   },
 
-  // 5. Delete Request
-  async deleteApplication(email) {
-    const cleanEmail = email.toLowerCase().trim();
-    const docRef = doc(db, 'msme_applications', cleanEmail);
-    await deleteDoc(docRef);
-    return true;
+  // Admin: Delete Application
+  async removeApplication(email) {
+    try {
+      await msmeService.deleteApplication(email);
+      showToast('success', 'Application record deleted.');
+      return true;
+    } catch (error) {
+      console.error('Delete MSME Error:', error);
+      showToast('error', 'Failed to delete record.');
+      throw error;
+    }
   }
 };

@@ -10,6 +10,25 @@ import {
   serverTimestamp
 } from 'firebase/firestore';
 
+// Helper Function: Upload Image File to Cloudinary via /api/upload Route
+async function uploadImageToCloudinary(imageFile) {
+  if (!imageFile) return '';
+  const formData = new FormData();
+  formData.append('file', imageFile);
+
+  const response = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.url) {
+    throw new Error(data.error || 'Failed to upload exhibition poster to Cloudinary.');
+  }
+
+  return data.url;
+}
+
 export const exhibitionsController = {
   // 1. READ ALL
   async fetchExhibitions() {
@@ -41,6 +60,13 @@ export const exhibitionsController = {
   // 3. CREATE
   async createExhibition(formData) {
     try {
+      let imageUrl = formData.image || '';
+
+      // Upload Poster File to Cloudinary if selected
+      if (formData.imageFile) {
+        imageUrl = await uploadImageToCloudinary(formData.imageFile);
+      }
+
       const colRef = collection(db, 'upcoming_exhibitions');
 
       const days = typeof formData.daysInput === 'string'
@@ -57,7 +83,7 @@ export const exhibitionsController = {
         days: days,
         timing: formData.timing || '11:00 AM to 09:00 PM',
         categories: formData.categories || 'Fashion | Handicrafts | Home Décor',
-        image: formData.image || '',
+        image: imageUrl, // Real Permanent Cloudinary URL Saved
         contact: formData.contact || '',
         createdAt: serverTimestamp(),
       };
@@ -73,6 +99,13 @@ export const exhibitionsController = {
   // 4. UPDATE
   async updateExhibition(id, formData) {
     try {
+      let imageUrl = formData.image || '';
+
+      // Upload new Poster File to Cloudinary if updated
+      if (formData.imageFile) {
+        imageUrl = await uploadImageToCloudinary(formData.imageFile);
+      }
+
       const docRef = doc(db, 'upcoming_exhibitions', id);
 
       const days = typeof formData.daysInput === 'string'
@@ -89,7 +122,7 @@ export const exhibitionsController = {
         days: days,
         timing: formData.timing || '11:00 AM to 09:00 PM',
         categories: formData.categories || 'Fashion | Handicrafts | Home Décor',
-        image: formData.image || '',
+        image: imageUrl, // Real Permanent Cloudinary URL Saved
         contact: formData.contact || '',
         updatedAt: serverTimestamp(),
       };

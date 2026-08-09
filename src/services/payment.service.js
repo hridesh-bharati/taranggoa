@@ -1,4 +1,3 @@
-// src\services\payment.service.js
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 
@@ -34,7 +33,7 @@ export const paymentService = {
             name: data.fullName || data.name || 'Member',
             amount: item.amount || data.amount || 999,
             paymentId: item.paymentId || data.lastTransactionId || 'N/A',
-            gateway: 'PhonePe',
+            gateway: item.gateway || 'PhonePe',
             status: item.status || data.paymentStatus || 'PAID',
             createdAt: item.date || data.startDate || new Date().toISOString(),
           });

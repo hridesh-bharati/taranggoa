@@ -1,16 +1,18 @@
 import { db } from '@/lib/firebase';
-import { 
-  collection, 
-  addDoc, 
-  onSnapshot, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  orderBy, 
-  serverTimestamp, 
-  arrayUnion, 
-  arrayRemove 
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  serverTimestamp,
+  arrayUnion,
+  arrayRemove,
+  increment
 } from 'firebase/firestore';
 
 export const mediaService = {
@@ -42,7 +44,10 @@ export const mediaService = {
   // 4. Toggle Like
   async toggleLike(postId, userId) {
     const postRef = doc(db, 'posts', postId);
-    const likesArr = (await mediaService.getDocData(postId))?.likes || [];
+    const postSnap = await getDoc(postRef);
+    if (!postSnap.exists()) return;
+
+    const likesArr = postSnap.data()?.likes || [];
 
     if (likesArr.includes(userId)) {
       await updateDoc(postRef, { likes: arrayRemove(userId) });
@@ -60,40 +65,31 @@ export const mediaService = {
     });
   },
 
-  // 6. Add Comment
+  // 6. Add Comment (Atomic increment - Fast)
   async addComment(postId, commentData) {
     await addDoc(collection(db, `posts/${postId}/comments`), {
       ...commentData,
       createdAt: serverTimestamp()
     });
-    
-    // Update counter
+
     const postRef = doc(db, 'posts', postId);
-    const currentCount = (await mediaService.getDocData(postId))?.commentsCount || 0;
-    await updateDoc(postRef, { commentsCount: currentCount + 1 });
+    await updateDoc(postRef, { commentsCount: increment(1) });
   },
 
   // 7. Edit Comment
   async editComment(postId, commentId, newText) {
     const commentRef = doc(db, `posts/${postId}/comments`, commentId);
-    await updateDoc(commentRef, { 
+    await updateDoc(commentRef, {
       text: newText,
-      editedAt: serverTimestamp() 
+      editedAt: serverTimestamp()
     });
   },
 
-  // 8. Delete Comment
+  // 8. Delete Comment (Atomic decrement)
   async deleteComment(postId, commentId) {
     await deleteDoc(doc(db, `posts/${postId}/comments`, commentId));
 
     const postRef = doc(db, 'posts', postId);
-    const currentCount = (await mediaService.getDocData(postId))?.commentsCount || 1;
-    await updateDoc(postRef, { commentsCount: Math.max(0, currentCount - 1) });
-  },
-
-  // Helper
-  async getDocData(postId) {
-    const snapshot = await mediaService.getDoc(doc(db, 'posts', postId));
-    return snapshot.data();
+    await updateDoc(postRef, { commentsCount: increment(-1) });
   }
 };

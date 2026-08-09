@@ -9,7 +9,8 @@ export const connectionController = {
     try {
       await connectionService.sendConnectionRequest(currentUserId, targetUserId);
       showToast('success', 'Connection request sent!');
-    } catch {
+    } catch (err) {
+      console.error('Connect error:', err);
       showToast('error', 'Failed to send request');
     }
   },
@@ -18,7 +19,8 @@ export const connectionController = {
     try {
       await connectionService.acceptConnectionRequest(currentUserId, targetUserId);
       showToast('success', 'Connection accepted!');
-    } catch {
+    } catch (err) {
+      console.error('Accept error:', err);
       showToast('error', 'Failed to accept');
     }
   },
@@ -27,7 +29,8 @@ export const connectionController = {
     try {
       await connectionService.removeConnection(currentUserId, targetUserId);
       showToast('info', 'Connection removed');
-    } catch {
+    } catch (err) {
+      console.error('Disconnect error:', err);
       showToast('error', 'Action failed');
     }
   }

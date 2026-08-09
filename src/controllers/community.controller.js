@@ -2,13 +2,13 @@ import { communityService } from '@/services/community.service';
 import { showToast } from '@/utils/toast';
 
 export const communityController = {
-  // Upload Media with Real-time Progress Tracking
+  // Upload Media to Cloudinary via /api/upload
   async uploadMedia(file, userId, onProgress) {
     if (!file) throw new Error('No file selected');
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('userId', userId);
+    if (userId) formData.append('userId', userId);
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
@@ -24,19 +24,19 @@ export const communityController = {
       xhr.onload = () => {
         if (xhr.status === 200) {
           const data = JSON.parse(xhr.responseText);
-          resolve(data.url);
+          resolve(data.url); // Cloudinary secure_url
         } else {
           reject(new Error('Media upload failed'));
         }
       };
 
       xhr.onerror = () => reject(new Error('Network upload error'));
-      xhr.open('POST', '/api/community/upload');
+      xhr.open('POST', '/api/upload');
       xhr.send(formData);
     });
   },
 
-  // Publish Post / Article
+  // Publish Post / Article to Firebase
   async publishPost(postData) {
     try {
       await communityService.createCommunityPost(postData);

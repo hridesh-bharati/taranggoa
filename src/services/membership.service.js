@@ -1,4 +1,3 @@
-// src\services\membership.service.js
 import { db } from '@/lib/firebase';
 import {
   collection,
@@ -28,10 +27,11 @@ export const membershipService = {
       throw new Error('An active membership already exists with this email.');
     }
 
-    // Calculate 1 Year (365 Days) Expiry Date
     const startDate = new Date();
     const expiryDate = new Date();
     expiryDate.setDate(startDate.getDate() + 365);
+
+    const txnId = paymentResponse?.transactionId || paymentResponse?.paymentId || `TXN_${Date.now()}`;
 
     const payload = {
       ...formData,
@@ -41,8 +41,17 @@ export const membershipService = {
       paymentStatus: 'PAID',
       membershipStatus: 'ACTIVE',
       gateway: 'PhonePe',
-      phonepeMerchantId: paymentResponse?.merchantId || '',
-      lastTransactionId: paymentResponse?.transactionId || paymentResponse?.paymentId || '',
+      phonepeMerchantId: paymentResponse?.merchantId || 'M22VWHRMH78WC',
+      lastTransactionId: txnId,
+      paymentHistory: [
+        {
+          amount: 999,
+          date: startDate.toISOString(),
+          paymentId: txnId,
+          gateway: 'PhonePe PG',
+          status: 'PAID'
+        }
+      ],
       createdAt: serverTimestamp(),
       startDate: startDate.toISOString(),
       expiryDate: expiryDate.toISOString(),
@@ -84,7 +93,7 @@ export const membershipService = {
     });
   },
 
-  // Update Status (Approve/Reject/Suspend)
+  // Update Status
   async updateStatus(emailId, status) {
     const docRef = doc(db, COLLECTION, emailId);
     await updateDoc(docRef, { status });
