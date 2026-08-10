@@ -9,26 +9,15 @@ export async function POST(request) {
     const merchantId = process.env.PHONEPE_MERCHANT_ID?.trim();
     const saltKey = process.env.PHONEPE_SALT_KEY?.trim();
     const saltIndex = process.env.PHONEPE_SALT_INDEX?.trim() || '1';
-    const phonepeUrl = process.env.PHONEPE_HOST_URL?.trim();
+    const baseUrlHost = process.env.PHONEPE_HOST_URL?.trim() || 'https://api.phonepe.com/apis/hermes';
 
-    // Strict Environment Check
-    if (!merchantId || !saltKey || !phonepeUrl) {
-      console.error('PhonePe Env Check Failed:', {
-        hasMerchantId: Boolean(merchantId),
-        hasSaltKey: Boolean(saltKey),
-        hasPhonepeUrl: Boolean(phonepeUrl),
-      });
-
+    if (!merchantId || !saltKey) {
       return NextResponse.json(
-        {
-          success: false,
-          message: 'PhonePe environment variables (PHONEPE_MERCHANT_ID / PHONEPE_SALT_KEY / PHONEPE_HOST_URL) missing on server.',
-        },
+        { success: false, message: 'PhonePe environment variables missing on server.' },
         { status: 500 }
       );
     }
 
-    // Dynamic Host & Protocol Resolution
     const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
 
@@ -46,10 +35,7 @@ export async function POST(request) {
     const phone = String(userDetails.phone || '').replace(/\D/g, '');
 
     if (!Number.isFinite(amount) || amount <= 0) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid payment amount.' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'Invalid payment amount.' }, { status: 400 });
     }
 
     if (!email || !/^\d{10}$/.test(phone)) {
@@ -62,43 +48,32 @@ export async function POST(request) {
     const merchantTransactionId = `TXN${Date.now()}${crypto.randomInt(100000, 999999)}`;
     const merchantUserId = `USER_${crypto.createHash('sha256').update(email).digest('hex').slice(0, 16)}`;
 
-    // Server Webhook / Callback URL
-    const callbackUrl = `${baseUrl}/api/payment/phonepe-callback?email=${encodeURIComponent(email)}`;
+    const apiPath = '/pg/v1/pay';
+    const fullPayUrl = `${baseUrlHost.replace(/\/$/, '')}${apiPath}`;
 
-    // User Return Frontend Redirect URL (GET Mode)
+    // S2S Webhook Endpoint
+    const callbackUrl = `${baseUrl}/api/payment/phonepe-callback?email=${encodeURIComponent(email)}`;
+    // Frontend User Redirect URL
     const redirectUrl = `${baseUrl}/membership-user-page?status=verifying&txn=${merchantTransactionId}`;
 
     const payload = {
       merchantId,
       merchantTransactionId,
       merchantUserId,
-      amount: Math.round(amount * 100), // convert to paise
+      amount: Math.round(amount * 100), // Paisa conversion
       redirectUrl,
       redirectMode: 'GET',
       callbackUrl,
       mobileNumber: phone,
-      paymentInstrument: {
-        type: 'PAY_PAGE',
-      },
+      paymentInstrument: { type: 'PAY_PAGE' },
     };
 
     const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-
-    // Standard PhonePe Checksum Format: base64Payload + "/pg/v1/pay" + saltKey
-    const apiPath = '/pg/v1/pay';
     const checksumString = base64Payload + apiPath + saltKey;
     const sha256 = crypto.createHash('sha256').update(checksumString).digest('hex');
     const xVerifyHeader = `${sha256}###${saltIndex}`;
 
-    console.log('PHONEPE CONFIG CHECK:', {
-      merchantId,
-      saltIndex,
-      phonepeUrl,
-      baseUrl,
-      hasSaltKey: Boolean(saltKey),
-    });
-
-    const phonePeRes = await fetch(phonepeUrl, {
+    const phonePeRes = await fetch(fullPayUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,17 +84,7 @@ export async function POST(request) {
       cache: 'no-store',
     });
 
-    const rawResponse = await phonePeRes.text();
-    let phonePeData;
-
-    try {
-      phonePeData = JSON.parse(rawResponse);
-    } catch {
-      phonePeData = { raw: rawResponse };
-    }
-
-    console.log('PhonePe API Status:', phonePeRes.status, phonePeData);
-
+    const phonePeData = await phonePeRes.json();
     const gatewayRedirectUrl = phonePeData?.data?.instrumentResponse?.redirectInfo?.url;
 
     if (phonePeRes.ok && phonePeData?.success === true && gatewayRedirectUrl) {
@@ -133,16 +98,12 @@ export async function POST(request) {
     return NextResponse.json(
       {
         success: false,
-        message: phonePeData?.message || phonePeData?.code || 'PhonePe Payment Initialization Failed',
+        message: phonePeData?.message || 'PhonePe Payment Initialization Failed',
         phonePeCode: phonePeData?.code || String(phonePeRes.status),
       },
       { status: 400 }
     );
   } catch (error) {
-    console.error('PhonePe Server Error:', error);
-    return NextResponse.json(
-      { success: false, message: error?.message || 'Server error initiating payment.' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, message: error?.message || 'Server error.' }, { status: 500 });
   }
 }
