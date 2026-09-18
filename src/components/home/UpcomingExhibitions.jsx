@@ -24,7 +24,7 @@ export default function UpcomingExhibitions() {
   }, []);
 
   return (
-    <section className="py-4 bg-light w-100">
+    <section className="py-4 bg-light w-100" id='exhibitions'>
       <div className="container-fluid px-2 px-md-4">
 
         {/* Header */}

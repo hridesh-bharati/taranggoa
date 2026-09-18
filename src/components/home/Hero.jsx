@@ -13,7 +13,9 @@ export default function Hero() {
     { icon: 'bi-flower1', title: 'Exhibitions', subtitle: '& Trade Fairs', bgColor: '#0a58ca' },
     { icon: 'bi-people-fill', title: 'Networking', subtitle: '& Mentorship', bgColor: '#ffc107' },
     { icon: 'bi-graph-up-arrow', title: 'Business', subtitle: 'Growth', bgColor: '#e64a19' },
-    { icon: 'bi-person-arms-up', title: 'Support for', subtitle: 'All Entrepreneurs', bgColor: '#2e7d32' }
+    { icon: 'bi-person-arms-up', title: 'Support for', subtitle: 'All Entrepreneurs', bgColor: '#2e7d32' },
+    { icon: 'bi-bank', title: 'Govt Support for', subtitle: 'SHGs & Artisans', bgColor: '#1976d2' },
+    { icon: 'bi-briefcase-fill', title: 'MSME', subtitle: 'Development', bgColor: '#7b1fa2' }
   ];
 
   return (
@@ -34,7 +36,7 @@ export default function Hero() {
         <div className="row align-items-center">
 
           {/* Left Side Content */}
-          <div className="col-12 col-lg-6 text-start">
+          <div className="col-12 col-lg-7 text-start">
 
             {/* Title */}
             <h1 className="hero-title mb-2 anim-title">
@@ -52,32 +54,38 @@ export default function Hero() {
               Tarang Goa is a platform that connects entrepreneurs, artisans, startups, businesses and innovators through exhibitions, networking and support to grow together.
             </p>
 
-            {/* Buttons (Fixed Explore Exhibitions Visibility) */}
-            <div className="d-flex flex-wrap gap-3 mb-3 align-items-center">
-              <Link href="/exhibitions" className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center gap-2 border-0 anim-btn-orange">
+            {/* Buttons */}
+            <div className="d-flex flex-wrap gap-3 mb-4 align-items-center">
+              <Link href="#exhibitions" className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center gap-2 border-0 anim-btn-orange">
                 <i className="bi bi-person-fill fs-6"></i>
                 <span>Explore Exhibitions</span>
                 <i className="bi bi-arrow-right fs-6 ms-1"></i>
               </Link>
 
-              <Link href="/membership" className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center gap-2 anim-btn-outline">
+              <Link href="/membership-user-page" className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center gap-2 anim-btn-outline">
                 <i className="bi bi-person-plus fs-6"></i>
                 <span>Become a Member</span>
               </Link>
             </div>
 
-            {/* Feature Icons Grid */}
-            <div className="row g-2 max-w-lg mt-2 anim-fade-up">
+            {/* Feature Icons Grid (Mobile me 3...3 layout) */}
+            <div className="row g-2 mt-2 anim-fade-up">
               {features.map((item, idx) => (
-                <div key={idx} className="col-3 text-center hover-lift">
-                  <div
-                    className="feature-icon-circle mb-1-5"
-                    style={{ backgroundColor: item.bgColor }}
-                  >
-                    <i className={`bi ${item.icon} text-white fs-5`}></i>
+                <div key={idx} className="col-4 col-md-2 text-center">
+                  <div className="feature-card p-2 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center hover-lift">
+                    <div
+                      className="feature-icon-circle mb-2 d-flex align-items-center justify-content-center rounded-circle text-white shadow-sm"
+                      style={{ backgroundColor: item.bgColor, width: '42px', height: '42px' }}
+                    >
+                      <i className={`bi ${item.icon} fs-5`}></i>
+                    </div>
+                    <div className="feature-title fw-bold text-dark" style={{ fontSize: '0.72rem', lineHeight: '1.2' }}>
+                      {item.title}
+                    </div>
+                    <div className="feature-subtitle text-muted" style={{ fontSize: '0.65rem', lineHeight: '1.1' }}>
+                      {item.subtitle}
+                    </div>
                   </div>
-                  <div className="feature-title">{item.title}</div>
-                  <div className="feature-subtitle">{item.subtitle}</div>
                 </div>
               ))}
             </div>
@@ -85,7 +93,7 @@ export default function Hero() {
           </div>
 
           {/* Right Floating Video Card */}
-          <div className="col-12 col-lg-6 d-flex justify-content-center justify-content-lg-end align-items-end mt-3 mt-lg-0">
+          <div className="col-12 col-lg-5 d-flex justify-content-center justify-content-lg-end align-items-end mt-4 mt-lg-0">
             <div className="video-card-white d-flex align-items-center gap-3 anim-fade-up hover-lift">
               <button className="btn-play-blue" aria-label="Play Video">
                 <i className="bi bi-play-fill fs-3 ms-1"></i>

@@ -11,7 +11,7 @@ export default function GoalsAndObjectives() {
     { src: '/images/our-aim1.png', alt: 'Tarang Women Entrepreneurs' },
     { src: '/images/our-aim2.png', alt: 'Exhibition Stall Display' },
     { src: '/images/our-aim3.png', alt: 'Artisans Expo Group' },
-    { src: '/images/our-aim4.png', alt: 'Networking Event' },
+    { src: '/images/recongniz-and-award3.png', alt: 'Networking Event' },
     { src: '/images/our-aim5.png', alt: 'Utsav Exhibition Gate' },
     { src: '/images/our-aim6.png', alt: 'Goa MSME Meet' },
   ];

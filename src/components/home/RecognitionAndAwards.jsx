@@ -19,7 +19,7 @@ export default function RecognitionAndAwards() {
   ];
 
   const galleryImages = [
-    { src: '/images/recongniz-and-award1.png', alt: 'Speech Award Stage' },
+    { src: '/images/recent-event-main-pic.png', alt: 'Speech Award Stage' },
     { src: '/images/recongniz-and-award2.png', alt: 'Felicitation Group Award' },
     { src: '/images/recongniz-and-award3.png', alt: 'Grand Asturi Award Ceremony' },
     { src: '/images/recongniz-and-award4.png', alt: 'Rotary Club Honor' },
