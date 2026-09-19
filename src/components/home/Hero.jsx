@@ -53,35 +53,41 @@ export default function Hero() {
               Tarang Goa is a platform that connects entrepreneurs, artisans, startups, businesses and innovators through exhibitions, networking and support to grow together.
             </p>
 
-            {/* Buttons */}
-            <div className="d-flex flex-wrap gap-3 mb-4 align-items-center">
-              <Link href="#exhibitions" className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center gap-2 border-0 anim-btn-orange">
+            {/* Buttons: Mobile me w-100, larger screens pe auto */}
+            <div className="d-flex flex-column flex-sm-row gap-3 mb-4 align-items-stretch align-items-sm-center">
+              <Link 
+                href="#exhibitions" 
+                className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center justify-content-center gap-2 border-0 anim-btn-orange w-100 w-sm-auto"
+              >
                 <i className="bi bi-person-fill fs-6"></i>
                 <span>Explore Exhibitions</span>
                 <i className="bi bi-arrow-right fs-6 ms-1"></i>
               </Link>
 
-              <Link href="/membership-user-page" className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center gap-2 anim-btn-outline">
+              <Link 
+                href="/membership-user-page" 
+                className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center justify-content-center gap-2 anim-btn-outline w-100 w-sm-auto"
+              >
                 <i className="bi bi-person-plus fs-6"></i>
                 <span>Become a Member</span>
               </Link>
             </div>
 
-            {/* Feature Icons Grid (Mobile me 3...3 layout) */}
-            <div className="row g-2 mt-2 anim-fade-up">
+            {/* Feature Icons Grid: Mobile me ek single line me horizontally scrollable, md+ pe normal grid */}
+            <div className="d-flex flex-nowrap overflow-x-auto d-md-flex row-md g-2 mt-2 anim-fade-up pb-2" style={{ scrollbarWidth: 'none' }}>
               {features.map((item, idx) => (
-                <div key={idx} className="col-4 col-md-2 text-center">
+                <div key={idx} className="flex-shrink-0 text-center" style={{ width: '20%', minWidth: '78px' }}>
                   <div className="feature-card p-2 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center hover-lift">
                     <div
                       className="feature-icon-circle mb-2 d-flex align-items-center justify-content-center rounded-circle text-white shadow-sm"
-                      style={{ backgroundColor: item.bgColor, width: '42px', height: '42px' }}
+                      style={{ backgroundColor: item.bgColor, width: '40px', height: '40px' }}
                     >
-                      <i className={`bi ${item.icon} fs-5`}></i>
+                      <i className={`bi ${item.icon} fs-6`}></i>
                     </div>
-                    <div className="feature-title fw-bold text-dark" style={{ fontSize: '0.72rem', lineHeight: '1.2' }}>
+                    <div className="feature-title fw-bold text-dark" style={{ fontSize: '0.68rem', lineHeight: '1.2' }}>
                       {item.title}
                     </div>
-                    <div className="feature-subtitle text-muted" style={{ fontSize: '0.65rem', lineHeight: '1.1' }}>
+                    <div className="feature-subtitle text-muted" style={{ fontSize: '0.62rem', lineHeight: '1.1' }}>
                       {item.subtitle}
                     </div>
                   </div>
