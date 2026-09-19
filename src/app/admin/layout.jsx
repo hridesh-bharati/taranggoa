@@ -41,10 +41,12 @@ export default function AdminLayout({ children }) {
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const [profilePhoto, setProfilePhoto] = useState(null);
 
-  const isAuthPage = pathname?.includes('/admin/auth');
+  // 1. Check if current URL is under auth (login, signup, forgot-password)
+  const isAuthPage = pathname?.startsWith('/admin/auth');
 
+  // 2. Fetch Profile Photo (Only if user is logged in & not on auth pages)
   useEffect(() => {
-    if (user?.uid) {
+    if (!isAuthPage && user?.uid) {
       const cached = profileController.getCache(user.uid);
       if (cached?.photoURL) {
         setProfilePhoto(cached.photoURL);
@@ -56,8 +58,9 @@ export default function AdminLayout({ children }) {
         }
       }).catch((err) => console.error("Profile image load error:", err));
     }
-  }, [user]);
+  }, [user, isAuthPage]);
 
+  // 3. Route Protection Redirects (Ignored completely for auth pages)
   useEffect(() => {
     if (!loading && !isAuthPage) {
       if (!user) {
@@ -68,8 +71,12 @@ export default function AdminLayout({ children }) {
     }
   }, [user, isAdmin, loading, router, isAuthPage]);
 
-  if (isAuthPage) return <>{children}</>;
+  // 4. CRITICAL: Auth pages par bina kisi checks ke seedha page render karo
+  if (isAuthPage) {
+    return <>{children}</>;
+  }
 
+  // 5. Admin Dashboard Protection & Loading State
   if (loading || !user || !isAdmin) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
@@ -271,7 +278,6 @@ export default function AdminLayout({ children }) {
       {/* 3. TOPBAR & MAIN CONTENT */}
       <div className="flex-grow-1 d-flex flex-column overflow-x-hidden">
         <header className="bg-white border-bottom p-2 d-flex align-items-center justify-content-between sticky-top z-3 shadow-sm">
-
           <div className="d-flex align-items-center gap-2">
             <button
               className="btn btn-light rounded-circle p-1.5 border text-dark d-none d-lg-flex align-items-center justify-content-center"
@@ -331,7 +337,7 @@ export default function AdminLayout({ children }) {
           <span>Dashboard</span>
         </Link>
 
-        <Link href="/admin/members" className={`bottom-nav-item ${pathname === '/admin/members' ? 'active' : ''}`}>
+        <Link href="/admin/all-users-list" className={`bottom-nav-item ${pathname === '/admin/members' ? 'active' : ''}`}>
           <Users size={18} />
           <span>Members</span>
         </Link>

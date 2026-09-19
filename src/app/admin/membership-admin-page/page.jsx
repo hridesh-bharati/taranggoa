@@ -120,7 +120,7 @@ export default function AdminMembershipsPage() {
       <div
         className="card border-0 rounded-4 p-3 p-md-4 mb-3 position-relative overflow-hidden no-print bg-primary-gradient"
       >
-        <Users size={140} className="position-absolute end-0 bottom-0 text-white opacity-10" style={{ pointerEvents: 'none' }} />
+        <Users size={140} className="position-absolute end-0 bottom-0 text-white  " style={{ pointerEvents: 'none', opacity:0.2 }} />
 
         <div className="d-flex align-items-center justify-content-between position-relative z-1">
           <div className="d-flex align-items-center gap-3">

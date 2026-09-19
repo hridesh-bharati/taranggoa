@@ -171,7 +171,7 @@ export default function AdminDashboardPage() {
       <div className="row g-3 mb-4">
         {/* Total Members Card */}
         <div className="col-6 col-xl-3">
-          <Link href="/admin/members" className="text-decoration-none">
+          <Link href="/admin/all-users-list" className="text-decoration-none">
             <div className="card dash-card stat-card-purple p-3 p-md-4 h-100">
               <Users size={120} className="card-watermark-right text-white" />
               <div className="d-flex align-items-center justify-content-between mb-3 position-relative z-1">
