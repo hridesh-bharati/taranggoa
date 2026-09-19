@@ -178,7 +178,7 @@ function ExhibitionFormContent({ onSuccess }) {
               <button
                 type="button"
                 onClick={removeImage}
-                className="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 m-2 p-1 d-flex align-items-center justify-content-center shadow"
+                className="btn btn-sm btn-danger rounded-circle position-absolute top-0 end-0 mb-t m-lg-2 p-1 d-flex align-items-center justify-content-center shadow"
                 title="Remove Image"
               >
                 <X size={14} />
