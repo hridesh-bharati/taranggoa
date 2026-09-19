@@ -62,6 +62,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <meta name="apple-mobile-web-app-title" content="TarangGoa" />
         <link rel="manifest" href="/site.webmanifest" />
+        <meta name="google-site-verification" content="M3e67SKCl-E2WDn6NIM7tBjmht0Oa3mmkb6s3o9p8MA" />
       </head>
       <body suppressHydrationWarning>
         <AuthProvider>
