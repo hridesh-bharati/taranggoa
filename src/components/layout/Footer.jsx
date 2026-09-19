@@ -124,10 +124,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-2 fs-7 footer-bottom-text">
-          <p className="mb-0 text-center text-md-start">
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-2 fs-7 footer-bottom-text text-center text-md-start">
+          <p className="mb-0">
             © {new Date().getFullYear()} Tarang Goa. All Rights Reserved.
           </p>
+
+          <p className="mb-0">
+            Maintained and Developed by:{' '}
+            <a 
+              href="https://www.awebgrow.com" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="footer-bottom-link fw-semibold text-decoration-none"
+            >
+              AWebGrow
+            </a>
+          </p>
+
           <div className="d-flex align-items-center gap-3">
             <Link href="/privacy" className="footer-bottom-link">
               Privacy Policy
