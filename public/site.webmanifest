@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "TarangGoa",
+  "short_name": "TarangGoa",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
