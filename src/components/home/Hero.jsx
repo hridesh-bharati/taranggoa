@@ -14,28 +14,31 @@ export default function Hero() {
     { icon: 'bi-people-fill', title: 'Networking', subtitle: '& Mentorship', bgColor: '#ffc107' },
     { icon: 'bi-graph-up-arrow', title: 'Business', subtitle: 'Growth', bgColor: '#e64a19' },
     { icon: 'bi-person-arms-up', title: 'Support for', subtitle: 'All Entrepreneurs', bgColor: '#2e7d32' },
-    { icon: 'bi-bank', title: 'Govt Support', subtitle: 'SHGs & Artisans', bgColor: '#1976d2' },
+    { icon: 'bi-bank', title: 'Govt Support for', subtitle: 'SHGs & Artisans', bgColor: '#1976d2' },
   ];
 
   return (
-    <section ref={sectionRef} className="hero-section position-relative">
-      {/* Background Overlay specifically optimized for mobile readability */}
-      <div className="hero-bg-overlay"></div>
-
-      <div className="container position-relative z-2 hero-container">
+    <section
+      ref={sectionRef}
+      className="hero-section position-relative"
+      style={{
+        backgroundImage: `linear-gradient(
+          to right,
+          #ffffff 0%,
+          #ffffff 44%,
+          rgba(255, 255, 255, 0.8) 58%,
+          rgba(255, 255, 255, 0) 100%
+        ), url('/images/home-image.png')`
+      }}
+    >
+      <div className="container position-relative z-2">
         <div className="row align-items-center">
 
-          {/* Main Content */}
+          {/* Left Side Content */}
           <div className="col-12 col-lg-7 text-start">
-            
-            {/* Badge for extra polish on mobile */}
-            <div className="hero-badge d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3">
-              <span className="badge-dot"></span>
-              <span className="fw-semibold">Goa's Premier Entrepreneur Network</span>
-            </div>
 
             {/* Title */}
-            <h1 className="hero-title mb-3 anim-title">
+            <h1 className="hero-title mb-2 anim-title">
               Empowering <br />
               <span className="text-blue-custom">Entrepreneurs.</span> <br />
               Creating <br />
@@ -46,45 +49,39 @@ export default function Hero() {
             <div className="hero-line-divider mb-3 anim-fade-up"></div>
 
             {/* Sub-text */}
-            <p className="hero-desc mb-4 anim-desc">
-              Tarang Goa connects artisans, startups, and innovators through premier exhibitions, networking, and direct community support.
+            <p className="hero-desc mb-3 anim-desc">
+              Tarang Goa is a platform that connects entrepreneurs, artisans, startups, businesses and innovators through exhibitions, networking and support to grow together.
             </p>
 
-            {/* Call to Actions (Full width on mobile, inline on desktop) */}
-            <div className="hero-actions d-flex flex-column flex-sm-row gap-2 gap-sm-3 mb-4 mb-lg-5">
-              <Link 
-                href="#exhibitions" 
-                className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center justify-content-center gap-2 py-2 px-4 shadow-sm"
-              >
-                <i className="bi bi-compass fs-6"></i>
+            {/* Buttons */}
+            <div className="d-flex flex-wrap gap-3 mb-4 align-items-center">
+              <Link href="#exhibitions" className="btn btn-blue-primary rounded-pill fw-semibold d-inline-flex align-items-center gap-2 border-0 anim-btn-orange">
+                <i className="bi bi-person-fill fs-6"></i>
                 <span>Explore Exhibitions</span>
                 <i className="bi bi-arrow-right fs-6 ms-1"></i>
               </Link>
 
-              <Link 
-                href="/membership-user-page" 
-                className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center justify-content-center gap-2 py-2 px-4"
-              >
+              <Link href="/membership-user-page" className="btn btn-blue-outline rounded-pill fw-semibold d-inline-flex align-items-center gap-2 anim-btn-outline">
                 <i className="bi bi-person-plus fs-6"></i>
                 <span>Become a Member</span>
               </Link>
             </div>
 
-            {/* Feature Icons: Mobile me clean flexible grid */}
-            <div className="hero-features-grid mt-2 anim-fade-up">
+            {/* Feature Icons Grid (Mobile me 3...3 layout) */}
+            <div className="row g-2 mt-2 anim-fade-up">
               {features.map((item, idx) => (
-                <div key={idx} className="feature-item">
-                  <div className="feature-card p-2 rounded-3 text-center h-100 d-flex flex-column align-items-center justify-content-center">
+                <div key={idx} className="col-4 col-md-2 text-center">
+                  <div className="feature-card p-2 rounded-3 h-100 d-flex flex-column align-items-center justify-content-center hover-lift">
                     <div
                       className="feature-icon-circle mb-2 d-flex align-items-center justify-content-center rounded-circle text-white shadow-sm"
-                      style={{ backgroundColor: item.bgColor }}
+                      style={{ backgroundColor: item.bgColor, width: '42px', height: '42px' }}
                     >
-                      <i className={`bi ${item.icon}`}></i>
+                      <i className={`bi ${item.icon} fs-5`}></i>
                     </div>
-                    <div className="feature-title fw-bold text-dark">
+                    <div className="feature-title fw-bold text-dark" style={{ fontSize: '0.72rem', lineHeight: '1.2' }}>
                       {item.title}
                     </div>
-                    <div className="feature-subtitle text-muted">
+                    <div className="feature-subtitle text-muted" style={{ fontSize: '0.65rem', lineHeight: '1.1' }}>
                       {item.subtitle}
                     </div>
                   </div>
@@ -94,17 +91,17 @@ export default function Hero() {
 
           </div>
 
-          {/* Floating Video Card (Mobile friendly compact card) */}
-          <div className="col-12 col-lg-5 d-flex justify-content-center justify-content-lg-end mt-4 mt-lg-0">
-            <div className="video-card-white d-flex align-items-center gap-3 anim-fade-up hover-lift w-100 w-sm-auto">
-              <button className="btn-play-blue flex-shrink-0" aria-label="Play Video">
+          {/* Right Floating Video Card */}
+          <div className="col-12 col-lg-5 d-flex justify-content-center justify-content-lg-end align-items-end mt-4 mt-lg-0">
+            <div className="video-card-white d-flex align-items-center gap-3 anim-fade-up hover-lift">
+              <button className="btn-play-blue" aria-label="Play Video">
                 <i className="bi bi-play-fill fs-3 ms-1"></i>
               </button>
-              <div className="text-start">
-                <h6 className="fw-bold mb-1 text-dark" style={{ fontSize: '0.9rem' }}>
+              <div>
+                <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '0.85rem' }}>
                   Watch Tarang Goa
                 </h6>
-                <p className="mb-0 text-muted" style={{ fontSize: '0.75rem', lineHeight: '1.3' }}>
+                <p className="mb-0 text-muted" style={{ fontSize: '0.72rem', lineHeight: '1.25' }}>
                   See how we empower businesses and communities
                 </p>
               </div>
