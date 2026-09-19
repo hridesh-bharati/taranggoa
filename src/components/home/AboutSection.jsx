@@ -9,9 +9,9 @@ export default function AboutSection() {
 
   return (
     <section ref={sectionRef} className="py-5 bg-white position-relative overflow-hidden">
-      
+
       {/* Background Decorative Large Vertical "about us" Text */}
-      <div 
+      <div
         className="position-absolute start-50 top-50 translate-middle pointer-events-none select-none d-none d-xl-block"
         style={{
           fontSize: '12rem',
@@ -28,13 +28,13 @@ export default function AboutSection() {
 
       <div className="container py-lg-4 position-relative z-2">
         <div className="row g-4 g-lg-5 align-items-stretch">
-          
+
           {/* Left Column: Founder Card with Premium Frame */}
           <div className="col-lg-5 col-xl-4">
             <div className="h-100 d-flex flex-column anim-fade-up">
-              
+
               {/* Image Box with Thick Yellow Border (Matching Poster) */}
-              <div 
+              <div
                 className="p-2 mb-3 rounded-4 shadow-sm"
                 style={{
                   backgroundColor: '#ffffff',
@@ -45,8 +45,12 @@ export default function AboutSection() {
                   <img
                     src="/images/founder-of-taranggoa-sweta-cheri.png"
                     alt="Ms. Sweta Chari - President & Founder"
-                    className="img-fluid w-100 object-fit-cover hover-lift"
-                    style={{ height: '340px' }}
+                    className="img-fluid w-100"
+                    style={{
+                      height: '420px',
+                      objectFit: 'cover',
+                      objectPosition: 'top center'
+                    }}
                   />
                 </div>
               </div>
@@ -71,11 +75,11 @@ export default function AboutSection() {
 
           {/* Right Column: Editorial Letter & About Details */}
           <div className="col-lg-7 col-xl-8 d-flex flex-column justify-content-center">
-            
+
             {/* Top Brand Tag */}
             <div className="d-flex align-items-center gap-2 mb-3 anim-title">
-              <span 
-                className="badge fw-bold px-3 py-2 rounded-pill shadow-sm" 
+              <span
+                className="badge fw-bold px-3 py-2 rounded-pill shadow-sm"
                 style={{ backgroundColor: 'var(--purple-hover-bg, #f3e8ff)', color: 'var(--primary-purple, #6b21a8)' }}
               >
                 • TARANG EMPOWERING WOMEN
@@ -85,10 +89,10 @@ export default function AboutSection() {
             {/* Quote Block with Large Dropcap 'F' */}
             <div className="position-relative mb-4 anim-desc">
               <p className="fs-5 text-dark fw-normal fst-italic mb-0" style={{ lineHeight: '1.8' }}>
-                <span 
+                <span
                   className="float-start me-2 lh-1 fw-extrabold"
-                  style={{ 
-                    fontSize: '3.8rem', 
+                  style={{
+                    fontSize: '3.8rem',
                     fontFamily: 'Georgia, serif',
                     color: 'var(--primary-purple, #6b21a8)',
                     marginTop: '-6px'
@@ -96,7 +100,7 @@ export default function AboutSection() {
                 >
                   F
                 </span>
-                riends... It is said, the future belongs to those who believe in the beauty of their dreams. So in order to enhance economic growth of our state, empowering women is essential. This will help in creating a more equitable and prosperous society.
+               riends... It is said, the future belongs to those who believe in the beauty of their dreams. So in order to enhance economic growth of our state, empowering women is essential. This will help in creating a more equitable and prosperous society. When a woman becomes financially independent, she uplifts an entire family, inspires her neighborhood, and strengthens the foundation of our entire state.
               </p>
             </div>
 

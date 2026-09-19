@@ -66,26 +66,33 @@ export default function UpcomingExhibitions() {
                     </div>
 
                     <div className="p-3">
+                      {/* --- CHANGE START: Adjusted Grid for Larger Image on Desktop --- */}
                       <div className="row g-3 align-items-center">
-                        {/* Poster with Margin */}
-                        {item.image && (
-                          <div className="col-12 col-md-5 text-center my-1">
-                            <div
-                              className="border rounded-2 p-1 bg-white cursor-pointer"
-                              onClick={() => setSelectedImage(item.image)}
-                            >
-                              <img
-                                src={item.image}
-                                alt={item.badge}
-                                className="img-fluid rounded-1 object-fit-contain"
-                                style={{ maxHeight: '200px' }}
-                              />
-                            </div>
-                          </div>
-                        )}
+                        {/* Poster Column - increased from col-md-5 to col-md-6 */}
+                       {/* Poster with Margin */}
+{item.image && (
+  <div className="col-12 col-md-6 text-center">
+    <div
+      className="border rounded-2 bg-white cursor-pointer overflow-hidden p-0"
+      onClick={() => setSelectedImage(item.image)}
+    >
+      <img
+        src={item.image}
+        alt={item.badge}
+        className="w-100 object-fit-cover object-fit-md-contain rounded-1"
+        style={{
+          height: 'auto',
+          maxHeight: '400px',
+          display: 'block'
+        }}
+      />
+    </div>
+  </div>
+)}
 
-                        {/* Details with Margins */}
-                        <div className={`col-12 ${item.image ? 'col-md-7' : 'col-12'} d-flex flex-column justify-content-between h-100 my-1`}>
+                        {/* Details Column - decreased from col-md-7 to col-md-6 */}
+                        <div className={`col-12 ${item.image ? 'col-md-6' : 'col-12'} d-flex flex-column justify-content-between h-100 my-1`}>
+                          {/* --- CHANGE END --- */}
                           <div className="d-flex flex-column gap-2">
                             <div className="bg-light p-2 rounded-2 border fs-8">
                               <div className="fw-bold text-dark mb-1 text-truncate">
