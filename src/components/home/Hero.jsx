@@ -15,7 +15,6 @@ export default function Hero() {
     { icon: 'bi-graph-up-arrow', title: 'Business', subtitle: 'Growth', bgColor: '#e64a19' },
     { icon: 'bi-person-arms-up', title: 'Support for', subtitle: 'All Entrepreneurs', bgColor: '#2e7d32' },
     { icon: 'bi-bank', title: 'Govt Support for', subtitle: 'SHGs & Artisans', bgColor: '#1976d2' },
-    { icon: 'bi-briefcase-fill', title: 'MSME', subtitle: 'Development', bgColor: '#7b1fa2' }
   ];
 
   return (

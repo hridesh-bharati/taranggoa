@@ -37,7 +37,7 @@ async function renameDocument(collectionName, oldDocId, newDocId) {
 
 // target IDs
 const COLLECTION = 'memberships';
-const OLD_EMAIL = 'hridesh027@gmail.com';
+const OLD_EMAIL = 'teamtaranggoa@gmail.com';
 const NEW_EMAIL = 'hridesh0277@gmail.com';
 
 renameDocument(COLLECTION, OLD_EMAIL, NEW_EMAIL);

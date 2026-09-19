@@ -96,7 +96,7 @@ export default function AboutSection() {
                 >
                   F
                 </span>
-                riendz... It is said, the future belongs to those who believe in the beauty of their dreams. So in order to enhance economic growth of our state, empowering women is essential. This will help in creating a more equitable and prosperous society.
+                riends... It is said, the future belongs to those who believe in the beauty of their dreams. So in order to enhance economic growth of our state, empowering women is essential. This will help in creating a more equitable and prosperous society.
               </p>
             </div>
 

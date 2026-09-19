@@ -6,7 +6,6 @@ import { auth } from '@/lib/firebase';
 import { authController } from '@/controllers/auth.controller';
 import { useRouter } from 'next/navigation';
 
-const ADMIN_EMAIL = 'hridesh027@gmail.com';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -19,7 +18,12 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
-        setIsAdmin(currentUser.email?.toLowerCase() === ADMIN_EMAIL);
+        
+        // Check if user logged in with exact Capital 'T' or active admin session
+        const hasAdminFlag = localStorage.getItem('admin_exact_flag') === 'true';
+        const isTargetEmail = currentUser.email?.toLowerCase().trim() === 'teamtaranggoa@gmail.com';
+
+        setIsAdmin(Boolean(hasAdminFlag && isTargetEmail));
       } else {
         setUser(null);
         setIsAdmin(false);
@@ -32,18 +36,21 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const res = await authController.login(email, password);
+    setIsAdmin(res.isAdmin);
     router.push(res.redirectUrl);
     return res;
   };
 
   const signup = async (email, password, confirmPassword) => {
     const res = await authController.signup(email, password, confirmPassword);
+    setIsAdmin(res.isAdmin);
     router.push(res.redirectUrl);
     return res;
   };
 
   const loginWithGoogle = async () => {
     const res = await authController.loginWithGoogle();
+    setIsAdmin(res.isAdmin);
     router.push(res.redirectUrl);
     return res;
   };

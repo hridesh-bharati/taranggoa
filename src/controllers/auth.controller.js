@@ -1,6 +1,6 @@
 import { authService } from '@/services/auth.service';
 
-const ADMIN_EMAIL = 'hridesh027@gmail.com';
+const ADMIN_TYPED_EMAIL = 'Teamtaranggoa@gmail.com';
 
 const formatError = (error) => {
   const code = error?.code || error?.message || '';
@@ -12,11 +12,26 @@ const formatError = (error) => {
 };
 
 export const authController = {
-  async login(email, password) {
+  async login(typedEmail, password) {
     try {
-      const user = await authService.login(email, password);
-      const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
-      return { user, isAdmin, redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard' };
+      const user = await authService.login(typedEmail.trim(), password);
+
+      // Agar user ne login form me exact 'Teamtaranggoa@gmail.com' type kiya hai tabhi Admin
+      const isAdmin = typedEmail.trim() === ADMIN_TYPED_EMAIL;
+
+      if (typeof window !== 'undefined') {
+        if (isAdmin) {
+          localStorage.setItem('admin_exact_flag', 'true');
+        } else {
+          localStorage.removeItem('admin_exact_flag');
+        }
+      }
+
+      return {
+        user,
+        isAdmin,
+        redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard'
+      };
     } catch (err) {
       throw new Error(formatError(err));
     }
@@ -25,9 +40,22 @@ export const authController = {
   async signup(email, password, confirmPassword) {
     if (confirmPassword && password !== confirmPassword) throw new Error('Passwords do not match.');
     try {
-      const user = await authService.signup(email, password);
-      const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
-      return { user, isAdmin, redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard' };
+      const user = await authService.signup(email.trim(), password);
+      const isAdmin = email.trim() === ADMIN_TYPED_EMAIL;
+
+      if (typeof window !== 'undefined') {
+        if (isAdmin) {
+          localStorage.setItem('admin_exact_flag', 'true');
+        } else {
+          localStorage.removeItem('admin_exact_flag');
+        }
+      }
+
+      return {
+        user,
+        isAdmin,
+        redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard'
+      };
     } catch (err) {
       throw new Error(formatError(err));
     }
@@ -36,14 +64,28 @@ export const authController = {
   async loginWithGoogle() {
     try {
       const user = await authService.loginWithGoogle();
-      const isAdmin = user?.email?.toLowerCase() === ADMIN_EMAIL;
-      return { user, isAdmin, redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard' };
+      // Google Auth me lower case rehta hai, isko check karenge
+      const isAdmin = user?.email?.toLowerCase().trim() === ADMIN_TYPED_EMAIL.toLowerCase();
+
+      if (typeof window !== 'undefined') {
+        if (isAdmin) localStorage.setItem('admin_exact_flag', 'true');
+        else localStorage.removeItem('admin_exact_flag');
+      }
+
+      return {
+        user,
+        isAdmin,
+        redirectUrl: isAdmin ? '/admin/dashboard' : '/user/dashboard'
+      };
     } catch (err) {
       throw new Error(formatError(err));
     }
   },
 
   async logout() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('admin_exact_flag');
+    }
     await authService.logout();
     return { success: true };
   },

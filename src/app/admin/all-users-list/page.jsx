@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { userService } from '@/services/user.service';
@@ -9,22 +9,28 @@ import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import { Users, Mail, Phone, ShieldCheck, UserCheck, Loader2, Trash2 } from 'lucide-react';
 
+const ADMIN_EMAIL = 'teamtaranggoa@gmail.com';
+
 export default function AdminMembersPage() {
   const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
 
-  const fetchUsers = async () => {
+  // Admin Check: Role 'admin' ya 'teamtaranggoa@gmail.com' (chahe small t ho ya Capital T)
+  const checkIsAdmin = useCallback((role, email) => {
+    const normalizedEmail = (email || '').toLowerCase().trim();
+    return role === 'admin' || normalizedEmail === ADMIN_EMAIL.toLowerCase();
+  }, []);
+
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      // 1. Fetch users and memberships concurrently
       const [usersData, membershipsSnap] = await Promise.all([
         userService.getAllUsers().catch(() => []),
         getDocs(collection(db, 'memberships')).catch(() => ({ docs: [] })),
       ]);
 
-      // 2. Map Profile Photos from Memberships using Email as Key
       const photoMap = {};
       membershipsSnap.docs.forEach((docSnap) => {
         const m = docSnap.data();
@@ -34,10 +40,10 @@ export default function AdminMembersPage() {
         }
       });
 
-      // 3. Sync & Enrich Users List with Photos
       const enrichedUsers = (usersData || []).map((u) => {
         const userEmailKey = (u.email || '').toLowerCase().trim();
-        const syncedPhoto = u.photoURL || u.image || photoMap[userEmailKey] || photoMap[u.uid] || '';
+        const syncedPhoto =
+          u.photoURL || u.image || photoMap[userEmailKey] || photoMap[u.uid] || '';
 
         return {
           ...u,
@@ -51,18 +57,18 @@ export default function AdminMembersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   const handleDeleteUser = async (uid, email, role) => {
-    const currentAdminEmail = currentUser?.email?.toLowerCase()?.trim();
-    const targetEmail = email?.toLowerCase()?.trim();
+    const currentAdminEmail = currentUser?.email?.toLowerCase().trim();
+    const targetEmail = (email || '').toLowerCase().trim();
 
-    // Fix: Check if target user is Admin or Main Admin email
-    if (targetEmail === currentAdminEmail || role === 'admin' || targetEmail === 'hridesh027@gmail.com') {
+    // Protection: Kisi bhi roop me admin account delete nahi ho sakta
+    if (targetEmail === currentAdminEmail || checkIsAdmin(role, targetEmail) || targetEmail === ADMIN_EMAIL.toLowerCase()) {
       showToast('error', 'Admin account cannot be deleted!');
       return;
     }
@@ -83,8 +89,7 @@ export default function AdminMembersPage() {
 
   return (
     <div className="container-fluid p-0 pb-3 mb-5 px-md-4">
-
-      {/* Compact Gradient Header */}
+      {/* Header */}
       <div className="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-primary-gradient">
         <div className="d-flex align-items-center justify-content-between">
           <div>
@@ -100,7 +105,7 @@ export default function AdminMembersPage() {
         </div>
       </div>
 
-      {/* Content Area */}
+      {/* Main Content Area */}
       {loading ? (
         <div className="text-center py-5">
           <Loader2 className="spinner-border text-primary" style={{ width: '2rem', height: '2rem' }} />
@@ -126,7 +131,7 @@ export default function AdminMembersPage() {
                 </thead>
                 <tbody>
                   {users.map((u) => {
-                    const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === 'hridesh027@gmail.com';
+                    const isTargetAdmin = checkIsAdmin(u.role, u.email);
 
                     return (
                       <tr key={u.uid}>
@@ -137,9 +142,12 @@ export default function AdminMembersPage() {
                             title={`View ${u.name || 'User'}'s Profile`}
                           >
                             <div className="d-flex align-items-center gap-3">
-                              <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 38, height: 38 }}>
+                              <div
+                                className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{ width: 38, height: 38 }}
+                              >
                                 {u.photoURL ? (
-                                  <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
+                                  <img src={u.photoURL} alt={u.name || 'User photo'} className="w-100 h-100 object-fit-cover" />
                                 ) : (
                                   <span className="fw-bold text-primary">
                                     {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
@@ -182,6 +190,7 @@ export default function AdminMembersPage() {
                               disabled={deletingId === u.uid}
                               className="btn btn-sm btn-outline-danger rounded-circle p-2 d-inline-flex align-items-center justify-content-center"
                               title="Delete Member"
+                              aria-label={`Delete member ${u.name || u.email}`}
                               style={{ width: 34, height: 34 }}
                             >
                               {deletingId === u.uid ? (
@@ -205,7 +214,7 @@ export default function AdminMembersPage() {
           {/* Mobile Card Stack View */}
           <div className="d-md-none d-flex flex-column gap-3">
             {users.map((u) => {
-              const isTargetAdmin = u.role === 'admin' || u.email?.toLowerCase() === 'hridesh027@gmail.com';
+              const isTargetAdmin = checkIsAdmin(u.role, u.email);
 
               return (
                 <div key={u.uid} className="card border-0 rounded-4 shadow-sm p-3 bg-white">
@@ -216,9 +225,12 @@ export default function AdminMembersPage() {
                       title={`View ${u.name || 'User'}'s Profile`}
                     >
                       <div className="d-flex align-items-center gap-2">
-                        <div className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0" style={{ width: 36, height: 36 }}>
+                        <div
+                          className="rounded-circle overflow-hidden border bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+                          style={{ width: 36, height: 36 }}
+                        >
                           {u.photoURL ? (
-                            <img src={u.photoURL} alt={u.name} className="w-100 h-100 object-fit-cover" />
+                            <img src={u.photoURL} alt={u.name || 'User photo'} className="w-100 h-100 object-fit-cover" />
                           ) : (
                             <span className="fw-bold text-primary">
                               {u.name ? u.name.charAt(0).toUpperCase() : 'U'}
@@ -235,6 +247,7 @@ export default function AdminMembersPage() {
                         disabled={deletingId === u.uid}
                         className="btn btn-sm btn-outline-danger border-0 p-1"
                         title="Delete Member"
+                        aria-label={`Delete member ${u.name || u.email}`}
                       >
                         {deletingId === u.uid ? <Loader2 size={16} className="spinner-border spinner-border-sm" /> : <Trash2 size={16} />}
                       </button>
@@ -268,7 +281,6 @@ export default function AdminMembersPage() {
               );
             })}
           </div>
-
         </div>
       )}
     </div>
