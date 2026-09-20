@@ -1,7 +1,7 @@
-// src/app/(website)/membership-user-page/page.jsx
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { paymentController } from '@/controllers/payment.controller';
@@ -49,6 +49,7 @@ const CATEGORIES = [
 ];
 
 export default function MembershipClientPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [form, setFormData] = useState({
@@ -64,7 +65,7 @@ export default function MembershipClientPage() {
 
   const handleChange = (e) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // Step 2 Validation
+  // Step 2 Form Validation
   const handleValidateForm = (e) => {
     e.preventDefault();
     if (!form.fullName || !form.phone || !form.email || !form.businessName || !form.city || !form.state) {
@@ -74,15 +75,20 @@ export default function MembershipClientPage() {
     setCurrentStep(3);
   };
 
-  // Step 3 PhonePe Payment Initiation via Single Controller
-  const handlePhonePePayment = () => {
+  // Step 3 Razorpay Payment Initiation
+  const handleRazorpayPayment = () => {
     setLoading(true);
 
     paymentController.initiateMembershipPayment({
       userDetails: form,
-      onError: (err) => {
-        showToast('error', err.message || 'PhonePe payment initialization failed.');
+      onSuccess: () => {
         setLoading(false);
+        showToast('success', 'Payment successful! Membership activated.');
+        router.push('/user/user-membership-page');
+      },
+      onError: (err) => {
+        setLoading(false);
+        showToast('error', err.message || 'Razorpay payment cancelled or failed.');
       }
     });
   };
@@ -116,6 +122,7 @@ export default function MembershipClientPage() {
             {/* Step 1 */}
             <div className="text-center position-relative z-2">
               <button
+                type="button"
                 onClick={() => setCurrentStep(1)}
                 className={`btn rounded-circle fw-bold d-flex align-items-center justify-content-center mx-auto shadow-sm ${currentStep >= 1 ? 'btn-primary text-white' : 'btn-light text-muted border'}`}
                 style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}
@@ -130,6 +137,7 @@ export default function MembershipClientPage() {
             {/* Step 2 */}
             <div className="text-center position-relative z-2">
               <button
+                type="button"
                 onClick={() => currentStep > 2 && setCurrentStep(2)}
                 className={`btn rounded-circle fw-bold d-flex align-items-center justify-content-center mx-auto shadow-sm ${currentStep >= 2 ? 'btn-primary text-white' : 'btn-light text-muted border'}`}
                 style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}
@@ -144,13 +152,14 @@ export default function MembershipClientPage() {
             {/* Step 3 */}
             <div className="text-center position-relative z-2">
               <button
+                type="button"
                 className={`btn rounded-circle fw-bold d-flex align-items-center justify-content-center mx-auto shadow-sm ${currentStep === 3 ? 'btn-primary text-white' : 'btn-light text-muted border'}`}
                 style={{ width: '48px', height: '48px', fontSize: '1.1rem' }}
               >
                 3
               </button>
               <small className={`fw-bold d-block mt-2 small text-uppercase ${currentStep === 3 ? 'text-primary' : 'text-muted'}`}>
-                3. Pay via PhonePe (₹999)
+                3. Pay via Razorpay (₹999)
               </small>
             </div>
 
@@ -199,6 +208,7 @@ export default function MembershipClientPage() {
 
               <div className="d-flex justify-content-end pt-3 border-top">
                 <button
+                  type="button"
                   onClick={() => setCurrentStep(2)}
                   className="btn btn-gov-portal shadow-sm d-inline-flex align-items-center gap-2"
                 >
@@ -270,36 +280,36 @@ export default function MembershipClientPage() {
           </div>
         )}
 
-        {/* STEP 3: PHONEPE PAYMENT & SUBMISSION */}
+        {/* STEP 3: RAZORPAY CHECKOUT */}
         {currentStep === 3 && (
           <div className="card border-0 rounded-3 shadow-sm bg-white overflow-hidden mx-auto" style={{ maxWidth: '600px' }}>
 
             {/* Header Strip */}
-            <div className="p-3 text-white d-flex align-items-center justify-content-between" style={{ background: 'linear-gradient(135deg, #5f259f 0%, #3f186c 100%)' }}>
+            <div className="p-3 text-white d-flex align-items-center justify-content-between" style={{ background: 'linear-gradient(135deg, #1e3a8a 0%, #0d6efd 100%)' }}>
               <span className="fw-bold small d-flex align-items-center gap-2">
                 <CreditCard size={18} /> STEP 3: PAYMENT CHECKOUT
               </span>
               <span className="badge bg-warning text-dark rounded-pill px-3 py-1 small fw-bold text-uppercase">
-                PhonePe PG
+                Razorpay Secure
               </span>
             </div>
 
             <div className="p-4 p-md-5 text-center">
 
-              {/* PhonePe Brand Icon Box */}
+              {/* Razorpay Brand Icon Box */}
               <div
                 className="rounded-circle d-inline-flex align-items-center justify-content-center mb-3 shadow-sm"
-                style={{ width: '68px', height: '68px', backgroundColor: '#f3e8ff', color: '#5f259f' }}
+                style={{ width: '68px', height: '68px', backgroundColor: '#e0f2fe', color: '#0284c7' }}
               >
                 <CreditCard size={32} />
               </div>
 
-              <h5 className="fw-bold text-dark mb-1">Complete Payment</h5>
+              <h5 className="fw-bold text-dark mb-1">Complete Payment via Razorpay</h5>
               <p className="text-muted small mb-4">
-                You will be redirected securely to PhonePe UPI / Net Banking / Card Checkout.
+                Instant UPI (GPay/PhonePe/Paytm), Cards, & Net Banking checkout.
               </p>
 
-              {/* Structured Receipt Summary Box */}
+              {/* Summary Box */}
               <div className="card border-0 bg-light rounded-3 p-3 text-start mb-4">
                 <div className="gov-section-strip py-1 px-2 mb-2 small">
                   PAYMENT SUMMARY (भुगतान विवरण)
@@ -330,7 +340,7 @@ export default function MembershipClientPage() {
 
                   <div className="d-flex justify-content-between align-items-center pt-1 fs-6">
                     <strong className="text-dark">Total Payable Amount</strong>
-                    <strong className="fs-5" style={{ color: '#5f259f' }}>₹999.00</strong>
+                    <strong className="fs-5 text-primary">₹999.00</strong>
                   </div>
                 </div>
               </div>
@@ -338,6 +348,7 @@ export default function MembershipClientPage() {
               {/* Action Buttons */}
               <div className="d-flex flex-column flex-sm-row gap-2 justify-content-center">
                 <button
+                  type="button"
                   onClick={() => setCurrentStep(2)}
                   className="btn btn-outline-secondary px-4 py-2 fw-bold small rounded-pill d-inline-flex align-items-center justify-content-center gap-2"
                 >
@@ -345,23 +356,23 @@ export default function MembershipClientPage() {
                 </button>
 
                 <button
-                  onClick={handlePhonePePayment}
+                  type="button"
+                  onClick={handleRazorpayPayment}
                   disabled={loading}
-                  className="btn text-white px-4 py-2 fw-bold small rounded-pill shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
-                  style={{ backgroundColor: '#5f259f', borderColor: '#5f259f' }}
+                  className="btn btn-primary px-4 py-2 fw-bold small rounded-pill shadow-sm d-inline-flex align-items-center justify-content-center gap-2"
                 >
                   {loading ? (
                     <Loader2 size={18} className="spinner-border spinner-border-sm" />
                   ) : (
                     <ShieldCheck size={18} />
                   )}
-                  <span>Pay ₹999 with PhonePe</span>
+                  <span>Pay ₹999 via Razorpay</span>
                 </button>
               </div>
 
               {/* Security Note */}
               <small className="d-block text-muted small mt-3">
-                🔒 256-Bit SSL Encrypted Official Gateway Session
+                🔒 256-Bit SSL Encrypted Razorpay Checkout Gateway
               </small>
 
             </div>

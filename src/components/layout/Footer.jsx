@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { 
   MapPin, 
@@ -8,30 +9,38 @@ import {
 } from 'lucide-react';
 import './Footer.css';
 
+// 1. Static arrays ko component ke bahar rakha gaya hai taaki SSR aur CSR render exact match karein
+const SOCIAL_LINKS = [
+  { iconClass: 'bi-facebook', href: '#', label: 'Facebook' },
+  { iconClass: 'bi-instagram', href: 'https://www.instagram.com/taranggoa?stkn=MTAwM3E2Y3ZuYnVndg==', label: 'Instagram' },
+  { iconClass: 'bi-linkedin', href: '#', label: 'LinkedIn' },
+  { iconClass: 'bi-youtube', href: '#', label: 'YouTube' },
+];
+
+const QUICK_LINKS = [
+  { name: 'About Us', href: '/about' },
+  { name: 'Exhibitions', href: '/exhibitions' },
+  { name: 'Events', href: '/events' },
+  { name: 'Gallery', href: '/gallery' },
+  { name: 'Entrepreneurs', href: '/entrepreneurs' },
+  { name: 'Contact Us', href: '/contact' },
+];
+
+const USEFUL_LINKS = [
+  { name: 'Member Registration', href: '/membership' },
+  { name: 'Exhibitor Registration', href: '/exhibitor' },
+  { name: 'Event Calendar', href: '/calendar' },
+  { name: 'Media Coverage', href: '/media' },
+  { name: 'FAQs', href: '/faqs' },
+];
+
 export default function Footer() {
-  const socialLinks = [
-    { iconClass: 'bi-facebook', href: '#', label: 'Facebook' },
-    { iconClass: 'bi-instagram', href: '#', label: 'Instagram' },
-    { iconClass: 'bi-linkedin', href: '#', label: 'LinkedIn' },
-    { iconClass: 'bi-youtube', href: '#', label: 'YouTube' },
-  ];
+  // 2. Year ko client-side mount par set karte hain taaki SSR par mismatch na aaye
+  const [currentYear, setCurrentYear] = useState('2026');
 
-  const quickLinks = [
-    { name: 'About Us', href: '/about' },
-    { name: 'Exhibitions', href: '/exhibitions' },
-    { name: 'Events', href: '/events' },
-    { name: 'Gallery', href: '/gallery' },
-    { name: 'Entrepreneurs', href: '/entrepreneurs' },
-    { name: 'Contact Us', href: '/contact' },
-  ];
-
-  const usefulLinks = [
-    { name: 'Member Registration', href: '/membership' },
-    { name: 'Exhibitor Registration', href: '/exhibitor' },
-    { name: 'Event Calendar', href: '/calendar' },
-    { name: 'Media Coverage', href: '/media' },
-    { name: 'FAQs', href: '/faqs' },
-  ];
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear().toString());
+  }, []);
 
   return (
     <footer className="footer-section position-relative pt-5 pb-3">
@@ -57,10 +66,12 @@ export default function Footer() {
             </p>
 
             <div className="d-flex gap-2">
-              {socialLinks.map((soc, idx) => (
+              {SOCIAL_LINKS.map((soc, idx) => (
                 <a
                   key={idx}
                   href={soc.href}
+                  target={soc.href.startsWith('http') ? '_blank' : undefined}
+                  rel={soc.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                   aria-label={soc.label}
                   className="social-icon-btn d-flex align-items-center justify-content-center rounded-circle"
                 >
@@ -74,7 +85,7 @@ export default function Footer() {
           <div className="col-6 col-lg-2 col-md-4">
             <h6 className="footer-heading fw-bold mb-3">Quick Links</h6>
             <ul className="list-unstyled d-flex flex-column gap-2 mb-0">
-              {quickLinks.map((link, idx) => (
+              {QUICK_LINKS.map((link, idx) => (
                 <li key={idx}>
                   <Link href={link.href} className="footer-link">
                     {link.name}
@@ -88,7 +99,7 @@ export default function Footer() {
           <div className="col-6 col-lg-3 col-md-4">
             <h6 className="footer-heading fw-bold mb-3">Useful Links</h6>
             <ul className="list-unstyled d-flex flex-column gap-2 mb-0">
-              {usefulLinks.map((link, idx) => (
+              {USEFUL_LINKS.map((link, idx) => (
                 <li key={idx}>
                   <Link href={link.href} className="footer-link">
                     {link.name}
@@ -126,7 +137,7 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center pt-3 gap-2 fs-7 footer-bottom-text text-center text-md-start">
           <p className="mb-0">
-            © {new Date().getFullYear()} Tarang Goa. All Rights Reserved.
+            © {currentYear} Tarang Goa. All Rights Reserved.
           </p>
 
           <p className="mb-0">
@@ -135,7 +146,7 @@ export default function Footer() {
               href="https://www.awebgrow.com" 
               target="_blank" 
               rel="noopener noreferrer" 
-              className="footer-bottom-link fw-semibold text-decoration-none"
+              className="footer-bottom-link fw-semibold text-warning text-decoration-none"
             >
               AWebGrow
             </a>

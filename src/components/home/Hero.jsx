@@ -97,22 +97,25 @@ export default function Hero() {
 
           </div>
 
-          {/* Right Floating Video Card */}
-          <div className="col-12 col-lg-5 d-flex justify-content-center justify-content-lg-end align-items-end mt-4 mt-lg-0">
-            <div className="video-card-white d-flex align-items-center gap-3 anim-fade-up hover-lift">
-              <button className="btn-play-blue" aria-label="Play Video">
-                <i className="bi bi-play-fill fs-3 ms-1"></i>
-              </button>
-              <div>
-                <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '0.85rem' }}>
-                  Watch Tarang Goa
-                </h6>
-                <p className="mb-0 text-muted" style={{ fontSize: '0.72rem', lineHeight: '1.25' }}>
-                  See how we empower businesses and communities
-                </p>
-              </div>
-            </div>
-          </div>
+    {/* Right Floating Video Card */}
+<div className="col-12 col-lg-5 d-flex justify-content-center justify-content-lg-end align-items-end mt-4 mt-lg-0">
+  <Link 
+    href="/about" 
+    className="video-card-white d-flex align-items-center gap-3 anim-fade-up hover-lift text-decoration-none"
+  >
+    <button type="button" className="btn-play-blue" aria-label="Play Video">
+      <i className="bi bi-play-fill fs-3 ms-1"></i>
+    </button>
+    <div>
+      <h6 className="fw-bold mb-0 text-dark" style={{ fontSize: '0.85rem' }}>
+        Watch Tarang Goa
+      </h6>
+      <p className="mb-0 text-muted" style={{ fontSize: '0.72rem', lineHeight: '1.25' }}>
+        See how we empower businesses and communities
+      </p>
+    </div>
+  </Link>
+</div>
 
         </div>
       </div>
