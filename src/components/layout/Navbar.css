@@ -4,6 +4,20 @@
   z-index: 1030;
 }
 
+/* =========================================
+   TARANG GOA LOGO
+   Only logo sizing changed
+   ========================================= */
+
+.tarang-logo {
+  display: block;
+  width: 255px;
+  height: auto;
+  max-height: 60px;
+  object-fit: contain;
+  object-position: center;
+}
+
 /* Three Dot WhatsApp Style Toggle Button */
 .three-dot-btn {
   background: transparent;
@@ -30,7 +44,7 @@
   white-space: nowrap;
 }
 
-.custom-nav-link:hover, 
+.custom-nav-link:hover,
 .custom-nav-link.active {
   color: var(--primary-purple) !important;
   background-color: var(--purple-hover-bg);
@@ -84,6 +98,11 @@
 
 /* Mobile Top-to-Bottom Drawer (Width: 60vw & Extra Margin-Y) */
 @media (max-width: 991.98px) {
+  .tarang-logo {
+    width: 230px;
+    max-height: 58px;
+  }
+
   .mobile-menu-drawer {
     position: absolute;
     top: 100%;
@@ -94,7 +113,7 @@
     box-shadow: -4px 12px 24px rgba(0, 0, 0, 0.15);
     border-radius: 0 0 16px 16px;
     padding: 12px 14px 16px 14px;
-    
+
     /* 🔴 FIXED: Allow dropdown to overflow outside drawer without hiding */
     max-height: 0;
     opacity: 0;
@@ -131,14 +150,37 @@
     flex-shrink: 0;
   }
 
-  .icon-blue { background-color: var(--badge-blue); }
-  .icon-cyan { background-color: var(--badge-cyan); }
-  .icon-yellow { background-color: var(--badge-yellow); }
-  .icon-red { background-color: var(--badge-red); }
-  .icon-purple { background-color: var(--badge-purple); }
-  .icon-green { background-color: var(--badge-green); }
-  .icon-teal { background-color: var(--badge-teal); }
-  .icon-indigo { background-color: var(--badge-indigo); }
+  .icon-blue {
+    background-color: var(--badge-blue);
+  }
+
+  .icon-cyan {
+    background-color: var(--badge-cyan);
+  }
+
+  .icon-yellow {
+    background-color: var(--badge-yellow);
+  }
+
+  .icon-red {
+    background-color: var(--badge-red);
+  }
+
+  .icon-purple {
+    background-color: var(--badge-purple);
+  }
+
+  .icon-green {
+    background-color: var(--badge-green);
+  }
+
+  .icon-teal {
+    background-color: var(--badge-teal);
+  }
+
+  .icon-indigo {
+    background-color: var(--badge-indigo);
+  }
 
   .bottom-action-group {
     border-top: 1px solid rgba(0, 0, 0, 0.08);
@@ -151,6 +193,11 @@
 
 /* PC / Desktop Horizontal Layout */
 @media (min-width: 992px) {
+  .tarang-logo {
+    width: 300px;
+    max-height: 70px;
+  }
+
   .mobile-menu-drawer {
     display: flex;
     align-items: center;
@@ -167,5 +214,13 @@
     height: 3px;
     background-color: var(--primary-purple);
     border-radius: 2px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 575.98px) {
+  .tarang-logo {
+    width: 210px;
+    max-height: 55px;
   }
 }

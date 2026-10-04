@@ -1,4 +1,3 @@
-// src\components\layout\Navbar.jsx
 'use client';
 
 import Link from 'next/link';
@@ -78,11 +77,14 @@ export default function Navbar() {
       <div className="container-fluid px-3 px-xl-5 position-relative">
 
         {/* Brand Logo */}
-        <Link href="/" className="navbar-brand d-flex align-items-center py-0 me-0 me-lg-3">
+        <Link
+          href="/"
+          className="navbar-brand d-flex align-items-center py-0 me-0 me-lg-3"
+        >
           <img
             src="/logo.png"
             alt="Tarang Logo"
-            style={{ height: '42px', width: 'auto', objectFit: 'contain' }}
+            className="tarang-logo"
           />
         </Link>
 
@@ -116,7 +118,9 @@ export default function Navbar() {
                     <span className={`app-icon-badge d-lg-none ${link.colorClass}`}>
                       <Icon size={16} className="text-white" />
                     </span>
+
                     <Icon size={15} className="d-none d-lg-inline nav-icon" />
+
                     <span className="fw-medium nav-text">{link.name}</span>
                   </Link>
                 </li>
@@ -140,12 +144,19 @@ export default function Navbar() {
                   style={{ width: 38, height: 38 }}
                 >
                   {displayPhoto ? (
-                    <img src={displayPhoto} alt="User" className="rounded-circle w-100 h-100 object-fit-cover" />
+                    <img
+                      src={displayPhoto}
+                      alt="User"
+                      className="rounded-circle w-100 h-100 object-fit-cover"
+                    />
                   ) : (
                     userInitial
                   )}
                 </div>
-                <span className="d-lg-none fw-bold small text-dark text-truncate">{displayName}</span>
+
+                <span className="d-lg-none fw-bold small text-dark text-truncate">
+                  {displayName}
+                </span>
               </Link>
             ) : (
               /* Login CTA */
@@ -160,10 +171,10 @@ export default function Navbar() {
             )}
 
             {/* Language Selector */}
-            <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill ">
+            <div className="language-selector d-flex align-items-center justify-content-center gap-1 rounded-pill">
               {!loadTranslator ? (
                 <button
-                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold   d-flex align-items-center gap-1 text-secondary"
+                  className="btn btn-light btn-sm rounded-pill px-2 py-1 fw-semibold d-flex align-items-center gap-1 text-secondary"
                   onClick={() => setLoadTranslator(true)}
                   title="Change Language"
                 >
