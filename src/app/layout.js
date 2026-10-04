@@ -20,7 +20,7 @@ export const metadata = {
     'Swayampoorna Goa',
     'GSRLM DRDA Goa'
   ].join(', '),
-  authors: [{ name: 'Hridesh' }],
+  authors: [{ name: 'tarang goa' }],
   creator: 'Tarang Goa Team',
   publisher: 'Tarang Goa',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://taranggoa.com'),
