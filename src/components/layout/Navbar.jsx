@@ -82,7 +82,7 @@ export default function Navbar() {
           className="navbar-brand d-flex align-items-center py-0 me-0 me-lg-3"
         >
           <img
-            src="/logo.png"
+            src="/mainlogo.png"
             alt="Tarang Logo"
             className="tarang-logo"
           />
