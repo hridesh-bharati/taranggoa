@@ -105,7 +105,7 @@ export default function AboutPage() {
           </p>
 
           <div className="d-flex flex-wrap gap-3 justify-content-center mt-4">
-            <Link href="/membership" className="btn rounded-pill px-4 py-3 fw-bold text-dark hover-app-btn shadow-lg hero-btn" style={{ backgroundColor: 'var(--logo-yellow)', border: 'none', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
+            <Link href="/membership-user-page" className="btn rounded-pill px-4 py-3 fw-bold text-dark hover-app-btn shadow-lg hero-btn" style={{ backgroundColor: 'var(--logo-yellow)', border: 'none', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
               Join Tarang <i className="bi bi-arrow-right ms-1"></i>
             </Link>
             <Link href="/events" className="btn btn-outline-light rounded-pill px-4 py-3 fw-bold hover-app-btn hero-btn" style={{ backdropFilter: 'blur(10px)', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)' }}>
