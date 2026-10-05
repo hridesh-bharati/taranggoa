@@ -29,10 +29,8 @@ export default function Navbar() {
   const [profileData, setProfileData] = useState(null);
   const [loadTranslator, setLoadTranslator] = useState(false);
 
-  // Context se user and admin status retrieve karna
   const { user, isAdmin: isContextAdmin } = useAuth();
 
-  // Load Cached & Fresh Profile Data
   useEffect(() => {
     if (user?.uid) {
       const cached = profileController.getCache(user.uid);
@@ -60,7 +58,6 @@ export default function Navbar() {
   const displayPhoto = profileData?.photoURL || user?.photoURL;
   const userInitial = displayName ? displayName.charAt(0).toUpperCase() : 'U';
 
-  // Dynamic Admin Checking using Environment Variable + Context
   const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || '').toLowerCase().trim();
   const userEmail = (user?.email || '').toLowerCase().trim();
 
@@ -69,17 +66,16 @@ export default function Navbar() {
     profileData?.role === 'admin' ||
     (Boolean(ADMIN_EMAIL) && userEmail === ADMIN_EMAIL);
 
-  // Dynamic Dashboard Route Target
   const dashboardLink = isAdmin ? '/admin/dashboard' : '/user/dashboard';
 
   return (
     <nav className="navbar navbar-expand-lg bg-white sticky-top shadow-sm py-1 py-lg-2 custom-navbar">
-      <div className="container-fluid px-3 px-xl-5 position-relative">
+      <div className="container-fluid px-3 px-xl-5 position-relative d-flex align-items-center justify-content-between">
 
-        {/* Brand Logo */}
+        {/* Brand Logo - Strictly Left */}
         <Link
           href="/"
-          className="navbar-brand d-flex align-items-center py-0 me-0 me-lg-3"
+          className="navbar-brand d-flex align-items-center py-0"
         >
           <img
             src="/mainlogo.png"
@@ -88,9 +84,9 @@ export default function Navbar() {
           />
         </Link>
 
-        {/* Mobile Toggle Button */}
+        {/* Mobile Toggle Button - Strictly Right */}
         <button
-          className="three-dot-btn d-lg-none ms-auto"
+          className="three-dot-btn d-lg-none"
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
@@ -131,7 +127,7 @@ export default function Navbar() {
           {/* Right Action Group */}
           <div className="bottom-action-group pt-2 pt-lg-0 d-flex flex-column flex-lg-row align-items-stretch align-items-lg-center gap-2 flex-shrink-0">
 
-            {/* Logged-In User Profile Avatar (Direct Dashboard Navigation) */}
+            {/* Logged-In User Profile Avatar */}
             {user ? (
               <Link
                 href={dashboardLink}
