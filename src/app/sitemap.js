@@ -1,5 +1,5 @@
 export default async function sitemap() {
-  const baseUrl = 'https://www.taranggoa.in';
+  const baseUrl = 'https://www.taranggo.in';
 
   // Website ke saare main public pages jo navbar aur footer mein hain
   const routes = [
@@ -18,12 +18,14 @@ export default async function sitemap() {
     '/faqs',
     '/privacy-policy',
     '/terms',
-  ].map((route) => ({
+  ];
+
+  const sitemapEntries = routes.map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date().toISOString(),
     changeFrequency: 'weekly',
     priority: route === '' ? 1.0 : 0.8,
   }));
 
-  return [...routes];
+  return sitemapEntries;
 }
