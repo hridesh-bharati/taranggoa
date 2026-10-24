@@ -7,7 +7,53 @@ import { eventController } from '@/controllers/event.controller';
 import useScrollReveal from '@/hooks/useScrollReveal';
 import { CalendarX, Loader2, Search, MapPin, Tag, RotateCcw, ChevronDown, ChevronUp, SlidersHorizontal, X, ChevronLeft, ChevronRight } from 'lucide-react';
 
-const ITEMS_PER_PAGE = 3; // Har page par exact 3 events load honge
+const ITEMS_PER_PAGE = 3;
+
+// Helper: Formats plain text into rich styled menu/event sections
+function FormattedDescription({ text, isExpanded }) {
+  if (!text) return null;
+
+  // Split lines to detect section headers (like 🥨 Appetizers, 🍲Soup, Warning:, etc.)
+  const lines = text.split('\n');
+
+  return (
+    <div 
+      className="text-dark" 
+      style={{ 
+        lineHeight: '1.8',
+        ...(!isExpanded ? {
+          display: '-webkit-box',
+          WebkitLineClamp: 8,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        } : {})
+      }}
+    >
+      {lines.map((rawLine, idx) => {
+        const line = rawLine.trim();
+        if (!line) return <div key={idx} style={{ height: '0.6rem' }} />;
+
+        // Check if line is a Category/Header with emojis or title-like
+        const isHeader = /^([🥨🍲🌭🥧🍺⭐✨📌🎯💡]|Warning:|About this event|Hosted by)/i.test(line);
+
+        if (isHeader) {
+          return (
+            <h6 key={idx} className="fw-bold mt-3 mb-1 text-dark d-flex align-items-center gap-1 fs-6">
+              {line}
+            </h6>
+          );
+        }
+
+        return (
+          <p key={idx} className="text-secondary mb-1 fs-7">
+            {line}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function EventsPage() {
   const [eventsData, setEventsData] = useState([]);
@@ -71,7 +117,6 @@ export default function EventsPage() {
     return titleMatch && locationMatch && categoryMatch;
   });
 
-  // Simple Pagination Calculation
   const totalPages = Math.ceil(filteredEvents.length / ITEMS_PER_PAGE);
   const currentEvents = filteredEvents.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
@@ -225,236 +270,132 @@ export default function EventsPage() {
               )}
             </div>
           ) : (
-            <>
-              <div className="d-flex flex-column gap-5">
-                {currentEvents.map((ev, index) => {
-                  const galleryList = ev.gallery || ev.gallery6 || ev.kalaImages || ev.grid4Images || ev.collageImages || ev.leftImages || [];
-                  const topImg = ev.image || ev.topImage || (galleryList.length > 0 ? galleryList[0] : null);
-                  
-                  const cardId = ev.id || ev.slugId || index;
-                  const isExpanded = !!expandedCards[cardId];
-                  
-                  const descText = ev.description || '';
-                  const hasLongDesc = descText.length > 220;
-                  const bulletList = ev.bulletPoints || [];
-                  const hasLongBullets = bulletList.length > 3;
+            <div className="d-flex flex-column gap-5">
+              {currentEvents.map((ev, index) => {
+                const galleryList = ev.gallery || ev.gallery6 || ev.kalaImages || ev.grid4Images || ev.collageImages || ev.leftImages || ev.images || [];
+                const topImg = ev.image || ev.topImage || (galleryList.length > 0 ? galleryList[0] : null);
+                
+                const cardId = ev.id || ev.slugId || index;
+                const isExpanded = !!expandedCards[cardId];
+                
+                const descText = ev.description || '';
+                const hasLongDesc = descText.length > 250;
+                const bulletList = ev.bulletPoints || [];
+                const hasLongBullets = bulletList.length > 3;
 
-                  return (
-                    <div key={cardId} className="card border-0 rounded-4 shadow-lg overflow-hidden p-4 p-md-5 anim-fade-up active position-relative" style={{ backgroundColor: '#fff' }}>
+                return (
+                  <div key={cardId} className="card border-0 rounded-4 shadow-lg overflow-hidden p-4 p-md-5 anim-fade-up active position-relative" style={{ backgroundColor: '#fff' }}>
 
-                      <div className="position-absolute top-0 end-0" style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 70px 70px 0', borderColor: 'transparent #f5b000 transparent transparent' }}></div>
+                    <div className="position-absolute top-0 end-0" style={{ width: 0, height: 0, borderStyle: 'solid', borderWidth: '0 70px 70px 0', borderColor: 'transparent #f5b000 transparent transparent' }}></div>
 
-                      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
-                        <span className="fw-bold fs-4 text-uppercase" style={{ color: '#d94e34' }}>
-                          {ev.category || 'Recent Event'}
+                    <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                      <span className="fw-bold fs-5 text-uppercase" style={{ color: '#d94e34' }}>
+                        {ev.category || 'Recent Event'}
+                      </span>
+                      {ev.date && (
+                        <span className="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold">
+                          {ev.date}
                         </span>
-                        {ev.date && (
-                          <span className="badge bg-light text-dark border px-3 py-2 rounded-pill fw-semibold">
-                            {ev.date}
-                          </span>
-                        )}
-                      </div>
-
-                      <h2 className="display-6 fw-bolder text-dark mb-1">{ev.title}</h2>
-                      {ev.subtitle && <h6 className="fw-bold mb-3" style={{ color: '#6b21a8' }}>{ev.subtitle}</h6>}
-
-                      <div className="d-flex flex-wrap gap-4 text-secondary mb-4 pb-3 border-bottom border-light">
-                        {ev.location && <span><i className="bi bi-geo-alt-fill text-danger me-1"></i><strong>Location / Address:</strong> {ev.location}</span>}
-                        {ev.date && <span><i className="bi bi-calendar-check-fill text-primary me-1"></i><strong>Date:</strong> {ev.date}</span>}
-                      </div>
-
-                      {ev.layoutType === 'editorial-top-image' && topImg && (
-                        <div className="rounded-4 overflow-hidden shadow-sm mb-4">
-                          <img src={topImg} alt={ev.title} className="img-fluid w-100 object-fit-cover" style={{ maxHeight: '450px' }} />
-                        </div>
                       )}
+                    </div>
 
-                      {(ev.layoutType === 'pop-up-bazaar-grid' || ev.layoutType === 'grid-6-special') && galleryList.length > 0 && (
-                        <div className="d-flex flex-column gap-4 mb-3">
-                          <div className="row g-3">
-                            {galleryList.slice(0, 2).map((img, idx) => (
-                              <div key={idx} className="col-lg-6 col-md-6">
-                                <div className="rounded-3 overflow-hidden shadow-sm border">
-                                  <img src={img} alt="Gallery Top" className="img-fluid w-100 object-fit-cover" style={{ height: '260px' }} />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                          {galleryList.length > 2 && (
-                            <div className="row g-3">
-                              {galleryList.slice(2).map((img, idx) => (
-                                <div key={idx} className="col-lg-3 col-6">
-                                  <div className="rounded-3 overflow-hidden shadow-sm border">
-                                    <img src={img} alt="Gallery Bottom" className="img-fluid w-100 object-fit-cover" style={{ height: '220px' }} />
-                                  </div>
-                                </div>
-                              ))}
+                    <h2 className="display-6 fw-bolder text-dark mb-1">{ev.title}</h2>
+                    {ev.subtitle && <h6 className="fw-bold mb-3" style={{ color: '#6b21a8' }}>{ev.subtitle}</h6>}
+
+                    <div className="d-flex flex-wrap gap-4 text-secondary mb-4 pb-3 border-bottom border-light">
+                      {ev.location && <span><i className="bi bi-geo-alt-fill text-danger me-1"></i><strong>Location / Address:</strong> {ev.location}</span>}
+                      {ev.date && <span><i className="bi bi-calendar-check-fill text-primary me-1"></i><strong>Date:</strong> {ev.date}</span>}
+                    </div>
+
+                    {/* Event Banner Image */}
+                    {topImg && (
+                      <div className="rounded-4 overflow-hidden shadow-sm mb-4">
+                        <img src={topImg} alt={ev.title} className="img-fluid w-100 object-fit-cover" style={{ maxHeight: '450px' }} />
+                      </div>
+                    )}
+
+                    {/* Additional Gallery Previews if multiple images exist */}
+                    {galleryList.length > 1 && (
+                      <div className="row g-2 mb-4">
+                        {galleryList.slice(1, 5).map((img, idx) => (
+                          <div key={idx} className="col-3">
+                            <div className="rounded-3 overflow-hidden border" style={{ height: '110px' }}>
+                              <img src={img} alt={`Gallery ${idx}`} className="w-100 h-100 object-fit-cover" />
                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Event Structured Body & Menu Layout */}
+                    <div className="mt-2">
+                      {bulletList.length > 0 ? (
+                        <div className="p-4 bg-light rounded-4 border">
+                          {(isExpanded ? bulletList : bulletList.slice(0, 3)).map((pt, idx) => (
+                            <p key={idx} className="text-secondary mb-2" style={{ lineHeight: '1.7' }}>
+                              • {pt}
+                            </p>
+                          ))}
+                          {hasLongBullets && (
+                            <button
+                              type="button"
+                              onClick={() => toggleReadMore(cardId)}
+                              className="btn btn-link p-0 mt-2 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent"
+                              style={{ color: '#6b21a8' }}
+                            >
+                              <span>{isExpanded ? 'Show Less Details' : 'Read Full Story'}</span>
+                              {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </button>
                           )}
                         </div>
-                      )}
-
-                      {(ev.layoutType === 'split-2x2' || ev.layoutType === 'grid-mix' || ev.layoutType === 'grid-2x2-left' || ev.layoutType === 'single-grid-frame' || ev.layoutType === 'editorial-left-stack') && galleryList.length > 0 && (
-                        <div className="row g-4 align-items-center mb-3">
-                          <div className="col-lg-6">
-                            <div className="row g-2">
-                              {galleryList.map((img, idx) => (
-                                <div key={idx} className={`${idx === 0 && ev.layoutType === 'grid-mix' ? 'col-12' : 'col-6'}`}>
-                                  <div className="rounded-3 overflow-hidden shadow-sm border">
-                                    <img src={img} alt="Grid Item" className="img-fluid w-100 object-fit-cover" style={{ height: idx === 0 && ev.layoutType === 'grid-mix' ? '220px' : '150px' }} />
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="col-lg-6">
-                            {bulletList.length > 0 ? (
-                              <div className="d-flex flex-column gap-3">
-                                {(isExpanded ? bulletList : bulletList.slice(0, 3)).map((pt, idx) => (
-                                  <div key={idx} className="d-flex align-items-start gap-2">
-                                    <i className="bi bi-caret-right-fill flex-shrink-0 mt-1" style={{ color: '#d94e34' }}></i>
-                                    <p className="text-secondary mb-0" style={{ lineHeight: '1.7' }}>{pt}</p>
-                                  </div>
-                                ))}
-                                {hasLongBullets && (
-                                  <button
-                                    type="button"
-                                    onClick={() => toggleReadMore(cardId)}
-                                    className="btn btn-link p-0 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent text-start"
-                                    style={{ color: '#6b21a8' }}
-                                  >
-                                    <span>{isExpanded ? 'Read Less' : 'Read More Story'}</span>
-                                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                  </button>
-                                )}
-                              </div>
-                            ) : (
-                              <div>
-                                <p 
-                                  className="text-secondary" 
-                                  style={{ 
-                                    lineHeight: '1.7',
-                                    ...(!isExpanded && hasLongDesc ? {
-                                      display: '-webkit-box',
-                                      WebkitLineClamp: 4,
-                                      WebkitBoxOrient: 'vertical',
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis'
-                                    } : {})
-                                  }}
-                                >
-                                  {descText}
-                                </p>
-                                {hasLongDesc && (
-                                  <button
-                                    type="button"
-                                    onClick={() => toggleReadMore(cardId)}
-                                    className="btn btn-link p-0 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent"
-                                    style={{ color: '#6b21a8' }}
-                                  >
-                                    <span>{isExpanded ? 'Read Less' : 'Read More Story'}</span>
-                                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                  </button>
-                                )}
-                              </div>
-                            )}
-                          </div>
+                      ) : descText ? (
+                        <div className="bg-light bg-opacity-50 p-4 rounded-4 border border-light">
+                          <FormattedDescription text={descText} isExpanded={isExpanded} />
+                          {hasLongDesc && (
+                            <button
+                              type="button"
+                              onClick={() => toggleReadMore(cardId)}
+                              className="btn btn-link p-0 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent mt-2"
+                              style={{ color: '#6b21a8' }}
+                            >
+                              <span>{isExpanded ? 'Read Less' : 'Read Full Story'}</span>
+                              {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                            </button>
+                          )}
                         </div>
-                      )}
-
-                      {(!ev.layoutType || ev.layoutType === 'standard') && topImg && (
-                        <div className="rounded-4 overflow-hidden shadow-sm mb-4">
-                          <img src={topImg} alt={ev.title} className="img-fluid w-100 object-fit-cover" style={{ maxHeight: '420px' }} />
-                        </div>
-                      )}
-
-                      {ev.layoutType !== 'split-2x2' && ev.layoutType !== 'grid-mix' && ev.layoutType !== 'grid-2x2-left' && ev.layoutType !== 'single-grid-frame' && ev.layoutType !== 'editorial-left-stack' && (
-                        <div className="mt-2">
-                          {bulletList.length > 0 ? (
-                            <div className="p-4 bg-light rounded-4 border">
-                              {(isExpanded ? bulletList : bulletList.slice(0, 3)).map((pt, idx) => (
-                                <p key={idx} className="text-secondary mb-2" style={{ lineHeight: '1.7' }}>
-                                  • {pt}
-                                </p>
-                              ))}
-
-                              {hasLongBullets && (
-                                <button
-                                  type="button"
-                                  onClick={() => toggleReadMore(cardId)}
-                                  className="btn btn-link p-0 mt-2 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent"
-                                  style={{ color: '#6b21a8' }}
-                                >
-                                  <span>{isExpanded ? 'Show Less Details' : 'Read Full Story'}</span>
-                                  {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </button>
-                              )}
-                            </div>
-                          ) : descText ? (
-                            <div>
-                              <p 
-                                className="text-secondary" 
-                                style={{ 
-                                  lineHeight: '1.7',
-                                  ...(!isExpanded && hasLongDesc ? {
-                                    display: '-webkit-box',
-                                    WebkitLineClamp: 3,
-                                    WebkitBoxOrient: 'vertical',
-                                    overflow: 'hidden',
-                                    textOverflow: 'ellipsis'
-                                  } : {})
-                                }}
-                              >
-                                {descText}
-                              </p>
-
-                              {hasLongDesc && (
-                                <button
-                                  type="button"
-                                  onClick={() => toggleReadMore(cardId)}
-                                  className="btn btn-link p-0 text-decoration-none fw-bold d-inline-flex align-items-center gap-1 border-0 bg-transparent mt-1"
-                                  style={{ color: '#6b21a8' }}
-                                >
-                                  <span>{isExpanded ? 'Read Less' : 'Read Full Story'}</span>
-                                  {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                </button>
-                              )}
-                            </div>
-                          ) : null}
-                        </div>
-                      )}
-
-                      <div className="position-absolute bottom-0 start-0 end-0" style={{ height: '6px', background: 'linear-gradient(90deg, #f5b000 0%, #d94e34 100%)' }}></div>
+                      ) : null}
                     </div>
-                  );
-                })}
-              </div>
 
-              {/* Clean & Minimalist Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="d-flex align-items-center justify-content-center gap-2 mt-5">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
-                    className="btn btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1"
-                  >
-                    <ChevronLeft size={18} /> Prev
-                  </button>
+                    <div className="position-absolute bottom-0 start-0 end-0" style={{ height: '6px', background: 'linear-gradient(90deg, #f5b000 0%, #d94e34 100%)' }}></div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-                  <span className="fw-bold text-secondary px-3">
-                    Page {currentPage} of {totalPages}
-                  </span>
+          {/* Minimalist Pagination */}
+          {totalPages > 1 && (
+            <div className="d-flex align-items-center justify-content-center gap-2 mt-5">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+                className="btn btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1"
+              >
+                <ChevronLeft size={18} /> Prev
+              </button>
 
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => p + 1)}
-                    className="btn btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1"
-                  >
-                    Next <ChevronRight size={18} />
-                  </button>
-                </div>
-              )}
-            </>
+              <span className="fw-bold text-secondary px-3">
+                Page {currentPage} of {totalPages}
+              </span>
+
+              <button
+                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+                className="btn btn-outline-dark rounded-pill px-3 py-1.5 fw-semibold d-flex align-items-center gap-1"
+              >
+                Next <ChevronRight size={18} />
+              </button>
+            </div>
           )}
 
         </div>
